@@ -1,0 +1,371 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="cl_demo.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="cl_input.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="cl_main.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="cl_parse.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="cl_tent.c">
+      <Filter>client</Filter>
+    </ClCompile>
+    <ClCompile Include="chase.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="cmd.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="common.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="conproc.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="console.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="crc.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="cvar.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_draw.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_fog.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_mesh.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_model.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_refrag.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_rlight.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_rmain.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_rmisc.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_screen.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_sky.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_test.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_texmgr.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_vidnt.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_warp.c">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="snd_dma.c">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="snd_mem.c">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="snd_mix.c">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="snd_win.c">
+      <Filter>sound</Filter>
+    </ClCompile>
+    <ClCompile Include="net_dgrm.c">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="net_loop.c">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="net_main.c">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="net_wipx.c">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="sv_main.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="sv_move.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="sv_phys.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="sv_user.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="net_win.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="net_wins.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sys_win.c">
+      <Filter>server</Filter>
+    </ClCompile>
+    <ClCompile Include="cd_win.c">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="in_win.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="host.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="host_cmd.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="image.c">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="mathlib.c">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="keys.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="menu.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="r_alias.c">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="r_brush.c">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="r_part.c">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="r_sprite.c">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="r_world.c">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="pr_cmds.c">
+      <Filter>prog</Filter>
+    </ClCompile>
+    <ClCompile Include="pr_edict.c">
+      <Filter>prog</Filter>
+    </ClCompile>
+    <ClCompile Include="pr_exec.c">
+      <Filter>prog</Filter>
+    </ClCompile>
+    <ClCompile Include="sbar.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="view.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="wad.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="world.c">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="zone.c">
+      <Filter>game</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="client">
+      <UniqueIdentifier>{fe65e8b4-3959-4dd1-936c-9652ab751da5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="misc">
+      <UniqueIdentifier>{5bee84da-9bce-4166-af1f-fad8b8a873c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="opengl">
+      <UniqueIdentifier>{e52fbd89-bb72-42cd-aeb3-8581fb89a728}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sound">
+      <UniqueIdentifier>{5eb73144-8c65-4c58-a499-c25db81af43a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="network">
+      <UniqueIdentifier>{6199e224-e9da-4af1-aecb-f1b26971dd8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="server">
+      <UniqueIdentifier>{70a487b0-5c73-4481-93b7-bd884f24f3f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32">
+      <UniqueIdentifier>{d4a83325-6a4f-498d-87be-11f19bf396a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="game">
+      <UniqueIdentifier>{5c259eb8-5bb8-4bfe-bceb-1a214bc23818}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer">
+      <UniqueIdentifier>{54f2975d-fbe7-4ab0-8d00-f33b3917ef0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="prog">
+      <UniqueIdentifier>{6f7a7b31-de49-4b17-b284-a98493f5608b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="progdefs.q1">
+      <Filter>prog</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="anorm_dots.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="anorms.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="asm_i386.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="bspfile.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="cdaudio.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="client.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="cmd.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="common.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="conproc.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="console.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="crc.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="cvar.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="d_ifacea.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_model.h">
+      <Filter>opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_texmgr.h">
+      <Filter>opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="gl_warp_sin.h">
+      <Filter>opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="glquake.h">
+      <Filter>opengl</Filter>
+    </ClInclude>
+    <ClInclude Include="image.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="keys.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="mathlib.h">
+      <Filter>misc</Filter>
+    </ClInclude>
+    <ClInclude Include="menu.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="modelgen.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="net.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="net_loop.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="net_ser.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="net_wins.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="net_wipx.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="net_dgrm.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="pr_comp.h">
+      <Filter>prog</Filter>
+    </ClInclude>
+    <ClInclude Include="progdefs.h">
+      <Filter>prog</Filter>
+    </ClInclude>
+    <ClInclude Include="progs.h">
+      <Filter>prog</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="quakeasm.h">
+      <Filter>prog</Filter>
+    </ClInclude>
+    <ClInclude Include="quakedef.h" />
+    <ClInclude Include="render.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="sbar.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="screen.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="server.h">
+      <Filter>network</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="spritegn.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="sys.h" />
+    <ClInclude Include="vid.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="view.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="wad.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="winquake.h" />
+    <ClInclude Include="world.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="zone.h">
+      <Filter>game</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

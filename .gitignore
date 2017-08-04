@@ -9,10 +9,13 @@
 *.userosscache
 *.sln.docstates
 
+
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
 # Build results
+cmake-build-debug/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

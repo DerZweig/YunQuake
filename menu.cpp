@@ -24,11 +24,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 #endif
 
-void (*vid_menucmdfn)(void); //johnfitz
-void (*vid_menudrawfn)(void);
+void (*vid_menucmdfn)(); //johnfitz
+void (*vid_menudrawfn)();
 void (*vid_menukeyfn)(int key);
 
-enum {
+enum class m_state_t {
 	m_none,
 	m_main,
 	m_singleplayer,
@@ -111,7 +111,7 @@ void M_Main_Key (int key);
 								// won't disrupt the sound
 	bool	m_recursiveDraw;
 
-int			m_return_state;
+	m_state_t			m_return_state;
 bool	m_return_onerror;
 char		m_return_reason [32];
 
@@ -173,14 +173,12 @@ void M_DrawTransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom) //
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
-	qpic_t	*p;
-	int		cx, cy;
 	int		n;
 
 	// draw left side
-	cx = x;
-	cy = y;
-	p = Draw_CachePic ("gfx/box_tl.lmp");
+	auto cx = x;
+	auto cy = y;
+	auto p = Draw_CachePic ("gfx/box_tl.lmp");
 	M_DrawTransPic (cx, cy, p);
 	p = Draw_CachePic ("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
@@ -239,18 +237,18 @@ void M_ToggleMenu_f()
 {
 	m_entersound = true;
 
-	if (key_dest == key_menu)
+	if (key_dest == keydest_t::key_menu)
 	{
-		if (m_state != m_main)
+		if (m_state != m_state_t::m_main)
 		{
 			M_Menu_Main_f ();
 			return;
 		}
-		key_dest = key_game;
-		m_state = m_none;
+		key_dest = keydest_t::key_game;
+		m_state = m_state_t::m_none;
 		return;
 	}
-	if (key_dest == key_console)
+	if (key_dest == keydest_t::key_console)
 	{
 		Con_ToggleConsole_f ();
 	}
@@ -270,28 +268,25 @@ int	m_main_cursor;
 
 void M_Menu_Main_f()
 {
-	if (key_dest != key_menu)
+	if (key_dest != keydest_t::key_menu)
 	{
 		m_save_demonum = cls.demonum;
 		cls.demonum = -1;
 	}
-	key_dest = key_menu;
-	m_state = m_main;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_main;
 	m_entersound = true;
 }
 
 
 void M_Main_Draw()
 {
-	int		f;
-	qpic_t	*p;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/ttl_main.lmp");
+	auto p = Draw_CachePic ("gfx/ttl_main.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mainmenu.lmp") );
 
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
+	auto f = static_cast<int>(realtime * 10)%6; //johnfitz -- was host_time
 
 	M_DrawTransPic (54, 32 + m_main_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
 }
@@ -302,10 +297,10 @@ void M_Main_Key (int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		key_dest = key_game;
-		m_state = m_none;
+		key_dest = keydest_t::key_game;
+		m_state = m_state_t::m_none;
 		cls.demonum = m_save_demonum;
-		if (cls.demonum != -1 && !cls.demoplayback && cls.state != ca_connected)
+		if (cls.demonum != -1 && !cls.demoplayback && cls.state != cactive_t::ca_connected)
 			CL_NextDemo ();
 		break;
 
@@ -345,7 +340,9 @@ void M_Main_Key (int key)
 		case 4:
 			M_Menu_Quit_f ();
 			break;
+		default: break;
 		}
+	default: break;
 	}
 }
 
@@ -358,23 +355,20 @@ int	m_singleplayer_cursor;
 
 void M_Menu_SinglePlayer_f()
 {
-	key_dest = key_menu;
-	m_state = m_singleplayer;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_singleplayer;
 	m_entersound = true;
 }
 
 
 void M_SinglePlayer_Draw()
 {
-	int		f;
-	qpic_t	*p;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/ttl_sgl.lmp");
+	auto p = Draw_CachePic ("gfx/ttl_sgl.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/sp_menu.lmp") );
 
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
+	auto f = static_cast<int>(realtime * 10)%6; //johnfitz -- was host_time
 
 	M_DrawTransPic (54, 32 + m_singleplayer_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
 }
@@ -409,7 +403,7 @@ void M_SinglePlayer_Key (int key)
 			if (sv.active)
 				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n", 0.0f))
 					break;
-			key_dest = key_game;
+			key_dest = keydest_t::key_game;
 			if (sv.active)
 				Cbuf_AddText ("disconnect\n");
 			Cbuf_AddText ("maxplayers 1\n");
@@ -425,7 +419,9 @@ void M_SinglePlayer_Key (int key)
 		case 2:
 			M_Menu_Save_f ();
 			break;
+		default: break;
 		}
+	default: break;
 	}
 }
 
@@ -440,17 +436,15 @@ int		loadable[MAX_SAVEGAMES];
 
 void M_ScanSaves()
 {
-	int		i, j;
 	char	name[MAX_OSPATH];
-	FILE	*f;
 	int		version;
 
-	for (i=0 ; i<MAX_SAVEGAMES ; i++)
+	for (auto i = 0 ; i<MAX_SAVEGAMES ; i++)
 	{
 		strcpy (m_filenames[i], "--- UNUSED SLOT ---");
 		loadable[i] = false;
 		sprintf (name, "%s/s%i.sav", com_gamedir, i);
-		f = fopen (name, "r");
+		auto f = fopen (name, "r");
 		if (!f)
 			continue;
 		fscanf (f, "%i\n", &version);
@@ -458,7 +452,7 @@ void M_ScanSaves()
 		strncpy (m_filenames[i], name, sizeof(m_filenames[i])-1);
 
 	// change _ back to space
-		for (j=0 ; j<SAVEGAME_COMMENT_LENGTH ; j++)
+		for (auto j = 0 ; j<SAVEGAME_COMMENT_LENGTH ; j++)
 			if (m_filenames[i][j] == '_')
 				m_filenames[i][j] = ' ';
 		loadable[i] = true;
@@ -469,8 +463,8 @@ void M_ScanSaves()
 void M_Menu_Load_f()
 {
 	m_entersound = true;
-	m_state = m_load;
-	key_dest = key_menu;
+	m_state = m_state_t::m_load;
+	key_dest = keydest_t::key_menu;
 	M_ScanSaves ();
 }
 
@@ -484,41 +478,35 @@ void M_Menu_Save_f()
 	if (svs.maxclients != 1)
 		return;
 	m_entersound = true;
-	m_state = m_save;
-	key_dest = key_menu;
+	m_state = m_state_t::m_save;
+	key_dest = keydest_t::key_menu;
 	M_ScanSaves ();
 }
 
 
 void M_Load_Draw()
 {
-	int		i;
-	qpic_t	*p;
-
-	p = Draw_CachePic ("gfx/p_load.lmp");
+	auto p = Draw_CachePic ("gfx/p_load.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	for (i=0 ; i< MAX_SAVEGAMES; i++)
+	for (auto i = 0 ; i< MAX_SAVEGAMES; i++)
 		M_Print (16, 32 + 8*i, m_filenames[i]);
 
 // line cursor
-	M_DrawCharacter (8, 32 + load_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawCharacter (8, 32 + load_cursor*8, 12+(static_cast<int>(realtime * 4)&1));
 }
 
 
 void M_Save_Draw()
 {
-	int		i;
-	qpic_t	*p;
-
-	p = Draw_CachePic ("gfx/p_save.lmp");
+	auto p = Draw_CachePic ("gfx/p_save.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	for (i=0 ; i<MAX_SAVEGAMES ; i++)
+	for (auto i = 0 ; i<MAX_SAVEGAMES ; i++)
 		M_Print (16, 32 + 8*i, m_filenames[i]);
 
 // line cursor
-	M_DrawCharacter (8, 32 + load_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawCharacter (8, 32 + load_cursor*8, 12+(static_cast<int>(realtime * 4)&1));
 }
 
 
@@ -534,8 +522,8 @@ void M_Load_Key (int k)
 		S_LocalSound ("misc/menu2.wav");
 		if (!loadable[load_cursor])
 			return;
-		m_state = m_none;
-		key_dest = key_game;
+		m_state = m_state_t::m_none;
+		key_dest = keydest_t::key_game;
 
 	// Host_Loadgame_f can't bring up the loading plaque because too much
 	// stack space has been used, so do it now
@@ -560,6 +548,7 @@ void M_Load_Key (int k)
 		if (load_cursor >= MAX_SAVEGAMES)
 			load_cursor = 0;
 		break;
+	default: break;
 	}
 }
 
@@ -573,8 +562,8 @@ void M_Save_Key (int k)
 		break;
 
 	case K_ENTER:
-		m_state = m_none;
-		key_dest = key_game;
+		m_state = m_state_t::m_none;
+		key_dest = keydest_t::key_game;
 		Cbuf_AddText (va("save s%i\n", load_cursor));
 		return;
 
@@ -593,6 +582,7 @@ void M_Save_Key (int k)
 		if (load_cursor >= MAX_SAVEGAMES)
 			load_cursor = 0;
 		break;
+	default: break;
 	}
 }
 
@@ -605,23 +595,20 @@ int	m_multiplayer_cursor;
 
 void M_Menu_MultiPlayer_f()
 {
-	key_dest = key_menu;
-	m_state = m_multiplayer;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_multiplayer;
 	m_entersound = true;
 }
 
 
 void M_MultiPlayer_Draw()
 {
-	int		f;
-	qpic_t	*p;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mp_menu.lmp") );
 
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
+	auto f = static_cast<int>(realtime * 10)%6; //johnfitz -- was host_time
 
 	M_DrawTransPic (54, 32 + m_multiplayer_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
 
@@ -668,7 +655,9 @@ void M_MultiPlayer_Key (int key)
 		case 2:
 			M_Menu_Setup_f ();
 			break;
+		default: break;
 		}
+	default: break;
 	}
 }
 
@@ -689,22 +678,20 @@ int		setup_bottom;
 
 void M_Menu_Setup_f()
 {
-	key_dest = key_menu;
-	m_state = m_setup;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_setup;
 	m_entersound = true;
 	Q_strcpy(setup_myname, cl_name.string);
 	Q_strcpy(setup_hostname, hostname.string);
-	setup_top = setup_oldtop = ((int)cl_color.value) >> 4;
-	setup_bottom = setup_oldbottom = ((int)cl_color.value) & 15;
+	setup_top = setup_oldtop = static_cast<int>(cl_color.value) >> 4;
+	setup_bottom = setup_oldbottom = static_cast<int>(cl_color.value) & 15;
 }
 
 
 void M_Setup_Draw()
 {
-	qpic_t	*p;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
 	M_Print (64, 40, "Hostname");
@@ -726,13 +713,13 @@ void M_Setup_Draw()
 	p = Draw_CachePic ("gfx/menuplyr.lmp");
 	M_DrawTransPicTranslate (172, 72, p, setup_top, setup_bottom);
 
-	M_DrawCharacter (56, setup_cursor_table [setup_cursor], 12+((int)(realtime*4)&1));
+	M_DrawCharacter (56, setup_cursor_table [setup_cursor], 12+(static_cast<int>(realtime * 4)&1));
 
 	if (setup_cursor == 0)
-		M_DrawCharacter (168 + 8*strlen(setup_hostname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (168 + 8*strlen(setup_hostname), setup_cursor_table [setup_cursor], 10+(static_cast<int>(realtime * 4)&1));
 
 	if (setup_cursor == 1)
-		M_DrawCharacter (168 + 8*strlen(setup_myname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (168 + 8*strlen(setup_myname), setup_cursor_table [setup_cursor], 10+(static_cast<int>(realtime * 4)&1));
 }
 
 
@@ -878,8 +865,8 @@ char *net_helpMessage [] =
 
 void M_Menu_Net_f()
 {
-	key_dest = key_menu;
-	m_state = m_net;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_net;
 	m_entersound = true;
 	m_net_items = 4;
 
@@ -892,14 +879,11 @@ void M_Menu_Net_f()
 
 void M_Net_Draw()
 {
-	int		f;
-	qpic_t	*p;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	f = 32;
+	auto f = 32;
 
 	if (serialAvailable)
 	{
@@ -964,7 +948,7 @@ void M_Net_Draw()
 	M_Print (f, 158, net_helpMessage[m_net_cursor*4+2]);
 	M_Print (f, 166, net_helpMessage[m_net_cursor*4+3]);
 
-	f = (int)(realtime * 10)%6; //johnfitz -- was host_time
+	f = static_cast<int>(realtime * 10)%6; //johnfitz -- was host_time
 	M_DrawTransPic (54, 32 + m_net_cursor * 20,Draw_CachePic( va("gfx/menudot%i.lmp", f+1 ) ) );
 }
 
@@ -1014,7 +998,9 @@ again:
 		case 4:
 // multiprotocol
 			break;
+		default: break;
 		}
+	default: break;
 	}
 
 	if (m_net_cursor == 0 && !serialAvailable)
@@ -1042,12 +1028,12 @@ int		options_cursor;
 
 void M_Menu_Options_f()
 {
-	key_dest = key_menu;
-	m_state = m_options;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_options;
 	m_entersound = true;
 
 #ifdef _WIN32
-	if ((options_cursor == 13) && (modestate != MS_WINDOWED))
+	if ((options_cursor == 13) && (modestate != modestate_t::MS_WINDOWED))
 	{
 		options_cursor = 0;
 	}
@@ -1135,6 +1121,7 @@ void M_AdjustSliders (int dir)
 	case 13:	// _windowed_mouse
 		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse.value);
 		break;
+	default: break;
 #endif
 	}
 }
@@ -1171,11 +1158,8 @@ void M_DrawCheckbox (int x, int y, int on)
 
 void M_Options_Draw()
 {
-	float		r;
-	qpic_t	*p;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_option.lmp");
+	auto p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
 	M_Print (16, 32, "    Customize controls");
@@ -1183,7 +1167,7 @@ void M_Options_Draw()
 	M_Print (16, 48, "     Reset to defaults");
 
 	M_Print (16, 56, "           Screen size");
-	r = (scr_viewsize.value - 30) / (120 - 30);
+	auto r = (scr_viewsize.value - 30) / (120 - 30);
 	M_DrawSlider (220, 56, r);
 
 	M_Print (16, 64, "            Brightness");
@@ -1218,7 +1202,7 @@ void M_Options_Draw()
 		M_Print (16, 128, "         Video Options");
 
 #ifdef _WIN32
-	if (modestate == MS_WINDOWED)
+	if (modestate == modestate_t::MS_WINDOWED)
 	{
 		M_Print (16, 136, "             Use Mouse");
 		M_DrawCheckbox (220, 136, _windowed_mouse.value);
@@ -1226,7 +1210,7 @@ void M_Options_Draw()
 #endif
 
 // cursor
-	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawCharacter (200, 32 + options_cursor*8, 12+(static_cast<int>(realtime * 4)&1));
 }
 
 
@@ -1246,7 +1230,7 @@ void M_Options_Key (int k)
 			M_Menu_Keys_f ();
 			break;
 		case 1:
-			m_state = m_none;
+			m_state = m_state_t::m_none;
 			Con_ToggleConsole_f ();
 			break;
 		case 2:
@@ -1283,6 +1267,7 @@ void M_Options_Key (int k)
 	case K_RIGHTARROW:
 		M_AdjustSliders (1);
 		break;
+	default: break;
 	}
 
 	if (options_cursor == 12 && vid_menudrawfn == nullptr)
@@ -1294,7 +1279,7 @@ void M_Options_Key (int k)
 	}
 
 #ifdef _WIN32
-	if ((options_cursor == 13) && (modestate != MS_WINDOWED))
+	if (options_cursor == 13 && modestate != modestate_t::MS_WINDOWED)
 	{
 		if (k == K_UPARROW)
 			options_cursor = 12;
@@ -1336,26 +1321,21 @@ int		bind_grab;
 
 void M_Menu_Keys_f()
 {
-	key_dest = key_menu;
-	m_state = m_keys;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_keys;
 	m_entersound = true;
 }
 
 
 void M_FindKeysForCommand (char *command, int *twokeys)
 {
-	int		count;
-	int		j;
-	int		l;
-	char	*b;
-
 	twokeys[0] = twokeys[1] = -1;
-	l = strlen(command);
-	count = 0;
+	int l = strlen(command);
+	auto count = 0;
 
-	for (j=0 ; j<256 ; j++)
+	for (auto j = 0 ; j<256 ; j++)
 	{
-		b = keybindings[j];
+		auto b = keybindings[j];
 		if (!b)
 			continue;
 		if (!strncmp (b, command, l) )
@@ -1370,15 +1350,11 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 
 void M_UnbindCommand (char *command)
 {
-	int		j;
-	int		l;
-	char	*b;
+	int l = strlen(command);
 
-	l = strlen(command);
-
-	for (j=0 ; j<256 ; j++)
+	for (auto j = 0 ; j<256 ; j++)
 	{
-		b = keybindings[j];
+		auto b = keybindings[j];
 		if (!b)
 			continue;
 		if (!strncmp (b, command, l) )
@@ -1389,13 +1365,9 @@ void M_UnbindCommand (char *command)
 
 void M_Keys_Draw()
 {
-	int		i, l;
 	int		keys[2];
-	char	*name;
-	int		x, y;
-	qpic_t	*p;
 
-	p = Draw_CachePic ("gfx/ttl_cstm.lmp");
+	auto p = Draw_CachePic ("gfx/ttl_cstm.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
 	if (bind_grab)
@@ -1404,13 +1376,11 @@ void M_Keys_Draw()
 		M_Print (18, 32, "Enter to change, backspace to clear");
 
 // search for known bindings
-	for (i=0 ; i<NUMCOMMANDS ; i++)
+	for (auto i = 0 ; i<NUMCOMMANDS ; i++)
 	{
-		y = 48 + 8*i;
+		auto y = 48 + 8*i;
 
 		M_Print (16, y, bindnames[i][1]);
-
-		l = strlen (bindnames[i][0]);
 
 		M_FindKeysForCommand (bindnames[i][0], keys);
 
@@ -1420,9 +1390,9 @@ void M_Keys_Draw()
 		}
 		else
 		{
-			name = Key_KeynumToString (keys[0]);
+			auto name = Key_KeynumToString (keys[0]);
 			M_Print (140, y, name);
-			x = strlen(name) * 8;
+			int x = strlen(name) * 8;
 			if (keys[1] != -1)
 			{
 				M_Print (140 + x + 8, y, "or");
@@ -1434,7 +1404,7 @@ void M_Keys_Draw()
 	if (bind_grab)
 		M_DrawCharacter (130, 48 + keys_cursor*8, '=');
 	else
-		M_DrawCharacter (130, 48 + keys_cursor*8, 12+((int)(realtime*4)&1));
+		M_DrawCharacter (130, 48 + keys_cursor*8, 12+(static_cast<int>(realtime * 4)&1));
 }
 
 
@@ -1495,6 +1465,7 @@ void M_Keys_Key (int k)
 		S_LocalSound ("misc/menu2.wav");
 		M_UnbindCommand (bindnames[keys_cursor][0]);
 		break;
+	default: break;
 	}
 }
 
@@ -1527,8 +1498,8 @@ int		help_page;
 
 void M_Menu_Help_f()
 {
-	key_dest = key_menu;
-	m_state = m_help;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_help;
 	m_entersound = true;
 	help_page = 0;
 }
@@ -1562,6 +1533,7 @@ void M_Help_Key (int key)
 		if (--help_page < 0)
 			help_page = NUM_HELP_PAGES-1;
 		break;
+	default: break;
 	}
 
 }
@@ -1570,17 +1542,17 @@ void M_Help_Key (int key)
 /* QUIT MENU */
 
 int		msgNumber;
-int		m_quit_prevstate;
+m_state_t		m_quit_prevstate;
 bool	wasInMenus;
 
 void M_Menu_Quit_f()
 {
-	if (m_state == m_quit)
+	if (m_state == m_state_t::m_quit)
 		return;
-	wasInMenus = (key_dest == key_menu);
-	key_dest = key_menu;
+	wasInMenus = (key_dest == keydest_t::key_menu);
+	key_dest = keydest_t::key_menu;
 	m_quit_prevstate = m_state;
-	m_state = m_quit;
+	m_state = m_state_t::m_quit;
 	m_entersound = true;
 	msgNumber = rand()&7;
 }
@@ -1600,14 +1572,14 @@ void M_Quit_Key (int key)
 		}
 		else
 		{
-			key_dest = key_game;
-			m_state = m_none;
+			key_dest = keydest_t::key_game;
+			m_state = m_state_t::m_none;
 		}
 		break;
 
 	case 'Y':
 	case 'y':
-		key_dest = key_console;
+		key_dest = keydest_t::key_console;
 		Host_Quit_f ();
 		break;
 
@@ -1622,24 +1594,23 @@ void M_Quit_Draw() //johnfitz -- modified for new quit message
 	char	msg1[40];
 	char	msg2[40];
 	char	msg3[40];
-	int		boxlen, y;
 
 	if (wasInMenus)
 	{
 		m_state = m_quit_prevstate;
 		m_recursiveDraw = true;
 		M_Draw ();
-		m_state = m_quit;
+		m_state = m_state_t::m_quit;
 	}
 
-	sprintf(msg1, "FitzQuake version %1.2f", (float)FITZQUAKE_VERSION);
+	sprintf(msg1, "FitzQuake version %1.2f", static_cast<float>(FITZQUAKE_VERSION));
 	sprintf(msg2, "by John Fitzgibbons");
 	sprintf(msg3, "Press y to quit");
 
 	//okay, this is kind of fucked up.  M_DrawTextBox will always act as if
 	//width is even. Also, the width and lines values are for the interior of the box,
 	//but the x and y values include the border.
-	boxlen = max(strlen(msg1),max(strlen(msg2),strlen(msg3))) + 1;
+	int boxlen = max(strlen(msg1),max(strlen(msg2),strlen(msg3))) + 1;
 	if (boxlen & 1) boxlen++;
 	M_DrawTextBox	(160-4*(boxlen+2), 76, boxlen, 4);
 
@@ -1673,8 +1644,8 @@ void M_Menu_SerialConfig_f()
 	int		baudrate;
 	bool	useModem;
 
-	key_dest = key_menu;
-	m_state = m_serialconfig;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_serialconfig;
 	m_entersound = true;
 	if (JoiningGame && SerialConfig)
 		serialConfig_cursor = 4;
@@ -1709,14 +1680,12 @@ void M_Menu_SerialConfig_f()
 
 void M_SerialConfig_Draw()
 {
-	qpic_t	*p;
-	int		basex;
 	char	*startJoin;
 	char	*directModem;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
-	basex = (320-p->width)/2;
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto basex = (320-p->width)/2;
 	M_DrawPic (basex, 4, p);
 
 	if (StartingGame)
@@ -1764,10 +1733,10 @@ void M_SerialConfig_Draw()
 		M_Print (basex+8, serialConfig_cursor_table[5], "OK");
 	}
 
-	M_DrawCharacter (basex-8, serialConfig_cursor_table [serialConfig_cursor], 12+((int)(realtime*4)&1));
+	M_DrawCharacter (basex-8, serialConfig_cursor_table [serialConfig_cursor], 12+(static_cast<int>(realtime * 4)&1));
 
 	if (serialConfig_cursor == 4)
-		M_DrawCharacter (168 + 8*strlen(serialConfig_phone), serialConfig_cursor_table [serialConfig_cursor], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (168 + 8*strlen(serialConfig_phone), serialConfig_cursor_table [serialConfig_cursor], 10+(static_cast<int>(realtime * 4)&1));
 
 	if (*m_return_reason)
 		M_PrintWhite (basex, 148, m_return_reason);
@@ -1776,8 +1745,6 @@ void M_SerialConfig_Draw()
 
 void M_SerialConfig_Key (int key)
 {
-	int		l;
-
 	switch (key)
 	{
 	case K_ESCAPE:
@@ -1894,8 +1861,8 @@ forward:
 
 		m_return_state = m_state;
 		m_return_onerror = true;
-		key_dest = key_game;
-		m_state = m_none;
+		key_dest = keydest_t::key_game;
+		m_state = m_state_t::m_none;
 
 		if (SerialConfig)
 			Cbuf_AddText (va ("connect \"%s\"\n", serialConfig_phone));
@@ -1916,7 +1883,7 @@ forward:
 			break;
 		if (serialConfig_cursor == 4)
 		{
-			l = strlen(serialConfig_phone);
+			int l = strlen(serialConfig_phone);
 			if (l < 15)
 			{
 				serialConfig_phone[l+1] = 0;
@@ -1952,8 +1919,8 @@ char	modemConfig_hangup [16];
 
 void M_Menu_ModemConfig_f()
 {
-	key_dest = key_menu;
-	m_state = m_modemconfig;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_modemconfig;
 	m_entersound = true;
 	(*GetModemConfig) (0, &modemConfig_dialing, modemConfig_clear, modemConfig_init, modemConfig_hangup);
 }
@@ -1961,12 +1928,9 @@ void M_Menu_ModemConfig_f()
 
 void M_ModemConfig_Draw()
 {
-	qpic_t	*p;
-	int		basex;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
-	basex = (320-p->width)/2;
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto basex = (320-p->width)/2;
 	M_DrawPic (basex, 4, p);
 	basex += 8;
 
@@ -1979,24 +1943,24 @@ void M_ModemConfig_Draw()
 	M_DrawTextBox (basex, modemConfig_cursor_table[1]+4, 16, 1);
 	M_Print (basex+8, modemConfig_cursor_table[1]+12, modemConfig_clear);
 	if (modemConfig_cursor == 1)
-		M_DrawCharacter (basex+8 + 8*strlen(modemConfig_clear), modemConfig_cursor_table[1]+12, 10+((int)(realtime*4)&1));
+		M_DrawCharacter (basex+8 + 8*strlen(modemConfig_clear), modemConfig_cursor_table[1]+12, 10+(static_cast<int>(realtime * 4)&1));
 
 	M_Print (basex, modemConfig_cursor_table[2], "Init");
 	M_DrawTextBox (basex, modemConfig_cursor_table[2]+4, 30, 1);
 	M_Print (basex+8, modemConfig_cursor_table[2]+12, modemConfig_init);
 	if (modemConfig_cursor == 2)
-		M_DrawCharacter (basex+8 + 8*strlen(modemConfig_init), modemConfig_cursor_table[2]+12, 10+((int)(realtime*4)&1));
+		M_DrawCharacter (basex+8 + 8*strlen(modemConfig_init), modemConfig_cursor_table[2]+12, 10+(static_cast<int>(realtime * 4)&1));
 
 	M_Print (basex, modemConfig_cursor_table[3], "Hangup");
 	M_DrawTextBox (basex, modemConfig_cursor_table[3]+4, 16, 1);
 	M_Print (basex+8, modemConfig_cursor_table[3]+12, modemConfig_hangup);
 	if (modemConfig_cursor == 3)
-		M_DrawCharacter (basex+8 + 8*strlen(modemConfig_hangup), modemConfig_cursor_table[3]+12, 10+((int)(realtime*4)&1));
+		M_DrawCharacter (basex+8 + 8*strlen(modemConfig_hangup), modemConfig_cursor_table[3]+12, 10+(static_cast<int>(realtime * 4)&1));
 
 	M_DrawTextBox (basex, modemConfig_cursor_table[4]-8, 2, 1);
 	M_Print (basex+8, modemConfig_cursor_table[4], "OK");
 
-	M_DrawCharacter (basex-8, modemConfig_cursor_table [modemConfig_cursor], 12+((int)(realtime*4)&1));
+	M_DrawCharacter (basex-8, modemConfig_cursor_table [modemConfig_cursor], 12+(static_cast<int>(realtime * 4)&1));
 }
 
 
@@ -2123,8 +2087,8 @@ char	lanConfig_joinname[22];
 
 void M_Menu_LanConfig_f()
 {
-	key_dest = key_menu;
-	m_state = m_lanconfig;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_lanconfig;
 	m_entersound = true;
 	if (lanConfig_cursor == -1)
 	{
@@ -2145,14 +2109,12 @@ void M_Menu_LanConfig_f()
 
 void M_LanConfig_Draw()
 {
-	qpic_t	*p;
-	int		basex;
 	char	*startJoin;
 	char	*protocol;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
-	basex = (320-p->width)/2;
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto basex = (320-p->width)/2;
 	M_DrawPic (basex, 4, p);
 
 	if (StartingGame)
@@ -2189,13 +2151,13 @@ void M_LanConfig_Draw()
 		M_Print (basex+8, lanConfig_cursor_table[1], "OK");
 	}
 
-	M_DrawCharacter (basex-8, lanConfig_cursor_table [lanConfig_cursor], 12+((int)(realtime*4)&1));
+	M_DrawCharacter (basex-8, lanConfig_cursor_table [lanConfig_cursor], 12+(static_cast<int>(realtime * 4)&1));
 
 	if (lanConfig_cursor == 0)
-		M_DrawCharacter (basex+9*8 + 8*strlen(lanConfig_portname), lanConfig_cursor_table [0], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (basex+9*8 + 8*strlen(lanConfig_portname), lanConfig_cursor_table [0], 10+(static_cast<int>(realtime * 4)&1));
 
 	if (lanConfig_cursor == 2)
-		M_DrawCharacter (basex+16 + 8*strlen(lanConfig_joinname), lanConfig_cursor_table [2], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (basex+16 + 8*strlen(lanConfig_joinname), lanConfig_cursor_table [2], 10+(static_cast<int>(realtime * 4)&1));
 
 	if (*m_return_reason)
 		M_PrintWhite (basex, 148, m_return_reason);
@@ -2249,8 +2211,8 @@ void M_LanConfig_Key (int key)
 		{
 			m_return_state = m_state;
 			m_return_onerror = true;
-			key_dest = key_game;
-			m_state = m_none;
+			key_dest = keydest_t::key_game;
+			m_state = m_state_t::m_none;
 			Cbuf_AddText ( va ("connect \"%s\"\n", lanConfig_joinname) );
 			break;
 		}
@@ -2305,9 +2267,7 @@ void M_LanConfig_Key (int key)
 			lanConfig_cursor = 0;
 
 	l =  Q_atoi(lanConfig_portname);
-	if (l > 65535)
-		l = lanConfig_port;
-	else
+	if (l <= 65535)
 		lanConfig_port = l;
 	sprintf(lanConfig_portname, "%u", lanConfig_port);
 }
@@ -2467,8 +2427,8 @@ double m_serverInfoMessageTime;
 
 void M_Menu_GameOptions_f()
 {
-	key_dest = key_menu;
-	m_state = m_gameoptions;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_gameoptions;
 	m_entersound = true;
 	if (maxplayers == 0)
 		maxplayers = svs.maxclients;
@@ -2483,11 +2443,8 @@ int		gameoptions_cursor;
 
 void M_GameOptions_Draw()
 {
-	qpic_t	*p;
-	int		x;
-
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
-	p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
 	M_DrawTextBox (152, 32, 10, 1);
@@ -2507,7 +2464,7 @@ void M_GameOptions_Draw()
 	{
 		char *msg;
 
-		switch((int)teamplay.value)
+		switch(static_cast<int>(teamplay.value))
 		{
 			case 1: msg = "No Friendly Fire"; break;
 			case 2: msg = "Friendly Fire"; break;
@@ -2523,7 +2480,7 @@ void M_GameOptions_Draw()
 	{
 		char *msg;
 
-		switch((int)teamplay.value)
+		switch(static_cast<int>(teamplay.value))
 		{
 			case 1: msg = "No Friendly Fire"; break;
 			case 2: msg = "Friendly Fire"; break;
@@ -2546,13 +2503,13 @@ void M_GameOptions_Draw()
 	if (fraglimit.value == 0)
 		M_Print (160, 88, "none");
 	else
-		M_Print (160, 88, va("%i frags", (int)fraglimit.value));
+		M_Print (160, 88, va("%i frags", static_cast<int>(fraglimit.value)));
 
 	M_Print (0, 96, "       Time Limit");
 	if (timelimit.value == 0)
 		M_Print (160, 96, "none");
 	else
-		M_Print (160, 96, va("%i minutes", (int)timelimit.value));
+		M_Print (160, 96, va("%i minutes", static_cast<int>(timelimit.value)));
 
 	M_Print (0, 112, "         Episode");
    //MED 01/06/97 added hipnotic episodes
@@ -2584,13 +2541,13 @@ void M_GameOptions_Draw()
    }
 
 // line cursor
-	M_DrawCharacter (144, gameoptions_cursor_table[gameoptions_cursor], 12+((int)(realtime*4)&1));
+	M_DrawCharacter (144, gameoptions_cursor_table[gameoptions_cursor], 12+(static_cast<int>(realtime * 4)&1));
 
 	if (m_serverInfoMessage)
 	{
 		if ((realtime - m_serverInfoMessageTime) < 5.0)
 		{
-			x = (320-26*8)/2;
+			auto x = (320-26*8)/2;
 			M_DrawTextBox (x, 138, 24, 4);
 			x += 8;
 			M_Print (x, 146, "  More than 4 players   ");
@@ -2705,6 +2662,7 @@ void M_NetStart_Change (int dir)
 		if (startlevel >= count)
 			startlevel = 0;
 		break;
+	default: break;
 	}
 }
 
@@ -2766,6 +2724,7 @@ void M_GameOptions_Key (int key)
 
 		M_NetStart_Change (1);
 		break;
+	default: break;
 	}
 }
 
@@ -2777,8 +2736,8 @@ double		searchCompleteTime;
 
 void M_Menu_Search_f()
 {
-	key_dest = key_menu;
-	m_state = m_search;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_search;
 	m_entersound = false;
 	slistSilent = true;
 	slistLocal = false;
@@ -2790,12 +2749,9 @@ void M_Menu_Search_f()
 
 void M_Search_Draw()
 {
-	qpic_t	*p;
-	int x;
-
-	p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
-	x = (320/2) - ((12*8)/2) + 4;
+	auto x = (320/2) - ((12*8)/2) + 4;
 	M_DrawTextBox (x-8, 32, 12, 1);
 	M_Print (x, 40, "Searching...");
 
@@ -2837,8 +2793,8 @@ bool slist_sorted;
 
 void M_Menu_ServerList_f()
 {
-	key_dest = key_menu;
-	m_state = m_slist;
+	key_dest = keydest_t::key_menu;
+	m_state = m_state_t::m_slist;
 	m_entersound = true;
 	slist_cursor = 0;
 	m_return_onerror = false;
@@ -2849,18 +2805,15 @@ void M_Menu_ServerList_f()
 
 void M_ServerList_Draw()
 {
-	int		n;
 	char	string [64];
-	qpic_t	*p;
 
 	if (!slist_sorted)
 	{
 		if (hostCacheCount > 1)
 		{
-			int	i,j;
 			hostcache_t temp;
-			for (i = 0; i < hostCacheCount; i++)
-				for (j = i+1; j < hostCacheCount; j++)
+			for (auto i = 0; i < hostCacheCount; i++)
+				for (auto j = i+1; j < hostCacheCount; j++)
 					if (strcmp(hostcache[j].name, hostcache[i].name) < 0)
 					{
 						Q_memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
@@ -2871,9 +2824,9 @@ void M_ServerList_Draw()
 		slist_sorted = true;
 	}
 
-	p = Draw_CachePic ("gfx/p_multi.lmp");
+	auto p = Draw_CachePic ("gfx/p_multi.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
-	for (n = 0; n < hostCacheCount; n++)
+	for (auto n = 0; n < hostCacheCount; n++)
 	{
 		if (hostcache[n].maxusers)
 			sprintf(string, "%-15.15s %-15.15s %2u/%2u\n", hostcache[n].name, hostcache[n].map, hostcache[n].users, hostcache[n].maxusers);
@@ -2881,7 +2834,7 @@ void M_ServerList_Draw()
 			sprintf(string, "%-15.15s %-15.15s\n", hostcache[n].name, hostcache[n].map);
 		M_Print (16, 32 + 8*n, string);
 	}
-	M_DrawCharacter (0, 32 + slist_cursor*8, 12+((int)(realtime*4)&1));
+	M_DrawCharacter (0, 32 + slist_cursor*8, 12+(static_cast<int>(realtime * 4)&1));
 
 	if (*m_return_reason)
 		M_PrintWhite (16, 148, m_return_reason);
@@ -2921,8 +2874,8 @@ void M_ServerList_Key (int k)
 		m_return_state = m_state;
 		m_return_onerror = true;
 		slist_sorted = false;
-		key_dest = key_game;
-		m_state = m_none;
+		key_dest = keydest_t::key_game;
+		m_state = m_state_t::m_none;
 		Cbuf_AddText ( va ("connect \"%s\"\n", hostcache[slist_cursor].cname) );
 		break;
 
@@ -2956,7 +2909,7 @@ void M_Init()
 
 void M_Draw()
 {
-	if (m_state == m_none || key_dest != key_menu)
+	if (m_state == m_state_t::m_none || key_dest != keydest_t::key_menu)
 		return;
 
 	if (!m_recursiveDraw)
@@ -2976,82 +2929,82 @@ void M_Draw()
 		m_recursiveDraw = false;
 	}
 
-	GL_SetCanvas (CANVAS_MENU); //johnfitz
+	GL_SetCanvas (canvastype::CANVAS_MENU); //johnfitz
 
 	switch (m_state)
 	{
-	case m_none:
+	case m_state_t::m_none:
 		break;
 
-	case m_main:
+	case m_state_t::m_main:
 		M_Main_Draw ();
 		break;
 
-	case m_singleplayer:
+	case m_state_t::m_singleplayer:
 		M_SinglePlayer_Draw ();
 		break;
 
-	case m_load:
+	case m_state_t::m_load:
 		M_Load_Draw ();
 		break;
 
-	case m_save:
+	case m_state_t::m_save:
 		M_Save_Draw ();
 		break;
 
-	case m_multiplayer:
+	case m_state_t::m_multiplayer:
 		M_MultiPlayer_Draw ();
 		break;
 
-	case m_setup:
+	case m_state_t::m_setup:
 		M_Setup_Draw ();
 		break;
 
-	case m_net:
+	case m_state_t::m_net:
 		M_Net_Draw ();
 		break;
 
-	case m_options:
+	case m_state_t::m_options:
 		M_Options_Draw ();
 		break;
 
-	case m_keys:
+	case m_state_t::m_keys:
 		M_Keys_Draw ();
 		break;
 
-	case m_video:
+	case m_state_t::m_video:
 		M_Video_Draw ();
 		break;
 
-	case m_help:
+	case m_state_t::m_help:
 		M_Help_Draw ();
 		break;
 
-	case m_quit:
+	case m_state_t::m_quit:
 		M_Quit_Draw ();
 		break;
 
-	case m_serialconfig:
+	case m_state_t::m_serialconfig:
 		M_SerialConfig_Draw ();
 		break;
 
-	case m_modemconfig:
+	case m_state_t::m_modemconfig:
 		M_ModemConfig_Draw ();
 		break;
 
-	case m_lanconfig:
+	case m_state_t::m_lanconfig:
 		M_LanConfig_Draw ();
 		break;
 
-	case m_gameoptions:
+	case m_state_t::m_gameoptions:
 		M_GameOptions_Draw ();
 		break;
 
-	case m_search:
+	case m_state_t::m_search:
 		M_Search_Draw ();
 		break;
 
-	case m_slist:
+	case m_state_t::m_slist:
 		M_ServerList_Draw ();
 		break;
 	}
@@ -3072,78 +3025,78 @@ void M_Keydown (int key)
 {
 	switch (m_state)
 	{
-	case m_none:
+	case m_state_t::m_none:
 		return;
 
-	case m_main:
+	case m_state_t::m_main:
 		M_Main_Key (key);
 		return;
 
-	case m_singleplayer:
+	case m_state_t::m_singleplayer:
 		M_SinglePlayer_Key (key);
 		return;
 
-	case m_load:
+	case m_state_t::m_load:
 		M_Load_Key (key);
 		return;
 
-	case m_save:
+	case m_state_t::m_save:
 		M_Save_Key (key);
 		return;
 
-	case m_multiplayer:
+	case m_state_t::m_multiplayer:
 		M_MultiPlayer_Key (key);
 		return;
 
-	case m_setup:
+	case m_state_t::m_setup:
 		M_Setup_Key (key);
 		return;
 
-	case m_net:
+	case m_state_t::m_net:
 		M_Net_Key (key);
 		return;
 
-	case m_options:
+	case m_state_t::m_options:
 		M_Options_Key (key);
 		return;
 
-	case m_keys:
+	case m_state_t::m_keys:
 		M_Keys_Key (key);
 		return;
 
-	case m_video:
+	case m_state_t::m_video:
 		M_Video_Key (key);
 		return;
 
-	case m_help:
+	case m_state_t::m_help:
 		M_Help_Key (key);
 		return;
 
-	case m_quit:
+	case m_state_t::m_quit:
 		M_Quit_Key (key);
 		return;
 
-	case m_serialconfig:
+	case m_state_t::m_serialconfig:
 		M_SerialConfig_Key (key);
 		return;
 
-	case m_modemconfig:
+	case m_state_t::m_modemconfig:
 		M_ModemConfig_Key (key);
 		return;
 
-	case m_lanconfig:
+	case m_state_t::m_lanconfig:
 		M_LanConfig_Key (key);
 		return;
 
-	case m_gameoptions:
+	case m_state_t::m_gameoptions:
 		M_GameOptions_Key (key);
 		return;
 
-	case m_search:
+	case m_state_t::m_search:
 		M_Search_Key (key);
 		break;
 
-	case m_slist:
+	case m_state_t::m_slist:
 		M_ServerList_Key (key);
 		return;
 	}

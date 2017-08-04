@@ -174,14 +174,12 @@ Host_FindMaxClients
 */
 void Host_FindMaxClients()
 {
-	int i;
-
 	svs.maxclients = 1;
 
-	i = COM_CheckParm("-dedicated");
+	auto i = COM_CheckParm("-dedicated");
 	if (i)
 	{
-		cls.state = ca_dedicated;
+		cls.state = cactive_t::ca_dedicated;
 		if (i != (com_argc - 1))
 		{
 			svs.maxclients = Q_atoi(com_argv[i + 1]);
@@ -190,12 +188,12 @@ void Host_FindMaxClients()
 			svs.maxclients = 8;
 	}
 	else
-		cls.state = ca_disconnected;
+		cls.state = cactive_t::ca_disconnected;
 
 	i = COM_CheckParm("-listen");
 	if (i)
 	{
-		if (cls.state == ca_dedicated)
+		if (cls.state == cactive_t::ca_dedicated)
 			Sys_Error("Only one of -dedicated or -listen can be specified");
 		if (i != (com_argc - 1))
 			svs.maxclients = Q_atoi(com_argv[i + 1]);
@@ -210,7 +208,7 @@ void Host_FindMaxClients()
 	svs.maxclientslimit = svs.maxclients;
 	if (svs.maxclientslimit < 4)
 		svs.maxclientslimit = 4;
-	svs.clients = Hunk_AllocName(svs.maxclientslimit * sizeof(client_t), "clients");
+	svs.clients = reinterpret_cast<client_t*>(Hunk_AllocName(svs.maxclientslimit * sizeof(client_t), "clients"));
 
 	if (svs.maxclients > 1)
 		Cvar_SetValue("deathmatch", 1.0);
@@ -257,7 +255,7 @@ void Host_InitLocal()
 	host_time = 1.0; // so a think at time 0 won't get called
 }
 
-
+void VID_SyncCvars();
 /*
 ===============
 Host_WriteConfiguration
@@ -267,13 +265,11 @@ Writes key bindings and archived cvars to config.cfg
 */
 void Host_WriteConfiguration()
 {
-	FILE* f;
-
 	// dedicated servers initialize the host but don't parse and set the
 	// config.cfg cvars
 	if (host_initialized & !isDedicated)
 	{
-		f = fopen(va("%s/config.cfg", com_gamedir), "w");
+		auto f = fopen(va("%s/config.cfg", com_gamedir), "w");
 		if (!f)
 		{
 			Con_Printf("Couldn't write config.cfg.\n");
@@ -344,13 +340,12 @@ void SV_BroadcastPrintf(char* fmt, ...)
 {
 	va_list argptr;
 	char string[1024];
-	int i;
 
 	va_start (argptr,fmt);
 	vsprintf(string, fmt, argptr);
 	va_end (argptr);
 
-	for (i = 0; i < svs.maxclients; i++)
+	for (auto i = 0; i < svs.maxclients; i++)
 		if (svs.clients[i].active && svs.clients[i].spawned)
 		{
 			MSG_WriteByte(&svs.clients[i].message, svc_print);
@@ -388,7 +383,6 @@ if (crash = true), don't bother sending signofs
 */
 void SV_DropClient(bool crash)
 {
-	int saveSelf;
 	int i;
 	client_t* client;
 
@@ -405,7 +399,7 @@ void SV_DropClient(bool crash)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
-			saveSelf = pr_global_struct->self;
+			auto saveSelf = pr_global_struct->self;
 			pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
 			PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
 			pr_global_struct->self = saveSelf;
@@ -454,7 +448,6 @@ void Host_ShutdownServer(bool crash)
 	int count;
 	sizebuf_t buf;
 	char message[4];
-	double start;
 
 	if (!sv.active)
 		return;
@@ -462,11 +455,11 @@ void Host_ShutdownServer(bool crash)
 	sv.active = false;
 
 	// stop all client sounds immediately
-	if (cls.state == ca_connected)
+	if (cls.state == cactive_t::ca_connected)
 		CL_Disconnect();
 
 	// flush any pending messages - like the score!!!
-	start = Sys_FloatTime();
+	auto start = Sys_FloatTime();
 	do
 	{
 		count = 0;
@@ -492,7 +485,7 @@ void Host_ShutdownServer(bool crash)
 	while (count);
 
 	// make sure all the clients know we're disconnecting
-	buf.data = message;
+	buf.data = reinterpret_cast<byte*>(message);
 	buf.maxsize = 4;
 	buf.cursize = 0;
 	MSG_WriteByte(&buf, svc_disconnect);
@@ -549,12 +542,10 @@ Returns false if the time is too short to run a frame
 */
 bool Host_FilterTime(float time)
 {
-	float maxfps; //johnfitz
-
 	realtime += time;
 
 	//johnfitz -- max fps cvar
-	maxfps = CLAMP (10.0, host_maxfps.value, 1000.0);
+	float maxfps = CLAMP (10.0, host_maxfps.value, 1000.0);
 	if (!cls.timedemo && realtime - oldrealtime < 1.0 / maxfps)
 		return false; // framerate is too high
 	//johnfitz
@@ -583,11 +574,9 @@ Add them exactly as if they had been typed at the console
 */
 void Host_GetConsoleCommands()
 {
-	char* cmd;
-
-	while (1)
+	while (true)
 	{
-		cmd = Sys_ConsoleInput();
+		auto cmd = Sys_ConsoleInput();
 		if (!cmd)
 			break;
 		Cbuf_AddText(cmd);
@@ -602,7 +591,6 @@ Host_ServerFrame
 void Host_ServerFrame()
 {
 	int i, active; //johnfitz
-	edict_t* ent; //johnfitz
 
 	// run the world state
 	pr_global_struct->frametime = host_frametime;
@@ -618,7 +606,7 @@ void Host_ServerFrame()
 
 	// move things around and think
 	// always pause in single player if in console or menus
-	if (!sv.paused && (svs.maxclients > 1 || key_dest == key_game))
+	if (!sv.paused && (svs.maxclients > 1 || key_dest == keydest_t::key_game))
 		SV_Physics();
 
 	//johnfitz -- devstats
@@ -626,7 +614,7 @@ void Host_ServerFrame()
 	{
 		for (i = 0 , active = 0; i < sv.num_edicts; i++)
 		{
-			ent = EDICT_NUM(i);
+			auto ent = EDICT_NUM(i);
 			if (!ent->free)
 				active++;
 		}
@@ -641,6 +629,8 @@ void Host_ServerFrame()
 	SV_SendClientMessages();
 }
 
+void CL_RunParticles();
+
 /*
 ==================
 Host_Frame
@@ -653,7 +643,6 @@ void _Host_Frame(float time)
 	static double time1 = 0;
 	static double time2 = 0;
 	static double time3 = 0;
-	int pass1, pass2, pass3;
 
 	if (setjmp(host_abortserver))
 		return; // something bad happened, or the server disconnected
@@ -706,7 +695,7 @@ void _Host_Frame(float time)
 	host_time += host_frametime;
 
 	// fetch results from server
-	if (cls.state == ca_connected)
+	if (cls.state == cactive_t::ca_connected)
 	{
 		CL_ReadFromServer();
 	}
@@ -735,10 +724,10 @@ void _Host_Frame(float time)
 
 	if (host_speeds.value)
 	{
-		pass1 = (time1 - time3) * 1000;
+		int pass1 = (time1 - time3) * 1000;
 		time3 = Sys_FloatTime();
-		pass2 = (time2 - time1) * 1000;
-		pass3 = (time3 - time2) * 1000;
+		int pass2 = (time2 - time1) * 1000;
+		int pass3 = (time3 - time2) * 1000;
 		Con_Printf("%3i tot %3i server %3i gfx %3i snd\n",
 		           pass1 + pass2 + pass3, pass1, pass2, pass3);
 	}
@@ -748,10 +737,8 @@ void _Host_Frame(float time)
 
 void Host_Frame(float time)
 {
-	double time1, time2;
 	static double timetotal;
 	static int timecount;
-	int i, c, m;
 
 	if (!serverprofile.value)
 	{
@@ -759,9 +746,9 @@ void Host_Frame(float time)
 		return;
 	}
 
-	time1 = Sys_FloatTime();
+	auto time1 = Sys_FloatTime();
 	_Host_Frame(time);
-	time2 = Sys_FloatTime();
+	auto time2 = Sys_FloatTime();
 
 	timetotal += time2 - time1;
 	timecount++;
@@ -769,11 +756,11 @@ void Host_Frame(float time)
 	if (timecount < 1000)
 		return;
 
-	m = timetotal * 1000 / timecount;
+	int m = timetotal * 1000 / timecount;
 	timecount = 0;
 	timetotal = 0;
-	c = 0;
-	for (i = 0; i < svs.maxclients; i++)
+	int c = 0;
+	for (int i = 0; i < svs.maxclients; i++)
 	{
 		if (svs.clients[i].active)
 			c++;
@@ -781,6 +768,10 @@ void Host_Frame(float time)
 
 	Con_Printf("serverprofile: %2i clients %2i msec\n", c, m);
 }
+
+void Cvar_Init();
+void ExtraMaps_Init();
+void Modlist_Init();
 
 /*
 ====================
@@ -800,7 +791,7 @@ void Host_Init(quakeparms_t* parms)
 	host_parms = *parms;
 
 	if (parms->memsize < minimum_memory)
-		Sys_Error("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
+		Sys_Error("Only %4.1f megs of memory available, can't execute game", parms->memsize / static_cast<float>(0x100000));
 
 	com_argc = parms->argc;
 	com_argv = parms->argv;
@@ -824,12 +815,12 @@ void Host_Init(quakeparms_t* parms)
 	ExtraMaps_Init(); //johnfitz
 	Modlist_Init(); //johnfitz
 
-	Con_Printf("Exe: "__TIME__" "__DATE__"\n");
+	//Con_Printf("Exe: "__TIME__" "__DATE__"\n");
 	Con_Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
 
-	if (cls.state != ca_dedicated)
+	if (cls.state != cactive_t::ca_dedicated)
 	{
-		host_colormap = (byte *)COM_LoadHunkFile("gfx/colormap.lmp");
+		host_colormap = static_cast<byte *>(COM_LoadHunkFile("gfx/colormap.lmp"));
 		if (!host_colormap)
 			Sys_Error("Couldn't load gfx/colormap.lmp");
 
@@ -894,7 +885,7 @@ void Host_Shutdown()
 	S_Shutdown();
 	IN_Shutdown();
 
-	if (cls.state != ca_dedicated)
+	if (cls.state != cactive_t::ca_dedicated)
 	{
 		VID_Shutdown();
 	}

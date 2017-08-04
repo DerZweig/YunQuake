@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // protocol.h -- communications protocols
 
+#pragma once
 #define	PROTOCOL_NETQUAKE	15 //johnfitz -- standard quake protocol
 #define PROTOCOL_FITZQUAKE	666 //johnfitz -- added new protocol for fitzquake 0.85
 

@@ -195,7 +195,7 @@ void CL_Record_f()
 	char name[MAX_OSPATH];
 	int track;
 
-	if (cmd_source != src_command)
+	if (cmd_source != cmd_source_t::src_command)
 		return;
 
 	auto c = Cmd_Argc();
@@ -232,7 +232,7 @@ void CL_Record_f()
 	// start the map up
 	//
 	if (c > 2)
-		Cmd_ExecuteString(va("map %s", Cmd_Argv(2)), src_command);
+		Cmd_ExecuteString(va("map %s", Cmd_Argv(2)), cmd_source_t::src_command);
 
 	//
 	// open the demo file
@@ -267,7 +267,7 @@ void CL_PlayDemo_f()
 	int c;
 	auto neg = false;
 
-	if (cmd_source != src_command)
+	if (cmd_source != cmd_source_t::src_command)
 		return;
 
 	if (Cmd_Argc() != 2)
@@ -339,7 +339,7 @@ timedemo [demoname]
 */
 void CL_TimeDemo_f()
 {
-	if (cmd_source != src_command)
+	if (cmd_source != cmd_source_t::src_command)
 		return;
 
 	if (Cmd_Argc() != 2)

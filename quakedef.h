@@ -1,27 +1,4 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// quakedef.h -- primary header for client
-
-//#define	GLTEST			// experimental stuff
-
+#pragma once
 #define	QUAKE_GAME			// as opposed to utilities
 
 #define	VERSION				1.09
@@ -70,8 +47,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __i386__	1
 #endif
 
-void	VID_LockBuffer();
-void	VID_UnlockBuffer();
+void VID_LockBuffer();
+void VID_UnlockBuffer();
 
 #else
 
@@ -128,7 +105,7 @@ void	VID_UnlockBuffer();
 
 #define MIN_EDICTS		256			// johnfitz -- lowest allowed value for max_edicts cvar
 #define MAX_EDICTS		32000		// johnfitz -- highest allowed value for max_edicts cvar
-									// ents past 8192 can't play sounds in the standard protocol
+// ents past 8192 can't play sounds in the standard protocol
 #define	MAX_LIGHTSTYLES	64
 #define	MAX_MODELS		2048		// johnfitz -- was 256
 #define	MAX_SOUNDS		2048		// johnfitz -- was 256
@@ -238,15 +215,15 @@ void	VID_UnlockBuffer();
 
 struct entity_state_t
 {
-	vec3_t			origin;
-	vec3_t			angles;
-	unsigned short 	modelindex; //johnfitz -- was int
-	unsigned short 	frame; //johnfitz -- was int
-	unsigned char 	colormap; //johnfitz -- was int
-	unsigned char 	skin; //johnfitz -- was int
-	unsigned char	alpha; //johnfitz -- added
-	int				effects;
-} ;
+	vec3_t origin;
+	vec3_t angles;
+	unsigned short modelindex; //johnfitz -- was int
+	unsigned short frame; //johnfitz -- was int
+	unsigned char colormap; //johnfitz -- was int
+	unsigned char skin; //johnfitz -- was int
+	unsigned char alpha; //johnfitz -- added
+	int effects;
+};
 
 
 #include "wad.h"
@@ -286,17 +263,16 @@ struct entity_state_t
 
 struct quakeparms_t
 {
-	char	*basedir;
-	char	*cachedir;		// for development over ISDN lines
-	int		argc;
-	char	**argv;
-	void	*membase;
-	int		memsize;
+	char* basedir;
+	char* cachedir; // for development over ISDN lines
+	int argc;
+	char** argv;
+	void* membase;
+	int memsize;
 };
 
 
 //=============================================================================
-
 
 
 extern bool noclip_anglehack;
@@ -305,47 +281,47 @@ extern bool noclip_anglehack;
 //
 // host
 //
-extern	quakeparms_t host_parms;
+extern quakeparms_t host_parms;
 
-extern	cvar_t		sys_ticrate;
-extern	cvar_t		sys_nostdout;
-extern	cvar_t		developer;
-extern	cvar_t		max_edicts; //johnfitz
+extern cvar_t sys_ticrate;
+extern cvar_t sys_nostdout;
+extern cvar_t developer;
+extern cvar_t max_edicts; //johnfitz
 
-extern	bool	host_initialized;		// true if into command execution
-extern	double		host_frametime;
-extern	byte		*host_colormap;
-extern	int			host_framecount;	// incremented every frame, never reset
-extern	double		realtime;			// not bounded in any way, changed at
-										// start of every frame, never reset
+extern bool host_initialized; // true if into command execution
+extern double host_frametime;
+extern byte* host_colormap;
+extern int host_framecount; // incremented every frame, never reset
+extern double realtime; // not bounded in any way, changed at
+// start of every frame, never reset
 
-void Host_ClearMemory ();
-void Host_ServerFrame ();
-void Host_InitCommands ();
-void Host_Init (quakeparms_t *parms);
+void Host_ClearMemory();
+void Host_ServerFrame();
+void Host_InitCommands();
+void Host_Init(quakeparms_t* parms);
 void Host_Shutdown();
-void Host_Error (char *error, ...);
-void Host_EndGame (char *message, ...);
-void Host_Frame (float time);
-void Host_Quit_f ();
-void Host_ClientCommands (char *fmt, ...);
-void Host_ShutdownServer (bool crash);
+void Host_Error(char* error, ...);
+void Host_EndGame(char* message, ...);
+void Host_Frame(float time);
+void Host_Quit_f();
+void Host_ClientCommands(char* fmt, ...);
+void Host_ShutdownServer(bool crash);
 
-extern bool		msg_suppress_1;		// suppresses resolution and cache size console output
-										//  an fullscreen DIB focus gain/loss
-extern int			current_skill;		// skill level for currently loaded level (in case
-										//  the user changes the cvar while the level is
-										//  running, this reflects the level actually in use)
+extern bool msg_suppress_1; // suppresses resolution and cache size console output
+//  an fullscreen DIB focus gain/loss
+extern int current_skill; // skill level for currently loaded level (in case
+//  the user changes the cvar while the level is
+//  running, this reflects the level actually in use)
 
-extern bool		isDedicated;
+extern bool isDedicated;
 
-extern int			minimum_memory;
+extern int minimum_memory;
 
 //
 // chase
 //
-extern	cvar_t	chase_active;
+extern cvar_t chase_active;
 
-void Chase_Init ();
-void Chase_UpdateForClient (); //johnfitz
-void Chase_UpdateForDrawing (); //johnfitz
+void Chase_Init();
+void Chase_UpdateForClient(); //johnfitz
+void Chase_UpdateForDrawing(); //johnfitz

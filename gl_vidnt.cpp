@@ -111,7 +111,7 @@ viddef_t	vid;				// global video state
 //unsigned short	d_8to16table[256]; //johnfitz -- never used
 //unsigned char		d_15to8table[65536]; //johnfitz -- never used
 
-modestate_t	modestate = MS_UNINIT;
+modestate_t	modestate = modestate_t::MS_UNINIT;
 
 void VID_Menu_Init(); //johnfitz
 void VID_Menu_f(); //johnfitz

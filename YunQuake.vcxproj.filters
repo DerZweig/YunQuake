@@ -344,9 +344,6 @@
     <ClInclude Include="zone.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="net_wins.h">
-      <Filter>renderer</Filter>
-    </ClInclude>
     <ClInclude Include="net_wipx.h">
       <Filter>win32</Filter>
     </ClInclude>
@@ -358,6 +355,9 @@
     </ClInclude>
     <ClInclude Include="server.h">
       <Filter>server</Filter>
+    </ClInclude>
+    <ClInclude Include="net_wins.h">
+      <Filter>win32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

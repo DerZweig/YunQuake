@@ -1,33 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-//
-// modelgen.h: header file for model generation program
-//
-
-// *********************************************************
-// * This file must be identical in the modelgen directory *
-// * and in the Quake directory, because it's used to      *
-// * pass data from one to the other via model files.      *
-// *********************************************************
-
 #ifdef INCLUDELIBS
 
 #include <stdlib.h>
@@ -50,49 +20,59 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // must match definition in spritegn.h
 #ifndef SYNCTYPE_T
 #define SYNCTYPE_T
+
 enum class synctype_t
-{ST_SYNC=0, ST_RAND } ;
+{
+	ST_SYNC=0,
+	ST_RAND
+};
 #endif
 
 enum class aliasframetype_t
-{ ALIAS_SINGLE=0, ALIAS_GROUP } ;
+{
+	ALIAS_SINGLE=0,
+	ALIAS_GROUP
+};
 
 enum class aliasskintype_t
-{ ALIAS_SKIN_SINGLE=0, ALIAS_SKIN_GROUP } ;
+{
+	ALIAS_SKIN_SINGLE=0,
+	ALIAS_SKIN_GROUP
+};
 
 struct mdl_t
 {
-	int			ident;
-	int			version;
-	vec3_t		scale;
-	vec3_t		scale_origin;
-	float		boundingradius;
-	vec3_t		eyeposition;
-	int			numskins;
-	int			skinwidth;
-	int			skinheight;
-	int			numverts;
-	int			numtris;
-	int			numframes;
-	synctype_t	synctype;
-	int			flags;
-	float		size;
-} ;
+	int ident;
+	int version;
+	vec3_t scale;
+	vec3_t scale_origin;
+	float boundingradius;
+	vec3_t eyeposition;
+	int numskins;
+	int skinwidth;
+	int skinheight;
+	int numverts;
+	int numtris;
+	int numframes;
+	synctype_t synctype;
+	int flags;
+	float size;
+};
 
 // TODO: could be shorts
 
 struct stvert_t
 {
-	int		onseam;
-	int		s;
-	int		t;
-} ;
+	int onseam;
+	int s;
+	int t;
+};
 
 struct dtriangle_t
 {
-	int					facesfront;
-	int					vertindex[3];
-} ;
+	int facesfront;
+	int vertindex[3];
+};
 
 #define DT_FACES_FRONT				0x0010
 
@@ -101,48 +81,48 @@ struct dtriangle_t
 
 struct trivertx_t
 {
-	byte	v[3];
-	byte	lightnormalindex;
-} ;
+	byte v[3];
+	byte lightnormalindex;
+};
 
 struct daliasframe_t
 {
-	trivertx_t	bboxmin;	// lightnormal isn't used
-	trivertx_t	bboxmax;	// lightnormal isn't used
-	char		name[16];	// frame name from grabbing
-} ;
+	trivertx_t bboxmin; // lightnormal isn't used
+	trivertx_t bboxmax; // lightnormal isn't used
+	char name[16]; // frame name from grabbing
+};
 
 struct daliasgroup_t
 {
-	int			numframes;
-	trivertx_t	bboxmin;	// lightnormal isn't used
-	trivertx_t	bboxmax;	// lightnormal isn't used
-} ;
+	int numframes;
+	trivertx_t bboxmin; // lightnormal isn't used
+	trivertx_t bboxmax; // lightnormal isn't used
+};
 
 struct daliasskingroup_t
 {
-	int			numskins;
-} ;
+	int numskins;
+};
 
-struct daliasinterval_t{
-	float	interval;
-} ;
+struct daliasinterval_t
+{
+	float interval;
+};
 
 struct daliasskininterval_t
 {
-	float	interval;
-} ;
+	float interval;
+};
 
 struct daliasframetype_t
 {
-	aliasframetype_t	type;
-} ;
+	aliasframetype_t type;
+};
 
 struct daliasskintype_t
 {
-	aliasskintype_t	type;
-} ;
+	aliasskintype_t type;
+};
 
 #define IDPOLYHEADER	(('O'<<24)+('P'<<16)+('D'<<8)+'I')
-														// little-endian "IDPO"
-
+// little-endian "IDPO"

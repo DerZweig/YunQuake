@@ -122,8 +122,8 @@ struct mtexinfo_t
 
 struct glpoly_t
 {
-	struct	glpoly_s	*next;
-	struct	glpoly_s	*chain;
+	glpoly_t	*next;
+	glpoly_t	*chain;
 	int		numverts;
 	float	verts[4][VERTEXSIZE];	// variable sized (xyz s1t1 s2t2)
 } ;
@@ -147,7 +147,7 @@ struct msurface_t
 	int			light_s, light_t;	// gl lightmap coordinates
 
 	glpoly_t	*polys;				// multiple if warped
-	struct	msurface_s	*texturechain;
+	msurface_t	*texturechain;
 
 	mtexinfo_t	*texinfo;
 

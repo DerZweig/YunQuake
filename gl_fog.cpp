@@ -1,24 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
-//gl_fog.c -- global and volumetric fog
-
 #include "quakedef.h"
 
 //==============================================================================
@@ -47,7 +26,7 @@ Fog_Update
 update internal variables
 =============
 */
-void Fog_Update (float density, float red, float green, float blue, float time)
+void Fog_Update(float density, float red, float green, float blue, float time)
 {
 	//save previous settings for fade
 	if (time > 0)
@@ -55,9 +34,7 @@ void Fog_Update (float density, float red, float green, float blue, float time)
 		//check for a fade in progress
 		if (fade_done > cl.time)
 		{
-			float f, d;
-
-			f = (fade_done - cl.time) / fade_time;
+			float f = (fade_done - cl.time) / fade_time;
 			old_density = f * old_density + (1.0 - f) * fog_density;
 			old_red = f * old_red + (1.0 - f) * fog_red;
 			old_green = f * old_green + (1.0 - f) * fog_green;
@@ -89,15 +66,13 @@ handle an SVC_FOG message from server
 */
 void Fog_ParseServerMessage()
 {
-	float density, red, green, blue, time;
+	float density = MSG_ReadByte() / 255.0;
+	float red = MSG_ReadByte() / 255.0;
+	float green = MSG_ReadByte() / 255.0;
+	float blue = MSG_ReadByte() / 255.0;
+	float time = max(0.0, MSG_ReadShort() / 100.0);
 
-	density = MSG_ReadByte() / 255.0;
-	red = MSG_ReadByte() / 255.0;
-	green = MSG_ReadByte() / 255.0;
-	blue = MSG_ReadByte() / 255.0;
-	time = max(0.0, MSG_ReadShort() / 100.0);
-
-	Fog_Update (density, red, green, blue, time);
+	Fog_Update(density, red, green, blue, time);
 }
 
 /*
@@ -125,38 +100,38 @@ void Fog_FogCommand_f()
 		break;
 	case 2:
 		Fog_Update(max(0.0, atof(Cmd_Argv(1))),
-				   fog_red,
-				   fog_green,
-				   fog_blue,
-				   0.0);
+		           fog_red,
+		           fog_green,
+		           fog_blue,
+		           0.0);
 		break;
 	case 3: //TEST
 		Fog_Update(max(0.0, atof(Cmd_Argv(1))),
-				   fog_red,
-				   fog_green,
-				   fog_blue,
-				   atof(Cmd_Argv(2)));
+		           fog_red,
+		           fog_green,
+		           fog_blue,
+		           atof(Cmd_Argv(2)));
 		break;
 	case 4:
 		Fog_Update(fog_density,
-				   CLAMP(0.0, atof(Cmd_Argv(1)), 1.0),
-				   CLAMP(0.0, atof(Cmd_Argv(2)), 1.0),
-				   CLAMP(0.0, atof(Cmd_Argv(3)), 1.0),
-				   0.0);
+		           CLAMP(0.0, atof(Cmd_Argv(1)), 1.0),
+		           CLAMP(0.0, atof(Cmd_Argv(2)), 1.0),
+		           CLAMP(0.0, atof(Cmd_Argv(3)), 1.0),
+		           0.0);
 		break;
 	case 5:
 		Fog_Update(max(0.0, atof(Cmd_Argv(1))),
-				   CLAMP(0.0, atof(Cmd_Argv(2)), 1.0),
-				   CLAMP(0.0, atof(Cmd_Argv(3)), 1.0),
-				   CLAMP(0.0, atof(Cmd_Argv(4)), 1.0),
-				   0.0);
+		           CLAMP(0.0, atof(Cmd_Argv(2)), 1.0),
+		           CLAMP(0.0, atof(Cmd_Argv(3)), 1.0),
+		           CLAMP(0.0, atof(Cmd_Argv(4)), 1.0),
+		           0.0);
 		break;
 	case 6: //TEST
 		Fog_Update(max(0.0, atof(Cmd_Argv(1))),
-				   CLAMP(0.0, atof(Cmd_Argv(2)), 1.0),
-				   CLAMP(0.0, atof(Cmd_Argv(3)), 1.0),
-				   CLAMP(0.0, atof(Cmd_Argv(4)), 1.0),
-				   atof(Cmd_Argv(5)));
+		           CLAMP(0.0, atof(Cmd_Argv(2)), 1.0),
+		           CLAMP(0.0, atof(Cmd_Argv(3)), 1.0),
+		           CLAMP(0.0, atof(Cmd_Argv(4)), 1.0),
+		           atof(Cmd_Argv(5)));
 		break;
 	}
 }
@@ -171,7 +146,6 @@ called at map load
 void Fog_ParseWorldspawn()
 {
 	char key[128], value[4096];
-	char *data;
 
 	//initially no fog
 	fog_density = 0.0;
@@ -179,12 +153,12 @@ void Fog_ParseWorldspawn()
 	fade_time = 0.0;
 	fade_done = 0.0;
 
-	data = COM_Parse(cl.worldmodel->entities);
+	auto data = COM_Parse(cl.worldmodel->entities);
 	if (!data)
 		return; // error
 	if (com_token[0] != '{')
 		return; // error
-	while (1)
+	while (true)
 	{
 		data = COM_Parse(data);
 		if (!data)
@@ -195,8 +169,8 @@ void Fog_ParseWorldspawn()
 			strcpy(key, com_token + 1);
 		else
 			strcpy(key, com_token);
-		while (key[strlen(key)-1] == ' ') // remove trailing spaces
-			key[strlen(key)-1] = 0;
+		while (key[strlen(key) - 1] == ' ') // remove trailing spaces
+			key[strlen(key) - 1] = 0;
 		data = COM_Parse(data);
 		if (!data)
 			return; // error
@@ -216,15 +190,14 @@ Fog_GetColor
 calculates fog color for this frame, taking into account fade times
 =============
 */
-float *Fog_GetColor()
+float* Fog_GetColor()
 {
 	static float c[4];
-	float f;
 	int i;
 
 	if (fade_done > cl.time)
 	{
-		f = (fade_done - cl.time) / fade_time;
+		float f = (fade_done - cl.time) / fade_time;
 		c[0] = f * old_red + (1.0 - f) * fog_red;
 		c[1] = f * old_green + (1.0 - f) * fog_green;
 		c[2] = f * old_blue + (1.0 - f) * fog_blue;
@@ -239,8 +212,8 @@ float *Fog_GetColor()
 	}
 
 	//find closest 24-bit RGB value, so solid-colored sky can match the fog perfectly
-	for (i=0;i<3;i++)
-		c[i] = (float)(Q_rint(c[i] * 255)) / 255.0f;
+	for (i = 0; i < 3; i++)
+		c[i] = static_cast<float>(Q_rint(c[i] * 255)) / 255.0f;
 
 	return c;
 }
@@ -254,15 +227,12 @@ returns current density of fog
 */
 float Fog_GetDensity()
 {
-	float f;
-
 	if (fade_done > cl.time)
 	{
-		f = (fade_done - cl.time) / fade_time;
+		float f = (fade_done - cl.time) / fade_time;
 		return f * old_density + (1.0 - f) * fog_density;
 	}
-	else
-		return fog_density;
+	return fog_density;
 }
 
 /*
@@ -340,8 +310,13 @@ void Fog_StopAdditive()
 
 cvar_t r_vfog = {"r_vfog", "1"};
 
-void Fog_DrawVFog(){}
-void Fog_MarkModels(){}
+void Fog_DrawVFog()
+{
+}
+
+void Fog_MarkModels()
+{
+}
 
 //==============================================================================
 //
@@ -358,8 +333,8 @@ called whenever a map is loaded
 */
 void Fog_NewMap()
 {
-	Fog_ParseWorldspawn (); //for global fog
-	Fog_MarkModels (); //for volumetric fog
+	Fog_ParseWorldspawn(); //for global fog
+	Fog_MarkModels(); //for volumetric fog
 }
 
 /*
@@ -371,7 +346,7 @@ called when quake initializes
 */
 void Fog_Init()
 {
-	Cmd_AddCommand ("fog",Fog_FogCommand_f);
+	Cmd_AddCommand("fog", Fog_FogCommand_f);
 
 	//Cvar_RegisterVariable (&r_vfog, nullptr);
 

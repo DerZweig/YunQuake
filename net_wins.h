@@ -20,13 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // net_wins.h
 
-int  WINS_Init (void);
-void WINS_Shutdown (void);
+int  WINS_Init();
+void WINS_Shutdown();
 void WINS_Listen (bool state);
 int  WINS_OpenSocket (int port);
 int  WINS_CloseSocket (int socket);
 int  WINS_Connect (int socket, struct qsockaddr *addr);
-int  WINS_CheckNewConnections (void);
+int  WINS_CheckNewConnections();
 int  WINS_Read (int socket, byte *buf, int len, struct qsockaddr *addr);
 int  WINS_Write (int socket, byte *buf, int len, struct qsockaddr *addr);
 int  WINS_Broadcast (int socket, byte *buf, int len);

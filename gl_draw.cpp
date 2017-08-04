@@ -191,7 +191,7 @@ int Scrap_AllocBlock (int w, int h, int *x, int *y)
 Scrap_Upload -- johnfitz -- now uses TexMgr
 ================
 */
-void Scrap_Upload (void)
+void Scrap_Upload()
 {
 	char name[8];
 	int	i;
@@ -344,7 +344,7 @@ qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 Draw_LoadPics -- johnfitz
 ===============
 */
-void Draw_LoadPics (void)
+void Draw_LoadPics()
 {
 	byte		*data;
 	unsigned	offset;
@@ -364,7 +364,7 @@ void Draw_LoadPics (void)
 Draw_NewGame -- johnfitz
 ===============
 */
-void Draw_NewGame (void)
+void Draw_NewGame()
 {
 	gltexture_t	*glt;
 	cachepic_t	*pic;
@@ -392,7 +392,7 @@ void Draw_NewGame (void)
 Draw_Init -- johnfitz -- rewritten
 ===============
 */
-void Draw_Init (void)
+void Draw_Init()
 {
 	Cvar_RegisterVariable (&scr_conalpha, nullptr);
 
@@ -543,7 +543,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, int top, int bottom)
 Draw_ConsoleBackground -- johnfitz -- rewritten
 ================
 */
-void Draw_ConsoleBackground (void)
+void Draw_ConsoleBackground()
 {
 	qpic_t *pic;
 	float alpha;
@@ -641,7 +641,7 @@ void Draw_Fill (int x, int y, int w, int h, int c, float alpha) //johnfitz -- ad
 Draw_FadeScreen -- johnfitz -- revised
 ================
 */
-void Draw_FadeScreen (void)
+void Draw_FadeScreen()
 {
 	GL_SetCanvas (CANVAS_DEFAULT);
 
@@ -673,7 +673,7 @@ Draws the little blue disc in the corner of the screen.
 Call before beginning any disc IO.
 ================
 */
-void Draw_BeginDisc (void)
+void Draw_BeginDisc()
 {
 	int viewport[4]; //johnfitz
 	canvastype oldcanvas; //johnfitz
@@ -796,7 +796,7 @@ void GL_SetCanvas (canvastype newcanvas)
 GL_Set2D -- johnfitz -- rewritten
 ================
 */
-void GL_Set2D (void)
+void GL_Set2D()
 {
 	currentcanvas = -1;
 	GL_SetCanvas (CANVAS_DEFAULT);

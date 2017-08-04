@@ -62,9 +62,9 @@ extern void (*vid_menucmdfn)(void); //johnfitz
 
 //johnfitz -- deleted VID_SetPalette and VID_ShiftPalette
 
-void	VID_Init (void); //johnfitz -- removed palette from argument list
+void	VID_Init(); //johnfitz -- removed palette from argument list
 
-void	VID_Shutdown (void);
+void	VID_Shutdown();
 // Called at shutdown
 
 void	VID_Update (vrect_t *rects);

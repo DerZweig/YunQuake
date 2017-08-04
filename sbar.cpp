@@ -61,8 +61,8 @@ int         hipweapons[4] = {HIT_LASER_CANNON_BIT,HIT_MJOLNIR_BIT,4,HIT_PROXIMIT
 //MED 01/04/97 added hipnotic items array
 qpic_t      *hsb_items[2];
 
-void Sbar_MiniDeathmatchOverlay (void);
-void Sbar_DeathmatchOverlay (void);
+void Sbar_MiniDeathmatchOverlay();
+void Sbar_DeathmatchOverlay();
 void M_DrawPic (int x, int y, qpic_t *pic);
 
 /*
@@ -72,7 +72,7 @@ Sbar_ShowScores
 Tab key down
 ===============
 */
-void Sbar_ShowScores (void)
+void Sbar_ShowScores()
 {
 	if (sb_showscores)
 		return;
@@ -87,7 +87,7 @@ Sbar_DontShowScores
 Tab key up
 ===============
 */
-void Sbar_DontShowScores (void)
+void Sbar_DontShowScores()
 {
 	sb_showscores = false;
 	sb_updates = 0;
@@ -98,7 +98,7 @@ void Sbar_DontShowScores (void)
 Sbar_Changed
 ===============
 */
-void Sbar_Changed (void)
+void Sbar_Changed()
 {
 	sb_updates = 0;	// update next frame
 }
@@ -108,7 +108,7 @@ void Sbar_Changed (void)
 Sbar_LoadPics -- johnfitz -- load all the sbar pics
 ===============
 */
-void Sbar_LoadPics (void)
+void Sbar_LoadPics()
 {
 	int		i;
 
@@ -249,7 +249,7 @@ void Sbar_LoadPics (void)
 Sbar_Init -- johnfitz -- rewritten
 ===============
 */
-void Sbar_Init (void)
+void Sbar_Init()
 {
 	Cmd_AddCommand ("+showscores", Sbar_ShowScores);
 	Cmd_AddCommand ("-showscores", Sbar_DontShowScores);
@@ -423,7 +423,7 @@ int		scoreboardlines;
 Sbar_SortFrags
 ===============
 */
-void Sbar_SortFrags (void)
+void Sbar_SortFrags()
 {
 	int		i, j, k;
 
@@ -458,7 +458,7 @@ int	Sbar_ColorForMap (int m)
 Sbar_UpdateScoreboard
 ===============
 */
-void Sbar_UpdateScoreboard (void)
+void Sbar_UpdateScoreboard()
 {
 	int		i, k;
 	int		top, bottom;
@@ -487,7 +487,7 @@ void Sbar_UpdateScoreboard (void)
 Sbar_SoloScoreboard -- johnfitz -- new layout
 ===============
 */
-void Sbar_SoloScoreboard (void)
+void Sbar_SoloScoreboard()
 {
 	char	str[80];
 	int		minutes, seconds, tens, units;
@@ -518,7 +518,7 @@ void Sbar_SoloScoreboard (void)
 Sbar_DrawScoreboard
 ===============
 */
-void Sbar_DrawScoreboard (void)
+void Sbar_DrawScoreboard()
 {
 	Sbar_SoloScoreboard ();
 	if (cl.gametype == GAME_DEATHMATCH)
@@ -532,7 +532,7 @@ void Sbar_DrawScoreboard (void)
 Sbar_DrawInventory
 ===============
 */
-void Sbar_DrawInventory (void)
+void Sbar_DrawInventory()
 {
 	int		i;
 	char	num[6];
@@ -752,7 +752,7 @@ void Sbar_DrawInventory (void)
 Sbar_DrawFrags -- johnfitz -- heavy revision
 ===============
 */
-void Sbar_DrawFrags (void)
+void Sbar_DrawFrags()
 {
 	int				numscores, i, x, color;
 	char			num[12];
@@ -802,7 +802,7 @@ void Sbar_DrawFrags (void)
 Sbar_DrawFace
 ===============
 */
-void Sbar_DrawFace (void)
+void Sbar_DrawFace()
 {
 	int		f, anim;
 
@@ -897,7 +897,7 @@ void Sbar_DrawFace (void)
 Sbar_Draw
 ===============
 */
-void Sbar_Draw (void)
+void Sbar_Draw()
 {
 	float w; //johnfitz
 
@@ -1076,7 +1076,7 @@ Sbar_DeathmatchOverlay
 
 ==================
 */
-void Sbar_DeathmatchOverlay (void)
+void Sbar_DeathmatchOverlay()
 {
 	qpic_t			*pic;
 	int				i, k, l;
@@ -1157,7 +1157,7 @@ void Sbar_DeathmatchOverlay (void)
 Sbar_MiniDeathmatchOverlay
 ==================
 */
-void Sbar_MiniDeathmatchOverlay (void)
+void Sbar_MiniDeathmatchOverlay()
 {
 	int				i, k, l, top, bottom, x, y, f, numlines;
 	char			num[12];
@@ -1233,7 +1233,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 Sbar_IntermissionOverlay
 ==================
 */
-void Sbar_IntermissionOverlay (void)
+void Sbar_IntermissionOverlay()
 {
 	qpic_t	*pic;
 	int		dig;
@@ -1275,7 +1275,7 @@ void Sbar_IntermissionOverlay (void)
 Sbar_FinaleOverlay
 ==================
 */
-void Sbar_FinaleOverlay (void)
+void Sbar_FinaleOverlay()
 {
 	qpic_t	*pic;
 

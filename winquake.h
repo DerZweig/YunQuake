@@ -47,8 +47,8 @@ extern LPDIRECTSOUNDBUFFER pDSBuf;
 extern DWORD gSndBufSize;
 //#define SNDBUFSIZE 65536
 
-void	VID_LockBuffer (void);
-void	VID_UnlockBuffer (void);
+void	VID_LockBuffer();
+void	VID_UnlockBuffer();
 
 #endif
 
@@ -62,15 +62,15 @@ extern bool		ActiveApp, Minimized;
 
 extern bool	WinNT;
 
-int VID_ForceUnlockedAndReturnState (void);
+int VID_ForceUnlockedAndReturnState();
 void VID_ForceLockState (int lk);
 
-void IN_ShowMouse (void);
-void IN_DeactivateMouse (void);
-void IN_HideMouse (void);
-void IN_ActivateMouse (void);
-void IN_RestoreOriginalMouseState (void);
-void IN_SetQuakeMouseState (void);
+void IN_ShowMouse();
+void IN_DeactivateMouse();
+void IN_HideMouse();
+void IN_ActivateMouse();
+void IN_RestoreOriginalMouseState();
+void IN_SetQuakeMouseState();
 void IN_MouseEvent (int mstate);
 
 extern bool	winsock_lib_initialized;
@@ -85,13 +85,13 @@ extern HWND		hwnd_dialog;
 
 extern HANDLE	hinput, houtput;
 
-void IN_UpdateClipCursor (void);
+void IN_UpdateClipCursor();
 void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify);
 
-void S_BlockSound (void);
-void S_UnblockSound (void);
+void S_BlockSound();
+void S_UnblockSound();
 
-void VID_SetDefaultMode (void);
+void VID_SetDefaultMode();
 
 int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
 int (PASCAL FAR *pWSACleanup)(void);

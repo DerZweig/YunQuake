@@ -230,7 +230,7 @@ facing it.
 
 ======================
 */
-void PF_changeyaw (void);
+void PF_changeyaw();
 bool SV_StepDirection (edict_t *ent, float yaw, float dist)
 {
 	vec3_t		move, oldorigin;
@@ -391,7 +391,7 @@ SV_MoveToGoal
 
 ======================
 */
-void SV_MoveToGoal (void)
+void SV_MoveToGoal()
 {
 	edict_t		*ent, *goal;
 	float		dist;

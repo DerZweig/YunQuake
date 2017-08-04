@@ -165,7 +165,7 @@ void R_SplitEntityOnNode (mnode_t *node)
 R_CheckEfrags -- johnfitz -- check for excessive efrag count
 ===========
 */
-void R_CheckEfrags (void)
+void R_CheckEfrags()
 {
 	efrag_t		*ef;
 	int			count;

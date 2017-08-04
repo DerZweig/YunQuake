@@ -110,7 +110,7 @@ This is also called on Host_Error, so it shouldn't cause any errors
 void CL_Disconnect()
 {
 	// stop sounds (especially looping!)
-	S_StopAllSounds(qboolean::qtrue);
+	S_StopAllSounds(true);
 
 	// if running a local server, shut it down
 	if (cls.demoplayback)

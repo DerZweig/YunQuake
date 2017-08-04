@@ -41,7 +41,7 @@ int vis_changed; //if true, force pvs to be refreshed
 R_MarkSurfaces -- johnfitz -- mark surfaces based on PVS and rebuild texture chains
 ===============
 */
-void R_MarkSurfaces (void)
+void R_MarkSurfaces()
 {
 	byte		*vis;
 	mleaf_t		*leaf;
@@ -167,7 +167,7 @@ bool R_BackFaceCull (msurface_t *surf)
 R_CullSurfaces -- johnfitz
 ================
 */
-void R_CullSurfaces (void)
+void R_CullSurfaces()
 {
 	msurface_t *s;
 	int i;
@@ -198,7 +198,7 @@ void R_CullSurfaces (void)
 R_BuildLightmapChains -- johnfitz -- used for r_lightmap 1
 ================
 */
-void R_BuildLightmapChains (void)
+void R_BuildLightmapChains()
 {
 	msurface_t *s;
 	int i;
@@ -224,7 +224,7 @@ void R_BuildLightmapChains (void)
 R_DrawTextureChains_ShowTris -- johnfitz
 ================
 */
-void R_DrawTextureChains_ShowTris (void)
+void R_DrawTextureChains_ShowTris()
 {
 	int			i;
 	msurface_t	*s;
@@ -262,7 +262,7 @@ void R_DrawTextureChains_ShowTris (void)
 R_DrawTextureChains_Drawflat -- johnfitz
 ================
 */
-void R_DrawTextureChains_Drawflat (void)
+void R_DrawTextureChains_Drawflat()
 {
 	int			i;
 	msurface_t	*s;
@@ -308,7 +308,7 @@ void R_DrawTextureChains_Drawflat (void)
 R_DrawTextureChains_Glow -- johnfitz
 ================
 */
-void R_DrawTextureChains_Glow (void)
+void R_DrawTextureChains_Glow()
 {
 	int			i;
 	msurface_t	*s;
@@ -344,7 +344,7 @@ void R_DrawTextureChains_Glow (void)
 R_DrawTextureChains_Multitexture -- johnfitz
 ================
 */
-void R_DrawTextureChains_Multitexture (void)
+void R_DrawTextureChains_Multitexture()
 {
 	int			i, j;
 	msurface_t	*s;
@@ -394,7 +394,7 @@ R_DrawTextureChains_NoTexture -- johnfitz
 draws surfs whose textures were missing from the BSP
 ================
 */
-void R_DrawTextureChains_NoTexture (void)
+void R_DrawTextureChains_NoTexture()
 {
 	int			i;
 	msurface_t	*s;
@@ -429,7 +429,7 @@ void R_DrawTextureChains_NoTexture (void)
 R_DrawTextureChains_TextureOnly -- johnfitz
 ================
 */
-void R_DrawTextureChains_TextureOnly (void)
+void R_DrawTextureChains_TextureOnly()
 {
 	int			i;
 	msurface_t	*s;
@@ -465,7 +465,7 @@ void R_DrawTextureChains_TextureOnly (void)
 R_DrawTextureChains_Water -- johnfitz
 ================
 */
-void R_DrawTextureChains_Water (void)
+void R_DrawTextureChains_Water()
 {
 	int			i, j;
 	msurface_t	*s;
@@ -545,7 +545,7 @@ void R_DrawTextureChains_Water (void)
 R_DrawTextureChains_White -- johnfitz -- draw sky and water as white polys when r_lightmap is 1
 ================
 */
-void R_DrawTextureChains_White (void)
+void R_DrawTextureChains_White()
 {
 	int			i;
 	msurface_t	*s;
@@ -574,7 +574,7 @@ void R_DrawTextureChains_White (void)
 R_DrawLightmapChains -- johnfitz -- R_BlendLightmaps stripped down to almost nothing
 ================
 */
-void R_DrawLightmapChains (void)
+void R_DrawLightmapChains()
 {
 	int			i, j;
 	glpoly_t	*p;
@@ -607,7 +607,7 @@ void R_DrawLightmapChains (void)
 R_DrawWorld -- johnfitz -- rewritten
 =============
 */
-void R_DrawWorld (void)
+void R_DrawWorld()
 {
 	if (!r_drawworld_cheatsafe)
 		return;

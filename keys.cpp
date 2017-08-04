@@ -553,7 +553,7 @@ void Key_SetBinding (int keynum, char *binding)
 Key_Unbind_f
 ===================
 */
-void Key_Unbind_f (void)
+void Key_Unbind_f()
 {
 	int		b;
 
@@ -573,7 +573,7 @@ void Key_Unbind_f (void)
 	Key_SetBinding (b, "");
 }
 
-void Key_Unbindall_f (void)
+void Key_Unbindall_f()
 {
 	int		i;
 
@@ -587,7 +587,7 @@ void Key_Unbindall_f (void)
 Key_Bindlist_f -- johnfitz
 ============
 */
-void Key_Bindlist_f (void)
+void Key_Bindlist_f()
 {
 	int		i, count;
 
@@ -607,7 +607,7 @@ void Key_Bindlist_f (void)
 Key_Bind_f
 ===================
 */
-void Key_Bind_f (void)
+void Key_Bind_f()
 {
 	int			i, c, b;
 	char		cmd[1024];
@@ -670,7 +670,7 @@ void Key_WriteBindings (FILE *f)
 Key_Init
 ===================
 */
-void Key_Init (void)
+void Key_Init()
 {
 	int		i;
 
@@ -929,7 +929,7 @@ void Key_Event (int key, bool down)
 Key_ClearStates -- johnfitz -- replaced with new function from Baker
 ===================
 */
-void Key_ClearStates (void)
+void Key_ClearStates()
 {
    int      i;
 

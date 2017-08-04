@@ -66,7 +66,7 @@ int R_ParticleTextureLookup (int x, int y, int sharpness)
 R_InitParticleTextures -- johnfitz -- rewritten
 ===============
 */
-void R_InitParticleTextures (void)
+void R_InitParticleTextures()
 {
 	int			x,y;
 	static byte	particle1_data[64*64*4];
@@ -121,7 +121,7 @@ void R_InitParticleTextures (void)
 R_SetParticleTexture_f -- johnfitz
 ===============
 */
-void R_SetParticleTexture_f (void)
+void R_SetParticleTexture_f()
 {
 	switch ((int)(r_particles.value))
 	{
@@ -145,7 +145,7 @@ void R_SetParticleTexture_f (void)
 R_InitParticles
 ===============
 */
-void R_InitParticles (void)
+void R_InitParticles()
 {
 	int		i;
 
@@ -241,7 +241,7 @@ void R_EntityParticles (entity_t *ent)
 R_ClearParticles
 ===============
 */
-void R_ClearParticles (void)
+void R_ClearParticles()
 {
 	int		i;
 
@@ -258,7 +258,7 @@ void R_ClearParticles (void)
 R_ReadPointFile_f
 ===============
 */
-void R_ReadPointFile_f (void)
+void R_ReadPointFile_f()
 {
 	FILE	*f;
 	vec3_t	org;
@@ -313,7 +313,7 @@ R_ParseParticleEffect
 Parse an effect out of the server message
 ===============
 */
-void R_ParseParticleEffect (void)
+void R_ParseParticleEffect()
 {
 	vec3_t		org, dir;
 	int			i, count, msgcount, color;
@@ -708,7 +708,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 CL_RunParticles -- johnfitz -- all the particle behavior, separated from R_DrawParticles
 ===============
 */
-void CL_RunParticles (void)
+void CL_RunParticles()
 {
 	particle_t		*p, *kill;
 	int				i;
@@ -814,7 +814,7 @@ void CL_RunParticles (void)
 R_DrawParticles -- johnfitz -- moved all non-drawing code to CL_RunParticles
 ===============
 */
-void R_DrawParticles (void)
+void R_DrawParticles()
 {
 	particle_t		*p;
 	float			scale;
@@ -929,7 +929,7 @@ void R_DrawParticles (void)
 R_DrawParticles_ShowTris -- johnfitz
 ===============
 */
-void R_DrawParticles_ShowTris (void)
+void R_DrawParticles_ShowTris()
 {
 	particle_t		*p;
 	float			scale;

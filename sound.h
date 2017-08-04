@@ -90,24 +90,24 @@ struct wavinfo_t
 	int		dataofs;		// chunk starts this many bytes from file start
 } ;
 
-void S_Init (void);
-void S_Startup (void);
-void S_Shutdown (void);
+void S_Init();
+void S_Startup();
+void S_Shutdown();
 void S_StartSound (int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol,  float attenuation);
 void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation);
 void S_StopSound (int entnum, int entchannel);
 void S_StopAllSounds(bool clear);
-void S_ClearBuffer (void);
+void S_ClearBuffer();
 void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
-void S_ExtraUpdate (void);
+void S_ExtraUpdate();
 
 sfx_t *S_PrecacheSound (char *sample);
 void S_TouchSound (char *sample);
-void S_ClearPrecache (void);
-void S_BeginPrecaching (void);
-void S_EndPrecaching (void);
+void S_ClearPrecache();
+void S_BeginPrecaching();
+void S_EndPrecaching();
 void S_PaintChannels(int endtime);
-void S_InitPaintChannels (void);
+void S_InitPaintChannels();
 
 // picks a channel based on priorities, empty slots, number of channels
 channel_t *SND_PickChannel(int entnum, int entchannel);
@@ -116,13 +116,13 @@ channel_t *SND_PickChannel(int entnum, int entchannel);
 void SND_Spatialize(channel_t *ch);
 
 // initializes cycling through a DMA buffer and returns information on it
-bool SNDDMA_Init(void);
+bool SNDDMA_Init();
 
 // gets the current DMA position
-int SNDDMA_GetDMAPos(void);
+int SNDDMA_GetDMAPos();
 
 // shutdown the DMA xfer.
-void SNDDMA_Shutdown(void);
+void SNDDMA_Shutdown();
 
 // ====================================================================
 // User-setable variables
@@ -169,10 +169,10 @@ sfxcache_t *S_LoadSound (sfx_t *s);
 
 wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength);
 
-void SND_InitScaletable (void);
-void SNDDMA_Submit(void);
+void SND_InitScaletable();
+void SNDDMA_Submit();
 
-void S_AmbientOff (void);
-void S_AmbientOn (void);
+void S_AmbientOff();
+void S_AmbientOn();
 
 #endif

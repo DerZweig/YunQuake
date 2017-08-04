@@ -162,7 +162,7 @@ stop recording a demo
 */
 void CL_Stop_f()
 {
-	if (cmd_source != src_command)
+	if (cmd_source != cmd_source_t::src_command)
 		return;
 
 	if (!cls.demorecording)

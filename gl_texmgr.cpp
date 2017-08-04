@@ -64,7 +64,7 @@ int gl_texturemode = 5; // bilinear
 TexMgr_DescribeTextureModes_f -- report available texturemodes
 ===============
 */
-void TexMgr_DescribeTextureModes_f(void)
+void TexMgr_DescribeTextureModes_f()
 {
 	int i;
 
@@ -112,7 +112,7 @@ void TexMgr_SetFilterModes(gltexture_t* glt)
 TexMgr_TextureMode_f
 ===============
 */
-void TexMgr_TextureMode_f(void)
+void TexMgr_TextureMode_f()
 {
 	gltexture_t* glt;
 	char* arg;
@@ -171,7 +171,7 @@ TexMgr_Anisotropy_f -- called when gl_texture_anisotropy changes
 FIXME: this is getting called twice (becuase of the recursive Cvar_SetValue call)
 ===============
 */
-void TexMgr_Anisotropy_f(void)
+void TexMgr_Anisotropy_f()
 {
 	extern bool gl_anisotropy_able;
 	extern float gl_max_anisotropy;
@@ -188,7 +188,7 @@ void TexMgr_Anisotropy_f(void)
 TexMgr_Imagelist_f -- report loaded textures
 ===============
 */
-void TexMgr_Imagelist_f(void)
+void TexMgr_Imagelist_f()
 {
 	float mb;
 	float texels = 0;
@@ -213,7 +213,7 @@ void TexMgr_Imagelist_f(void)
 TexMgr_Imagedump_f -- dump all current textures to TGA files
 ===============
 */
-void TexMgr_Imagedump_f(void)
+void TexMgr_Imagedump_f()
 {
 	char tganame[MAX_OSPATH], tempname[MAX_OSPATH], dirname[MAX_OSPATH];
 	gltexture_t* glt;
@@ -257,7 +257,7 @@ void TexMgr_Imagedump_f(void)
 TexMgr_FrameUsage -- report texture memory usage for this frame
 ===============
 */
-float TexMgr_FrameUsage(void)
+float TexMgr_FrameUsage()
 {
 	float mb;
 	float texels = 0;
@@ -309,7 +309,7 @@ gltexture_t* TexMgr_FindTexture(model_t* owner, char* name)
 TexMgr_NewTexture
 ================
 */
-gltexture_t* TexMgr_NewTexture(void)
+gltexture_t* TexMgr_NewTexture()
 {
 	gltexture_t* glt;
 
@@ -416,7 +416,7 @@ void TexMgr_FreeTexturesForOwner(model_t* owner)
 TexMgr_LoadPalette -- johnfitz -- was VID_SetPalette, moved here, renamed, rewritten
 =================
 */
-void TexMgr_LoadPalette(void)
+void TexMgr_LoadPalette()
 {
 	byte mask[] = {255,255,255,0};
 	byte black[] = {0,0,0,255};
@@ -483,7 +483,7 @@ void TexMgr_LoadPalette(void)
 TexMgr_NewGame
 ================
 */
-void TexMgr_NewGame(void)
+void TexMgr_NewGame()
 {
 	TexMgr_FreeTextures(0, TEXPREF_PERSIST); //deletes all textures where TEXPREF_PERSIST is unset
 	TexMgr_LoadPalette();
@@ -496,7 +496,7 @@ TexMgr_RecalcWarpImageSize -- called during init, and after a vid_restart
 choose safe warpimage size and resize existing warpimage textures
 =============
 */
-void TexMgr_RecalcWarpImageSize(void)
+void TexMgr_RecalcWarpImageSize()
 {
 	int mark, oldsize;
 	gltexture_t* glt;
@@ -543,7 +543,7 @@ TexMgr_Init
 must be called before any texture loading
 ================
 */
-void TexMgr_Init(void)
+void TexMgr_Init()
 {
 	int i, mark;
 	static byte notexture_data[16] = {159,91,83,255,0,0,0,255,0,0,0,255,159,91,83,255}; //black and pink checker
@@ -1356,7 +1356,7 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
 TexMgr_ReloadImages -- reloads all texture images. called only by vid_restart
 ================
 */
-void TexMgr_ReloadImages(void)
+void TexMgr_ReloadImages()
 {
 	gltexture_t* glt;
 
@@ -1372,7 +1372,7 @@ void TexMgr_ReloadImages(void)
 TexMgr_ReloadNobrightImages -- reloads all texture that were loaded with the nobright palette.  called when gl_fullbrights changes
 ================
 */
-void TexMgr_ReloadNobrightImages(void)
+void TexMgr_ReloadNobrightImages()
 {
 	gltexture_t* glt;
 
@@ -1427,7 +1427,7 @@ void GL_SelectTexture(GLenum target)
 GL_DisableMultitexture -- selects texture unit 0
 ================
 */
-void GL_DisableMultitexture(void)
+void GL_DisableMultitexture()
 {
 	if (mtexenabled)
 	{
@@ -1442,7 +1442,7 @@ void GL_DisableMultitexture(void)
 GL_EnableMultitexture -- selects texture unit 1
 ================
 */
-void GL_EnableMultitexture(void)
+void GL_EnableMultitexture()
 {
 	if (gl_mtexable)
 	{

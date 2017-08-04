@@ -361,7 +361,7 @@ void V_StartPitchDrift();
 void V_StopPitchDrift();
 
 void V_RenderView();
-//void V_UpdatePalette (void); //johnfitz
+//void V_UpdatePalette(); //johnfitz
 void V_Register();
 void V_ParseDamage();
 void V_SetContentsColor(int contents);

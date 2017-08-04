@@ -317,4 +317,4 @@ extern bool slistInProgress;
 extern bool slistSilent;
 extern bool slistLocal;
 
-void NET_Slist_f(void);
+void NET_Slist_f();

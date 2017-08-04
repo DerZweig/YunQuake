@@ -113,17 +113,17 @@ viddef_t	vid;				// global video state
 
 modestate_t	modestate = MS_UNINIT;
 
-void VID_Menu_Init (void); //johnfitz
-void VID_Menu_f (void); //johnfitz
-void VID_MenuDraw (void);
+void VID_Menu_Init(); //johnfitz
+void VID_Menu_f(); //johnfitz
+void VID_MenuDraw();
 void VID_MenuKey (int key);
 
 LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AppActivate(BOOL fActive, BOOL minimize);
 char *VID_GetModeDescription (int mode);
-void ClearAllStates (void);
-void VID_UpdateWindowStatus (void);
-void GL_Init (void);
+voidClearAllStates();
+void VID_UpdateWindowStatus();
+void GL_Init();
 
 PROC glArrayElementEXT;
 PROC glColorPointerEXT;
@@ -153,7 +153,7 @@ int			gl_stencilbits; //johnfitz
 
 bool vid_locked = false; //johnfitz
 
-void GL_SetupState (void); //johnfitz
+void GL_SetupState(); //johnfitz
 
 //====================================
 
@@ -194,7 +194,7 @@ int vid_gammaworks, vid_3dfxgamma;
 VID_Gamma_SetGamma -- apply gamma correction
 ================
 */
-void VID_Gamma_SetGamma (void)
+void VID_Gamma_SetGamma()
 {
 	if (maindc)
 	{
@@ -213,7 +213,7 @@ void VID_Gamma_SetGamma (void)
 VID_Gamma_Restore -- restore system gamma
 ================
 */
-void VID_Gamma_Restore (void)
+void VID_Gamma_Restore()
 {
 	if (maindc)
 	{
@@ -232,7 +232,7 @@ void VID_Gamma_Restore (void)
 VID_Gamma_Shutdown -- called on exit
 ================
 */
-void VID_Gamma_Shutdown (void)
+void VID_Gamma_Shutdown()
 {
 	VID_Gamma_Restore ();
 }
@@ -242,7 +242,7 @@ void VID_Gamma_Shutdown (void)
 VID_Gamma_f -- callback when the cvar changes
 ================
 */
-void VID_Gamma_f (void)
+void VID_Gamma_f()
 {
 	static float oldgamma;
 	int i;
@@ -264,7 +264,7 @@ void VID_Gamma_f (void)
 VID_Gamma_Init -- call on init
 ================
 */
-void VID_Gamma_Init (void)
+void VID_Gamma_Init()
 {
 	vid_gammaworks = vid_3dfxgamma = false;
 
@@ -297,15 +297,15 @@ void VID_ForceLockState (int lk)
 {
 }
 
-void VID_LockBuffer (void)
+void VID_LockBuffer()
 {
 }
 
-void VID_UnlockBuffer (void)
+void VID_UnlockBuffer()
 {
 }
 
-int VID_ForceUnlockedAndReturnState (void)
+int VID_ForceUnlockedAndReturnState()
 {
 	return 0;
 }
@@ -633,7 +633,7 @@ int VID_SetMode (int modenum)
 VID_Vsync_f -- johnfitz
 ===============
 */
-void VID_Vsync_f (void)
+void VID_Vsync_f()
 {
 	if (gl_swap_control)
 	{
@@ -655,7 +655,7 @@ void VID_Vsync_f (void)
 VID_Restart -- johnfitz -- change video modes on the fly
 ===================
 */
-void VID_Restart (void)
+void VID_Restart()
 {
 	HDC			hdc;
 	HGLRC		hrc;
@@ -825,7 +825,7 @@ void VID_Restart (void)
 VID_Test -- johnfitz -- like vid_restart, but asks for confirmation after switching modes
 ================
 */
-void VID_Test (void)
+void VID_Test()
 {
 	vmode_t oldmode;
 	bool	mode_changed = false;
@@ -879,7 +879,7 @@ void VID_Test (void)
 VID_Unlock -- johnfitz
 ================
 */
-void VID_Unlock (void)
+void VID_Unlock()
 {
 	vid_locked = false;
 
@@ -896,7 +896,7 @@ void VID_Unlock (void)
 VID_UpdateWindowStatus
 ================
 */
-void VID_UpdateWindowStatus (void)
+void VID_UpdateWindowStatus()
 {
 	window_rect.left = window_x;
 	window_rect.top = window_y;
@@ -949,7 +949,7 @@ char *GL_MakeNiceExtensionsList (const char *in)
 GL_Info_f -- johnfitz
 ===============
 */
-void GL_Info_f (void)
+void GL_Info_f()
 {
 	static char *gl_extensions_nice = nullptr;
 	static char *wgl_extensions_nice = nullptr;
@@ -972,7 +972,7 @@ void GL_Info_f (void)
 CheckArrayExtensions
 ===============
 */
-void CheckArrayExtensions (void)
+voidCheckArrayExtensions()
 {
 	char		*tmp;
 
@@ -1004,7 +1004,7 @@ void CheckArrayExtensions (void)
 GL_CheckExtensions -- johnfitz
 ===============
 */
-void GL_CheckExtensions (void)
+void GL_CheckExtensions()
 {
 	//
 	// multitexture
@@ -1147,7 +1147,7 @@ void GL_CheckExtensions (void)
 GetWGLExtensions -- johnfitz
 ===============
 */
-void GetWGLExtensions (void)
+voidGetWGLExtensions()
 {
 	const char *(*wglGetExtensionsStringARB) (HDC hdc);
 	const char *(*wglGetExtensionsStringEXT) ();
@@ -1168,7 +1168,7 @@ does all the stuff from GL_Init that needs to be done every time a new GL render
 GL_Init will still do the stuff that only needs to be done once
 ===============
 */
-void GL_SetupState (void)
+void GL_SetupState()
 {
 	glClearColor (0.15,0.15,0.15,0); //johnfitz -- originally 1,0,0,0
 	glCullFace(GL_BACK); //johnfitz -- glquake used CCW with backwards culling -- let's do it right
@@ -1194,7 +1194,7 @@ void GL_SetupState (void)
 GL_Init
 ===============
 */
-void GL_Init (void)
+void GL_Init()
 {
 	gl_vendor = glGetString (GL_VENDOR);
 	gl_renderer = glGetString (GL_RENDERER);
@@ -1251,7 +1251,7 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 GL_EndRendering
 =================
 */
-void GL_EndRendering (void)
+void GL_EndRendering()
 {
 	if (!scr_skipupdate || block_drawing)
 		SwapBuffers(maindc);
@@ -1280,13 +1280,13 @@ void GL_EndRendering (void)
 		Sbar_Changed();
 }
 
-void VID_SetDefaultMode (void)
+void VID_SetDefaultMode()
 {
 	IN_DeactivateMouse ();
 }
 
 
-void	VID_Shutdown (void)
+void	VID_Shutdown()
 {
    	HGLRC hRC;
    	HDC	  hDC;
@@ -1485,7 +1485,7 @@ MAIN WINDOW
 ClearAllStates
 ================
 */
-void ClearAllStates (void)
+voidClearAllStates()
 {
 	//johnfitz -- moved some code into Key_ClearStates
 	Key_ClearStates ();
@@ -1703,7 +1703,7 @@ LONG WINAPI MainWndProc (
 VID_NumModes
 =================
 */
-int VID_NumModes (void)
+int VID_NumModes()
 {
 	return nummodes;
 }
@@ -1800,7 +1800,7 @@ char *VID_GetExtModeDescription (int mode)
 VID_DescribeCurrentMode_f
 =================
 */
-void VID_DescribeCurrentMode_f (void)
+void VID_DescribeCurrentMode_f()
 {
 	Con_Printf ("%s\n", VID_GetExtModeDescription (vid_modenum));
 }
@@ -1810,7 +1810,7 @@ void VID_DescribeCurrentMode_f (void)
 VID_DescribeModes_f -- johnfitz -- changed formatting, and added refresh rates after each mode.
 =================
 */
-void VID_DescribeModes_f (void)
+void VID_DescribeModes_f()
 {
 	int			i, lnummodes, t;
 	char		*pinfo;
@@ -2085,7 +2085,7 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 VID_Init
 ===================
 */
-void	VID_Init (void)
+void	VID_Init()
 {
 	int		i, existingmode;
 	int		basenummodes, width, height, bpp, findbpp, done;
@@ -2339,7 +2339,7 @@ void	VID_Init (void)
 VID_SyncCvars -- johnfitz -- set vid cvars to match current video mode
 ================
 */
-void VID_SyncCvars (void)
+void VID_SyncCvars()
 {
 	Cvar_Set ("vid_width", va("%i", modelist[vid_default].width));
 	Cvar_Set ("vid_height", va("%i", modelist[vid_default].height));
@@ -2354,7 +2354,7 @@ void VID_SyncCvars (void)
 //
 //==========================================================================
 
-extern void M_Menu_Options_f (void);
+extern void M_Menu_Options_f();
 extern void M_Print (int cx, int cy, char *str);
 extern void M_PrintWhite (int cx, int cy, char *str);
 extern void M_DrawCharacter (int cx, int line, int num);
@@ -2412,7 +2412,7 @@ int vid_menu_numrates=0;
 VID_Menu_Init
 ================
 */
-void VID_Menu_Init (void)
+void VID_Menu_Init()
 {
 	int i,j,h,w;
 
@@ -2444,7 +2444,7 @@ VID_Menu_RebuildBppList
 regenerates bpp list based on current vid_width and vid_height
 ================
 */
-void VID_Menu_RebuildBppList (void)
+void VID_Menu_RebuildBppList()
 {
 	int i,j,b;
 
@@ -2495,7 +2495,7 @@ VID_Menu_RebuildRateList
 regenerates rate list based on current vid_width, vid_height and vid_bpp
 ================
 */
-void VID_Menu_RebuildRateList (void)
+void VID_Menu_RebuildRateList()
 {
 	int i,j,r;
 
@@ -2547,7 +2547,7 @@ VID_Menu_CalcAspectRatio
 calculates aspect ratio for current vid_width/vid_height
 ================
 */
-void VID_Menu_CalcAspectRatio (void)
+void VID_Menu_CalcAspectRatio()
 {
 	int w,h,f;
 	w = vid_width.value;
@@ -2786,7 +2786,7 @@ void VID_MenuKey (int key)
 VID_MenuDraw
 ================
 */
-void VID_MenuDraw (void)
+void VID_MenuDraw()
 {
 	int i = 0;
 	qpic_t *p;
@@ -2838,7 +2838,7 @@ void VID_MenuDraw (void)
 VID_Menu_f
 ================
 */
-void VID_Menu_f (void)
+void VID_Menu_f()
 {
 	key_dest = key_menu;
 	m_state = m_video;

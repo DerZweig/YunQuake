@@ -71,21 +71,21 @@ unsigned int d_8to24table_pants[256];
 
 // TEXTURE MANAGER
 
-float TexMgr_FrameUsage (void);
+float TexMgr_FrameUsage();
 gltexture_t *TexMgr_FindTexture (model_t *owner, char *name);
-gltexture_t *TexMgr_NewTexture (void);
+gltexture_t *TexMgr_NewTexture();
 void TexMgr_FreeTexture (gltexture_t *kill);
 void TexMgr_FreeTextures (int flags, int mask);
 void TexMgr_FreeTexturesForOwner (model_t *owner);
-void TexMgr_NewGame (void);
-void TexMgr_Init (void);
+void TexMgr_NewGame();
+void TexMgr_Init();
 
 // IMAGE LOADING
 gltexture_t *TexMgr_LoadImage (model_t *owner, char *name, int width, int height, enum srcformat format,
 							   byte *data, char *source_file, unsigned source_offset, unsigned flags);
 void TexMgr_ReloadImage (gltexture_t *glt, int shirt, int pants);
-void TexMgr_ReloadImages (void);
-void TexMgr_ReloadNobrightImages (void);
+void TexMgr_ReloadImages();
+void TexMgr_ReloadNobrightImages();
 
 int TexMgr_Pad(int s);
 int TexMgr_SafeTextureSize (int s);
@@ -95,6 +95,6 @@ int TexMgr_PadConditional (int s);
 
 extern bool gl_mtexable;
 
-void GL_DisableMultitexture (void); //selects texture unit 0
-void GL_EnableMultitexture (void); //selects texture unit 1
+void GL_DisableMultitexture(); //selects texture unit 0
+void GL_EnableMultitexture(); //selects texture unit 1
 void GL_Bind (gltexture_t *texture);

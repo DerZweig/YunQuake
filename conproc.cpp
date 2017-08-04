@@ -86,7 +86,7 @@ void InitConProc (HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
 }
 
 
-void DeinitConProc (void)
+voidDeinitConProc()
 {
 	if (heventDone)
 		SetEvent (heventDone);

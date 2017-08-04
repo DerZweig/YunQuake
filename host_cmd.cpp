@@ -27,7 +27,7 @@ extern int com_nummissionpacks; //johnfitz
 
 int	current_skill;
 
-void Mod_Print (void);
+void Mod_Print();
 
 /*
 ==================
@@ -35,9 +35,9 @@ Host_Quit_f
 ==================
 */
 
-extern void M_Menu_Quit_f (void);
+extern void M_Menu_Quit_f();
 
-void Host_Quit_f (void)
+void Host_Quit_f()
 {
 	if (key_dest != key_console && cls.state != ca_dedicated)
 	{
@@ -115,14 +115,14 @@ int NumGames(searchpath_t *search)
 	return found;
 }
 
-void ExtraMaps_NewGame (void);
+void ExtraMaps_NewGame();
 
 /*
 ==================
 Host_Game_f
 ==================
 */
-void Host_Game_f (void)
+void Host_Game_f()
 {
 	int i;
 	searchpath_t *search = com_searchpaths;
@@ -248,7 +248,7 @@ void ExtraMaps_Add (char *name)
     }
 }
 
-void ExtraMaps_Init (void) //TODO: move win32 specific stuff to sys_win.c
+void ExtraMaps_Init() //TODO: move win32 specific stuff to sys_win.c
 {
 #ifdef _WIN32
 	WIN32_FIND_DATA	FindFileData;
@@ -292,7 +292,7 @@ void ExtraMaps_Init (void) //TODO: move win32 specific stuff to sys_win.c
 #endif
 }
 
-void ExtraMaps_Clear (void)
+void ExtraMaps_Clear()
 {
 	extralevel_t *blah;
 
@@ -304,7 +304,7 @@ void ExtraMaps_Clear (void)
 	}
 }
 
-void ExtraMaps_NewGame (void)
+void ExtraMaps_NewGame()
 {
 	ExtraMaps_Clear ();
 	ExtraMaps_Init ();
@@ -315,7 +315,7 @@ void ExtraMaps_NewGame (void)
 Host_Maps_f
 ==================
 */
-void Host_Maps_f (void)
+void Host_Maps_f()
 {
 	int i;
 	extralevel_t	*level;
@@ -373,7 +373,7 @@ void Modlist_Add (char *name)
     }
 }
 
-void Modlist_Init (void) //TODO: move win32 specific stuff to sys_win.c
+void Modlist_Init() //TODO: move win32 specific stuff to sys_win.c
 {
 #ifdef _WIN32
 	WIN32_FIND_DATA	FindFileData, FindChildData;
@@ -415,7 +415,7 @@ Host_Mods_f -- johnfitz
 list all potential mod directories (contain either a pak file or a progs.dat)
 ==================
 */
-void Host_Mods_f (void)
+void Host_Mods_f()
 {
 	int i;
 	mod_t	*mod;
@@ -436,7 +436,7 @@ void Host_Mods_f (void)
 Host_Mapname_f -- johnfitz
 =============
 */
-void Host_Mapname_f (void)
+void Host_Mapname_f()
 {
 	char name[MAX_QPATH];
 
@@ -462,7 +462,7 @@ void Host_Mapname_f (void)
 Host_Status_f
 ==================
 */
-void Host_Status_f (void)
+void Host_Status_f()
 {
 	client_t	*client;
 	int			seconds;
@@ -518,7 +518,7 @@ Host_God_f
 Sets client to godmode
 ==================
 */
-void Host_God_f (void)
+void Host_God_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -563,7 +563,7 @@ void Host_God_f (void)
 Host_Notarget_f
 ==================
 */
-void Host_Notarget_f (void)
+void Host_Notarget_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -610,7 +610,7 @@ bool noclip_anglehack;
 Host_Noclip_f
 ==================
 */
-void Host_Noclip_f (void)
+void Host_Noclip_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -666,7 +666,7 @@ Host_Fly_f
 Sets client to flymode
 ==================
 */
-void Host_Fly_f (void)
+void Host_Fly_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -718,7 +718,7 @@ Host_Ping_f
 
 ==================
 */
-void Host_Ping_f (void)
+void Host_Ping_f()
 {
 	int		i, j;
 	float	total;
@@ -761,7 +761,7 @@ map <servername>
 command from the console.  Active clients are kicked off.
 ======================
 */
-void Host_Map_f (void)
+void Host_Map_f()
 {
 	int		i;
 	char	name[MAX_QPATH];
@@ -812,7 +812,7 @@ Host_Changelevel_f
 Goes to a new map, taking all clients along
 ==================
 */
-void Host_Changelevel_f (void)
+void Host_Changelevel_f()
 {
 	char	level[MAX_QPATH];
 	int		i; //johnfitz
@@ -846,7 +846,7 @@ Host_Restart_f
 Restarts the current server for a dead player
 ==================
 */
-void Host_Restart_f (void)
+void Host_Restart_f()
 {
 	char	mapname[MAX_QPATH];
 
@@ -868,7 +868,7 @@ This command causes the client to wait for the signon messages again.
 This is sent just before a server changes levels
 ==================
 */
-void Host_Reconnect_f (void)
+void Host_Reconnect_f()
 {
 	SCR_BeginLoadingPlaque ();
 	cls.signon = 0;		// need new connection messages
@@ -881,7 +881,7 @@ Host_Connect_f
 User command to connect to server
 =====================
 */
-void Host_Connect_f (void)
+void Host_Connect_f()
 {
 	char	name[MAX_QPATH];
 
@@ -937,7 +937,7 @@ void Host_SavegameComment (char *text)
 Host_Savegame_f
 ===============
 */
-void Host_Savegame_f (void)
+void Host_Savegame_f()
 {
 	char	name[256];
 	FILE	*f;
@@ -1033,7 +1033,7 @@ void Host_Savegame_f (void)
 Host_Loadgame_f
 ===============
 */
-void Host_Loadgame_f (void)
+void Host_Loadgame_f()
 {
 	char	name[MAX_OSPATH];
 	FILE	*f;
@@ -1179,7 +1179,7 @@ void Host_Loadgame_f (void)
 Host_Name_f
 ======================
 */
-void Host_Name_f (void)
+void Host_Name_f()
 {
 	char	*newName;
 
@@ -1218,7 +1218,7 @@ void Host_Name_f (void)
 }
 
 
-void Host_Version_f (void)
+void Host_Version_f()
 {
 	Con_Printf ("Quake Version %1.2f\n", VERSION); //johnfitz
 	Con_Printf ("FitzQuake Version %1.2f\n", FITZQUAKE_VERSION); //johnfitz
@@ -1289,19 +1289,19 @@ void Host_Say(bool teamonly)
 }
 
 
-void Host_Say_f(void)
+void Host_Say_f()
 {
 	Host_Say(false);
 }
 
 
-void Host_Say_Team_f(void)
+void Host_Say_Team_f()
 {
 	Host_Say(true);
 }
 
 
-void Host_Tell_f(void)
+void Host_Tell_f()
 {
 	client_t *client;
 	client_t *save;
@@ -1358,7 +1358,7 @@ void Host_Tell_f(void)
 Host_Color_f
 ==================
 */
-void Host_Color_f(void)
+void Host_Color_f()
 {
 	int		top, bottom;
 	int		playercolor;
@@ -1409,7 +1409,7 @@ void Host_Color_f(void)
 Host_Kill_f
 ==================
 */
-void Host_Kill_f (void)
+void Host_Kill_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -1434,7 +1434,7 @@ void Host_Kill_f (void)
 Host_Pause_f
 ==================
 */
-void Host_Pause_f (void)
+void Host_Pause_f()
 {
 
 	if (cmd_source == src_command)
@@ -1471,7 +1471,7 @@ void Host_Pause_f (void)
 Host_PreSpawn_f
 ==================
 */
-void Host_PreSpawn_f (void)
+void Host_PreSpawn_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -1496,7 +1496,7 @@ void Host_PreSpawn_f (void)
 Host_Spawn_f
 ==================
 */
-void Host_Spawn_f (void)
+void Host_Spawn_f()
 {
 	int		i;
 	client_t	*client;
@@ -1620,7 +1620,7 @@ void Host_Spawn_f (void)
 Host_Begin_f
 ==================
 */
-void Host_Begin_f (void)
+void Host_Begin_f()
 {
 	if (cmd_source == src_command)
 	{
@@ -1641,7 +1641,7 @@ Host_Kick_f
 Kicks a user off of the server
 ==================
 */
-void Host_Kick_f (void)
+void Host_Kick_f()
 {
 	char		*who;
 	char		*message = nullptr;
@@ -1733,7 +1733,7 @@ DEBUGGING TOOLS
 Host_Give_f
 ==================
 */
-void Host_Give_f (void)
+void Host_Give_f()
 {
 	char	*t;
 	int		v, w;
@@ -1945,7 +1945,7 @@ void Host_Give_f (void)
 	//johnfitz
 }
 
-edict_t	*FindViewthing (void)
+edict_t	*FindViewthing()
 {
 	int		i;
 	edict_t	*e;
@@ -1965,7 +1965,7 @@ edict_t	*FindViewthing (void)
 Host_Viewmodel_f
 ==================
 */
-void Host_Viewmodel_f (void)
+void Host_Viewmodel_f()
 {
 	edict_t	*e;
 	model_t	*m;
@@ -1990,7 +1990,7 @@ void Host_Viewmodel_f (void)
 Host_Viewframe_f
 ==================
 */
-void Host_Viewframe_f (void)
+void Host_Viewframe_f()
 {
 	edict_t	*e;
 	int		f;
@@ -2027,7 +2027,7 @@ void PrintFrameName (model_t *m, int frame)
 Host_Viewnext_f
 ==================
 */
-void Host_Viewnext_f (void)
+void Host_Viewnext_f()
 {
 	edict_t	*e;
 	model_t	*m;
@@ -2049,7 +2049,7 @@ void Host_Viewnext_f (void)
 Host_Viewprev_f
 ==================
 */
-void Host_Viewprev_f (void)
+void Host_Viewprev_f()
 {
 	edict_t	*e;
 	model_t	*m;
@@ -2081,7 +2081,7 @@ DEMO LOOP CONTROL
 Host_Startdemos_f
 ==================
 */
-void Host_Startdemos_f (void)
+void Host_Startdemos_f()
 {
 	int		i, c;
 
@@ -2120,7 +2120,7 @@ Host_Demos_f
 Return to looping demos
 ==================
 */
-void Host_Demos_f (void)
+void Host_Demos_f()
 {
 	if (cls.state == ca_dedicated)
 		return;
@@ -2137,7 +2137,7 @@ Host_Stopdemo_f
 Return to looping demos
 ==================
 */
-void Host_Stopdemo_f (void)
+void Host_Stopdemo_f()
 {
 	if (cls.state == ca_dedicated)
 		return;
@@ -2154,7 +2154,7 @@ void Host_Stopdemo_f (void)
 Host_InitCommands
 ==================
 */
-void Host_InitCommands (void)
+void Host_InitCommands()
 {
 	Cmd_AddCommand ("maps", Host_Maps_f); //johnfitz
 	Cmd_AddCommand ("game", Host_Game_f); //johnfitz

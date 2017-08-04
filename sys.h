@@ -53,17 +53,17 @@ void Sys_Error (char *error, ...);
 void Sys_Printf (char *fmt, ...);
 // send text to the console
 
-void Sys_Quit (void);
+void Sys_Quit();
 
-double Sys_FloatTime (void);
+double Sys_FloatTime();
 
-char *Sys_ConsoleInput (void);
+char *Sys_ConsoleInput();
 
-void Sys_Sleep (void);
+void Sys_Sleep();
 // called to yield for a little bit so as
 // not to hog cpu when paused or debugging
 
-void Sys_SendKeyEvents (void);
+void Sys_SendKeyEvents();
 // Perform Key_Event () callbacks until the input que is empty
 
 

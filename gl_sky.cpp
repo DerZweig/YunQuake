@@ -24,8 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	MAX_CLIP_VERTS 64
 
-float Fog_GetDensity(void);
-float *Fog_GetColor(void);
+float Fog_GetDensity();
+float *Fog_GetColor();
 
 extern	model_t	*loadmodel;
 extern	int	rs_skypolys; //for r_speeds readout
@@ -210,7 +210,7 @@ void Sky_LoadSkyBox (char *name)
 Sky_NewMap
 =================
 */
-void Sky_NewMap (void)
+void Sky_NewMap()
 {
 	char	key[128], value[4096];
 	char	*data;
@@ -271,7 +271,7 @@ void Sky_NewMap (void)
 Sky_SkyCommand_f
 =================
 */
-void Sky_SkyCommand_f (void)
+void Sky_SkyCommand_f()
 {
 	switch (Cmd_Argc())
 	{
@@ -291,7 +291,7 @@ void Sky_SkyCommand_f (void)
 Sky_Init
 =============
 */
-void Sky_Init (void)
+void Sky_Init()
 {
 	int		i;
 
@@ -514,7 +514,7 @@ void Sky_ProcessPoly (glpoly_t	*p)
 Sky_ProcessTextureChains -- handles sky polys in world model
 ================
 */
-void Sky_ProcessTextureChains (void)
+void Sky_ProcessTextureChains()
 {
 	int			i;
 	msurface_t	*s;
@@ -541,7 +541,7 @@ void Sky_ProcessTextureChains (void)
 Sky_ProcessEntities -- handles sky polys on brush models
 ================
 */
-void Sky_ProcessEntities (void)
+void Sky_ProcessEntities()
 {
 	entity_t	*e;
 	msurface_t	*s;
@@ -672,7 +672,7 @@ Sky_DrawSkyBox
 FIXME: eliminate cracks by adding an extra vert on tjuncs
 ==============
 */
-void Sky_DrawSkyBox (void)
+void Sky_DrawSkyBox()
 {
 	int		i, j, k;
 	vec3_t	v;
@@ -939,7 +939,7 @@ Sky_DrawSkyLayers
 draws the old-style scrolling cloud layers
 ==============
 */
-void Sky_DrawSkyLayers (void)
+void Sky_DrawSkyLayers()
 {
 	int i;
 
@@ -961,7 +961,7 @@ Sky_DrawSky
 called once per frame before drawing anything else
 ==============
 */
-void Sky_DrawSky (void)
+void Sky_DrawSky()
 {
 	int				i;
 

@@ -20,13 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // net_wipx.h
 
-int  WIPX_Init (void);
-void WIPX_Shutdown (void);
+int  WIPX_Init();
+void WIPX_Shutdown();
 void WIPX_Listen (bool state);
 int  WIPX_OpenSocket (int port);
 int  WIPX_CloseSocket (int socket);
 int  WIPX_Connect (int socket, struct qsockaddr *addr);
-int  WIPX_CheckNewConnections (void);
+int  WIPX_CheckNewConnections();
 int  WIPX_Read (int socket, byte *buf, int len, struct qsockaddr *addr);
 int  WIPX_Write (int socket, byte *buf, int len, struct qsockaddr *addr);
 int  WIPX_Broadcast (int socket, byte *buf, int len);

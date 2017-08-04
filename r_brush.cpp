@@ -862,7 +862,7 @@ Builds the lightmap texture
 with all the surfaces from all brush models
 ==================
 */
-void GL_BuildLightmaps (void)
+void GL_BuildLightmaps()
 {
 	char	name[16];
 	byte	*data;
@@ -1148,7 +1148,7 @@ void R_UploadLightmap(int lmap)
 R_RebuildAllLightmaps -- johnfitz -- called when gl_overbright gets toggled
 ================
 */
-void R_RebuildAllLightmaps (void)
+void R_RebuildAllLightmaps()
 {
 	int			i, j;
 	model_t		*mod;

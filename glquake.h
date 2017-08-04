@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <GL/glu.h>
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
-void GL_EndRendering (void);
+void GL_EndRendering();
 
 //johnfitz -- removed texture object stuff since they are standard in gl 1.1
  
@@ -70,8 +70,8 @@ extern	PROC glVertexPointerEXT;
 #define BACKFACE_EPSILON	0.01
 
 
-void R_TimeRefresh_f (void);
-void R_ReadPointFile_f (void);
+void R_TimeRefresh_f();
+void R_ReadPointFile_f();
 texture_t *R_TextureAnimation (texture_t *base, int frame);
 
 struct surfcache_t
@@ -277,14 +277,14 @@ int gl_warpimagesize; //johnfitz -- for water warp
 bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
 
 //johnfitz -- fog functions called from outside gl_fog.c
-void Fog_ParseServerMessage (void);
-float *Fog_GetColor (void);
-float Fog_GetDensity (void);
-void Fog_EnableGFog (void);
-void Fog_DisableGFog (void);
-void Fog_StartAdditive (void);
-void Fog_StopAdditive (void);
-void Fog_SetupFrame (void);
-void Fog_NewMap (void);
-void Fog_Init (void);
+void Fog_ParseServerMessage();
+float *Fog_GetColor();
+float Fog_GetDensity();
+void Fog_EnableGFog();
+void Fog_DisableGFog();
+void Fog_StartAdditive();
+void Fog_StopAdditive();
+void Fog_SetupFrame();
+void Fog_NewMap();
+void Fog_Init();
 //johnfitz

@@ -50,14 +50,14 @@ extern cvar_t gl_subdivide_size; //johnfitz -- moved here from gl_model.c
 
 extern gltexture_t *playertextures[MAX_SCOREBOARD]; //johnfitz
 
-void R_NoLerpList_f (void); //johnfitz
+void R_NoLerpList_f(); //johnfitz
 
 /*
 ====================
 GL_Overbright_f -- johnfitz
 ====================
 */
-void GL_Overbright_f (void)
+void GL_Overbright_f()
 {
 	R_RebuildAllLightmaps ();
 }
@@ -67,7 +67,7 @@ void GL_Overbright_f (void)
 GL_Fullbrights_f -- johnfitz
 ====================
 */
-void GL_Fullbrights_f (void)
+void GL_Fullbrights_f()
 {
 	TexMgr_ReloadNobrightImages ();
 }
@@ -77,7 +77,7 @@ void GL_Fullbrights_f (void)
 R_SetClearColor_f -- johnfitz
 ====================
 */
-void R_SetClearColor_f (void)
+void R_SetClearColor_f()
 {
 	byte	*rgb;
 	int		s;
@@ -92,7 +92,7 @@ void R_SetClearColor_f (void)
 R_Novis_f -- johnfitz
 ====================
 */
-void R_Novis_f (void)
+void R_Novis_f()
 {
 	extern int vis_changed;
 	vis_changed = TRUE;
@@ -103,7 +103,7 @@ void R_Novis_f (void)
 R_OldSkyLeaf_f -- johnfitz
 ====================
 */
-void R_OldSkyLeaf_f (void)
+void R_OldSkyLeaf_f()
 {
 	extern int vis_changed;
 	vis_changed = TRUE;
@@ -116,7 +116,7 @@ R_Envmap_f
 Grab six views for environment mapping tests
 ===============
 */
-void R_Envmap_f (void)
+void R_Envmap_f()
 {
 	byte	buffer[256*256*4];
 	char	name[1024];
@@ -181,7 +181,7 @@ void R_Envmap_f (void)
 R_Init
 ===============
 */
-void R_Init (void)
+void R_Init()
 {
 	extern byte *hunk_base;
 	extern cvar_t gl_finish;
@@ -251,7 +251,7 @@ void R_Init (void)
 R_NoLerpList_f -- johnfitz -- called when r_nolerp_list cvar changes
 ===============
 */
-void R_NoLerpList_f (void)
+void R_NoLerpList_f()
 {
 	int i;
 
@@ -324,7 +324,7 @@ void R_TranslateNewPlayerSkin (int playernum)
 R_NewGame -- johnfitz -- handle a game switch
 ===============
 */
-void R_NewGame (void)
+void R_NewGame()
 {
 	int i;
 
@@ -338,7 +338,7 @@ void R_NewGame (void)
 R_NewMap
 ===============
 */
-void R_NewMap (void)
+void R_NewMap()
 {
 	int		i;
 
@@ -371,7 +371,7 @@ R_TimeRefresh_f
 For program optimization
 ====================
 */
-void R_TimeRefresh_f (void)
+void R_TimeRefresh_f()
 {
 	int			i;
 	float		start, stop, time;
@@ -397,6 +397,6 @@ void R_TimeRefresh_f (void)
 	GL_EndRendering ();
 }
 
-void D_FlushCaches (void)
+void D_FlushCaches()
 {
 }

@@ -63,14 +63,14 @@ extern	int				pr_edict_size;	// in bytes
 
 //============================================================================
 
-void PR_Init (void);
+void PR_Init();
 
 void PR_ExecuteProgram (func_t fnum);
-void PR_LoadProgs (void);
+void PR_LoadProgs();
 
-void PR_Profile_f (void);
+void PR_Profile_f();
 
-edict_t *ED_Alloc (void);
+edict_t *ED_Alloc();
 void ED_Free (edict_t *ed);
 
 char	*ED_NewString (char *string);
@@ -127,7 +127,7 @@ extern	unsigned short		pr_crc;
 
 void PR_RunError (char *error, ...);
 
-void ED_PrintEdicts (void);
+void ED_PrintEdicts();
 void ED_PrintNum (int ent);
 
 eval_t *GetEdictFieldValue(edict_t *ed, char *field);

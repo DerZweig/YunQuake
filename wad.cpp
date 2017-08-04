@@ -64,7 +64,7 @@ void W_CleanupName (char *in, char *out)
 W_LoadWadFile
 ====================
 */
-void W_LoadWadFile (void) //johnfitz -- filename is now hard-coded for honesty
+void W_LoadWadFile() //johnfitz -- filename is now hard-coded for honesty
 {
 	lumpinfo_t		*lump_p;
 	wadinfo_t		*header;

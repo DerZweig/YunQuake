@@ -245,7 +245,7 @@ void Z_Print (memzone_t *zone)
 Z_CheckHeap
 ========================
 */
-void Z_CheckHeap (void)
+void Z_CheckHeap()
 {
 	memblock_t	*block;
 
@@ -282,7 +282,7 @@ int		hunk_high_used;
 bool	hunk_tempactive;
 int		hunk_tempmark;
 
-void R_FreeTextures (void);
+void R_FreeTextures();
 
 /*
 ==============
@@ -291,7 +291,7 @@ Hunk_Check
 Run consistancy and sentinal trahing checks
 ==============
 */
-void Hunk_Check (void)
+void Hunk_Check()
 {
 	hunk_t	*h;
 
@@ -397,7 +397,7 @@ void Hunk_Print (bool all)
 Hunk_Print_f -- johnfitz -- console command to call hunk_print
 ===================
 */
-void Hunk_Print_f (void)
+void Hunk_Print_f()
 {
 	Hunk_Print (false);
 }
@@ -447,7 +447,7 @@ void *Hunk_Alloc (int size)
 	return Hunk_AllocName (size, "unknown");
 }
 
-int	Hunk_LowMark (void)
+int	Hunk_LowMark()
 {
 	return hunk_low_used;
 }
@@ -460,7 +460,7 @@ void Hunk_FreeToLowMark (int mark)
 	hunk_low_used = mark;
 }
 
-int	Hunk_HighMark (void)
+int	Hunk_HighMark()
 {
 	if (hunk_tempactive)
 	{
@@ -767,7 +767,7 @@ Cache_Flush
 Throw everything out, so new data will be demand cached
 ============
 */
-void Cache_Flush (void)
+void Cache_Flush()
 {
 	while (cache_head.next != &cache_head)
 		Cache_Free ( cache_head.next->user, true); // reclaim the space //johnfitz -- added second argument
@@ -780,7 +780,7 @@ Cache_Print
 
 ============
 */
-void Cache_Print (void)
+void Cache_Print()
 {
 	cache_system_t	*cd;
 
@@ -796,7 +796,7 @@ Cache_Report
 
 ============
 */
-void Cache_Report (void)
+void Cache_Report()
 {
 	Con_DPrintf ("%4.1f megabyte data cache\n", (hunk_size - hunk_high_used - hunk_low_used) / (float)(1024*1024) );
 }
@@ -807,7 +807,7 @@ Cache_Compact
 
 ============
 */
-void Cache_Compact (void)
+void Cache_Compact()
 {
 }
 
@@ -817,7 +817,7 @@ Cache_Init
 
 ============
 */
-void Cache_Init (void)
+void Cache_Init()
 {
 	cache_head.next = cache_head.prev = &cache_head;
 	cache_head.lru_next = cache_head.lru_prev = &cache_head;

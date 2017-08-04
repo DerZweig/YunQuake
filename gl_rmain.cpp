@@ -313,7 +313,7 @@ void GL_SetFrustum(float fovx, float fovy)
 R_SetupGL
 =============
 */
-void R_SetupGL (void)
+void R_SetupGL()
 {
 	//johnfitz -- rewrote this section
 	glMatrixMode(GL_PROJECTION);
@@ -358,7 +358,7 @@ void R_SetupGL (void)
 R_Clear -- johnfitz -- rewritten and gutted
 =============
 */
-void R_Clear (void)
+void R_Clear()
 {
 	extern int gl_stencilbits;
 	unsigned int clearbits;
@@ -374,7 +374,7 @@ void R_Clear (void)
 R_SetupScene -- johnfitz -- this is the stuff that needs to be done once per eye in stereo mode
 ===============
 */
-void R_SetupScene (void)
+void R_SetupScene()
 {
 	R_PushDlights ();
 	R_AnimateLight ();
@@ -387,7 +387,7 @@ void R_SetupScene (void)
 R_SetupView -- johnfitz -- this is the stuff that needs to be done once per frame, even in stereo mode
 ===============
 */
-void R_SetupView (void)
+void R_SetupView()
 {
 	Fog_SetupFrame (); //johnfitz
 
@@ -498,7 +498,7 @@ void R_DrawEntitiesOnList (bool alphapass) //johnfitz -- added parameter
 R_DrawViewModel -- johnfitz -- gutted
 =============
 */
-void R_DrawViewModel (void)
+void R_DrawViewModel()
 {
 	if (!r_drawviewmodel.value || !r_drawentities.value || chase_active.value || envmap)
 		return;
@@ -568,7 +568,7 @@ R_ShowBoundingBoxes -- johnfitz
 draw bounding boxes -- the server-side boxes, not the renderer cullboxes
 ================
 */
-void R_ShowBoundingBoxes (void)
+void R_ShowBoundingBoxes()
 {
 	extern		edict_t *sv_player;
 	vec3_t		mins,maxs;
@@ -623,7 +623,7 @@ void R_ShowBoundingBoxes (void)
 R_ShowTris -- johnfitz
 ================
 */
-void R_ShowTris (void)
+void R_ShowTris()
 {
 	extern cvar_t r_particles;
 	int i;
@@ -708,7 +708,7 @@ void R_ShowTris (void)
 R_DrawShadows
 ================
 */
-void R_DrawShadows (void)
+void R_DrawShadows()
 {
 	int i;
 
@@ -734,7 +734,7 @@ void R_DrawShadows (void)
 R_RenderScene
 ================
 */
-void R_RenderScene (void)
+void R_RenderScene()
 {
 	R_SetupScene (); //johnfitz -- this does everything that should be done once per call to RenderScene
 
@@ -776,7 +776,7 @@ void R_RenderScene (void)
 R_RenderView
 ================
 */
-void R_RenderView (void)
+void R_RenderView()
 {
 	double	time1, time2;
 

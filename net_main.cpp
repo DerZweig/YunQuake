@@ -163,7 +163,7 @@ void NET_FreeQSocket(qsocket_t *sock)
 }
 
 
-static void NET_Listen_f (void)
+static void NET_Listen_f()
 {
 	if (Cmd_Argc () != 2)
 	{
@@ -182,7 +182,7 @@ static void NET_Listen_f (void)
 }
 
 
-static void MaxPlayers_f (void)
+static void MaxPlayers_f()
 {
 	int 	n;
 
@@ -221,7 +221,7 @@ static void MaxPlayers_f (void)
 }
 
 
-static void NET_Port_f (void)
+static void NET_Port_f()
 {
 	int 	n;
 
@@ -250,7 +250,7 @@ static void NET_Port_f (void)
 }
 
 
-static void PrintSlistHeader(void)
+static voidPrintSlistHeader()
 {
 	Con_Printf("Server          Map             Users\n");
 	Con_Printf("--------------- --------------- -----\n");
@@ -258,7 +258,7 @@ static void PrintSlistHeader(void)
 }
 
 
-static void PrintSlist(void)
+static voidPrintSlist()
 {
 	int n;
 
@@ -273,7 +273,7 @@ static void PrintSlist(void)
 }
 
 
-static void PrintSlistTrailer(void)
+static voidPrintSlistTrailer()
 {
 	if (hostCacheCount)
 		Con_Printf("== end list ==\n\n");
@@ -282,7 +282,7 @@ static void PrintSlistTrailer(void)
 }
 
 
-void NET_Slist_f (void)
+void NET_Slist_f()
 {
 	if (slistInProgress)
 		return;
@@ -303,7 +303,7 @@ void NET_Slist_f (void)
 }
 
 
-static void Slist_Send(void)
+static void Slist_Send()
 {
 	for (net_driverlevel=0; net_driverlevel < net_numdrivers; net_driverlevel++)
 	{
@@ -319,7 +319,7 @@ static void Slist_Send(void)
 }
 
 
-static void Slist_Poll(void)
+static void Slist_Poll()
 {
 	for (net_driverlevel=0; net_driverlevel < net_numdrivers; net_driverlevel++)
 	{
@@ -438,7 +438,7 @@ NET_CheckNewConnections
 ===================
 */
 
-qsocket_t *NET_CheckNewConnections (void)
+qsocket_t *NET_CheckNewConnections()
 {
 	qsocket_t	*ret;
 
@@ -703,7 +703,7 @@ NET_Init
 ====================
 */
 
-void NET_Init (void)
+void NET_Init()
 {
 	int			i;
 	int			controlSocket;
@@ -783,7 +783,7 @@ NET_Shutdown
 ====================
 */
 
-void		NET_Shutdown (void)
+void		NET_Shutdown()
 {
 	qsocket_t	*sock;
 
@@ -808,7 +808,7 @@ void		NET_Shutdown (void)
 
 static PollProcedure *pollProcedureList = nullptr;
 
-void NET_Poll(void)
+void NET_Poll()
 {
 	PollProcedure *pp;
 	bool	useModem;

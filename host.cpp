@@ -84,7 +84,7 @@ cvar_t devstats = {"devstats","0"}; //johnfitz -- track developer statistics tha
 Max_Edicts_f -- johnfitz
 ================
 */
-void Max_Edicts_f(void)
+void Max_Edicts_f()
 {
 	static float oldval = 1024; //must match the default value for max_edicts
 
@@ -172,7 +172,7 @@ void Host_Error(char* error, ...)
 Host_FindMaxClients
 ================
 */
-void Host_FindMaxClients(void)
+void Host_FindMaxClients()
 {
 	int i;
 
@@ -223,7 +223,7 @@ void Host_FindMaxClients(void)
 Host_InitLocal
 ======================
 */
-void Host_InitLocal(void)
+void Host_InitLocal()
 {
 	Host_InitCommands();
 
@@ -265,7 +265,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration(void)
+void Host_WriteConfiguration()
 {
 	FILE* f;
 
@@ -520,7 +520,7 @@ This clears all the memory used by both the client and server, but does
 not reinitialize anything.
 ================
 */
-void Host_ClearMemory(void)
+void Host_ClearMemory()
 {
 	Con_DPrintf("Clearing memory\n");
 	D_FlushCaches();
@@ -581,7 +581,7 @@ Host_GetConsoleCommands
 Add them exactly as if they had been typed at the console
 ===================
 */
-void Host_GetConsoleCommands(void)
+void Host_GetConsoleCommands()
 {
 	char* cmd;
 
@@ -599,7 +599,7 @@ void Host_GetConsoleCommands(void)
 Host_ServerFrame
 ==================
 */
-void Host_ServerFrame(void)
+void Host_ServerFrame()
 {
 	int i, active; //johnfitz
 	edict_t* ent; //johnfitz
@@ -873,7 +873,7 @@ FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
 to run quit through here before the final handoff to the sys code.
 ===============
 */
-void Host_Shutdown(void)
+void Host_Shutdown()
 {
 	static bool isdown = false;
 

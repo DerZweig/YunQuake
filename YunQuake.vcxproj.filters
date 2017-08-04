@@ -321,9 +321,6 @@
     <ClInclude Include="screen.h">
       <Filter>renderer</Filter>
     </ClInclude>
-    <ClInclude Include="server.h">
-      <Filter>network</Filter>
-    </ClInclude>
     <ClInclude Include="sound.h">
       <Filter>sound</Filter>
     </ClInclude>
@@ -358,6 +355,9 @@
     </ClInclude>
     <ClInclude Include="net_dgrm.h">
       <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="server.h">
+      <Filter>server</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

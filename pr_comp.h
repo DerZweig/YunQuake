@@ -1,31 +1,18 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-
-// this file is shared by quake and qcc
-
-using func_t=  int	;
-using string_t = int	;
+#pragma once
+using func_t = int;
+using string_t = int;
 
 enum class etype_t
-{ev_void, ev_string, ev_float, ev_vector, ev_entity, ev_field, ev_function, ev_pointer} ;
+{
+	ev_void,
+	ev_string,
+	ev_float,
+	ev_vector,
+	ev_entity,
+	ev_field,
+	ev_function,
+	ev_pointer
+};
 
 
 #define	OFS_nullptr		0
@@ -41,7 +28,8 @@ enum class etype_t
 #define	RESERVED_OFS	28
 
 
-enum {
+enum class opcode_t : uint16_t
+{
 	OP_DONE,
 	OP_MUL_F,
 	OP_MUL_V,
@@ -122,61 +110,62 @@ enum {
 
 struct dstatement_t
 {
-	unsigned short	op;
-	short	a,b,c;
-} ;
+	opcode_t op;
+	short a, b, c;
+};
 
 struct ddef_t
 {
-	unsigned short	type;		// if DEF_SAVEGLOBGAL bit is set
-								// the variable needs to be saved in savegames
-	unsigned short	ofs;
-	int			s_name;
-} ;
+	unsigned short type; // if DEF_SAVEGLOBGAL bit is set
+	// the variable needs to be saved in savegames
+	unsigned short ofs;
+	int s_name;
+};
+
 #define	DEF_SAVEGLOBAL	(1<<15)
 
 #define	MAX_PARMS	8
 
 struct dfunction_t
 {
-	int		first_statement;	// negative numbers are builtins
-	int		parm_start;
-	int		locals;				// total ints of parms + locals
+	int first_statement; // negative numbers are builtins
+	int parm_start;
+	int locals; // total ints of parms + locals
 
-	int		profile;		// runtime
+	int profile; // runtime
 
-	int		s_name;
-	int		s_file;			// source file defined in
+	int s_name;
+	int s_file; // source file defined in
 
-	int		numparms;
-	byte	parm_size[MAX_PARMS];
-} ;
+	int numparms;
+	byte parm_size[MAX_PARMS];
+};
 
 
 #define	PROG_VERSION	6
+
 struct dprograms_t
 {
-	int		version;
-	int		crc;			// check of header file
+	int version;
+	int crc; // check of header file
 
-	int		ofs_statements;
-	int		numstatements;	// statement 0 is an error
+	int ofs_statements;
+	int numstatements; // statement 0 is an error
 
-	int		ofs_globaldefs;
-	int		numglobaldefs;
+	int ofs_globaldefs;
+	int numglobaldefs;
 
-	int		ofs_fielddefs;
-	int		numfielddefs;
+	int ofs_fielddefs;
+	int numfielddefs;
 
-	int		ofs_functions;
-	int		numfunctions;	// function 0 is an empty
+	int ofs_functions;
+	int numfunctions; // function 0 is an empty
 
-	int		ofs_strings;
-	int		numstrings;		// first string is a nullptr string
+	int ofs_strings;
+	int numstrings; // first string is a nullptr string
 
-	int		ofs_globals;
-	int		numglobals;
+	int ofs_globals;
+	int numglobals;
 
-	int		entityfields;
-} ;
-
+	int entityfields;
+};

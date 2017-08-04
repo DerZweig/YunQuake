@@ -53,19 +53,16 @@ SV_SetIdealPitch
 #define	MAX_FORWARD	6
 void SV_SetIdealPitch()
 {
-	float	angleval, sinval, cosval;
-	trace_t	tr;
 	vec3_t	top, bottom;
 	float	z[MAX_FORWARD];
-	int		i, j;
-	int		step, dir, steps;
+	int		i;
 
-	if (!((int)sv_player->v.flags & FL_ONGROUND))
+	if (!(static_cast<int>(sv_player->v.flags) & FL_ONGROUND))
 		return;
 
-	angleval = sv_player->v.angles[YAW] * M_PI*2 / 360;
-	sinval = sin(angleval);
-	cosval = cos(angleval);
+	float angleval = sv_player->v.angles[YAW] * M_PI*2 / 360;
+	auto sinval = sin(angleval);
+	auto cosval = cos(angleval);
 
 	for (i=0 ; i<MAX_FORWARD ; i++)
 	{
@@ -77,7 +74,7 @@ void SV_SetIdealPitch()
 		bottom[1] = top[1];
 		bottom[2] = top[2] - 160;
 
-		tr = SV_Move (top, vec3_origin, vec3_origin, bottom, 1, sv_player);
+		auto tr = SV_Move (top, vec3_origin, vec3_origin, bottom, 1, sv_player);
 		if (tr.allsolid)
 			return;	// looking at a wall, leave ideal the way is was
 
@@ -87,11 +84,11 @@ void SV_SetIdealPitch()
 		z[i] = top[2] + tr.fraction*(bottom[2]-top[2]);
 	}
 
-	dir = 0;
-	steps = 0;
-	for (j=1 ; j<i ; j++)
+	int dir = 0;
+	int steps = 0;
+	for (int j = 1 ; j<i ; j++)
 	{
-		step = z[j] - z[j-1];
+		int step = z[j] - z[j-1];
 		if (step > -ON_EPSILON && step < ON_EPSILON)
 			continue;
 
@@ -122,15 +119,12 @@ SV_UserFriction
 */
 void SV_UserFriction()
 {
-	float	*vel;
-	float	speed, newspeed, control;
 	vec3_t	start, stop;
 	float	friction;
-	trace_t	trace;
 
-	vel = velocity;
+	auto vel = velocity;
 
-	speed = sqrt(vel[0]*vel[0] +vel[1]*vel[1]);
+	auto speed = sqrt(vel[0]*vel[0] +vel[1]*vel[1]);
 	if (!speed)
 		return;
 
@@ -140,7 +134,7 @@ void SV_UserFriction()
 	start[2] = origin[2] + sv_player->v.mins[2];
 	stop[2] = start[2] - 34;
 
-	trace = SV_Move (start, vec3_origin, vec3_origin, stop, true, sv_player);
+	auto trace = SV_Move (start, vec3_origin, vec3_origin, stop, true, sv_player);
 
 	if (trace.fraction == 1.0)
 		friction = sv_friction.value*sv_edgefriction.value;
@@ -148,8 +142,8 @@ void SV_UserFriction()
 		friction = sv_friction.value;
 
 // apply friction
-	control = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
-	newspeed = speed - host_frametime*control*friction;
+	float control = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
+	float newspeed = speed - host_frametime*control*friction;
 
 	if (newspeed < 0)
 		newspeed = 0;
@@ -169,48 +163,40 @@ cvar_t	sv_maxspeed = {"sv_maxspeed", "320", false, true};
 cvar_t	sv_accelerate = {"sv_accelerate", "10"};
 void SV_Accelerate()
 {
-	int			i;
-	float		addspeed, accelspeed, currentspeed;
-
-	currentspeed = DotProduct (velocity, wishdir);
-	addspeed = wishspeed - currentspeed;
+	auto currentspeed = DotProduct (velocity, wishdir);
+	auto addspeed = wishspeed - currentspeed;
 	if (addspeed <= 0)
 		return;
-	accelspeed = sv_accelerate.value*host_frametime*wishspeed;
+	float accelspeed = sv_accelerate.value*host_frametime*wishspeed;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 
-	for (i=0 ; i<3 ; i++)
+	for (int i = 0 ; i<3 ; i++)
 		velocity[i] += accelspeed*wishdir[i];
 }
 
 void SV_AirAccelerate (vec3_t wishveloc)
 {
-	int			i;
-	float		addspeed, wishspd, accelspeed, currentspeed;
-
-	wishspd = VectorNormalize (wishveloc);
+	auto wishspd = VectorNormalize (wishveloc);
 	if (wishspd > 30)
 		wishspd = 30;
-	currentspeed = DotProduct (velocity, wishveloc);
-	addspeed = wishspd - currentspeed;
+	auto currentspeed = DotProduct (velocity, wishveloc);
+	auto addspeed = wishspd - currentspeed;
 	if (addspeed <= 0)
 		return;
 //	accelspeed = sv_accelerate.value * host_frametime;
-	accelspeed = sv_accelerate.value*wishspeed * host_frametime;
+	float accelspeed = sv_accelerate.value*wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 
-	for (i=0 ; i<3 ; i++)
+	for (int i = 0 ; i<3 ; i++)
 		velocity[i] += accelspeed*wishveloc[i];
 }
 
 
-voidDropPunchAngle()
+void DropPunchAngle()
 {
-	float	len;
-
-	len = VectorNormalize (sv_player->v.punchangle);
+	auto len = VectorNormalize (sv_player->v.punchangle);
 
 	len -= 10*host_frametime;
 	if (len < 0)
@@ -228,7 +214,7 @@ void SV_WaterMove()
 {
 	int		i;
 	vec3_t	wishvel;
-	float	speed, newspeed, wishspeed, addspeed, accelspeed;
+	float newspeed;
 
 //
 // user intentions
@@ -243,7 +229,7 @@ void SV_WaterMove()
 	else
 		wishvel[2] += cmd.upmove;
 
-	wishspeed = Length(wishvel);
+	auto wishspeed = Length(wishvel);
 	if (wishspeed > sv_maxspeed.value)
 	{
 		VectorScale (wishvel, sv_maxspeed.value/wishspeed, wishvel);
@@ -254,7 +240,7 @@ void SV_WaterMove()
 //
 // water friction
 //
-	speed = Length (velocity);
+	auto speed = Length (velocity);
 	if (speed)
 	{
 		newspeed = speed - host_frametime * speed * sv_friction.value;
@@ -271,12 +257,12 @@ void SV_WaterMove()
 	if (!wishspeed)
 		return;
 
-	addspeed = wishspeed - newspeed;
+	auto addspeed = wishspeed - newspeed;
 	if (addspeed <= 0)
 		return;
 
 	VectorNormalize (wishvel);
-	accelspeed = sv_accelerate.value * wishspeed * host_frametime;
+	float accelspeed = sv_accelerate.value * wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 
@@ -289,7 +275,7 @@ void SV_WaterJump()
 	if (sv.time > sv_player->v.teleport_time
 	|| !sv_player->v.waterlevel)
 	{
-		sv_player->v.flags = (int)sv_player->v.flags & ~FL_WATERJUMP;
+		sv_player->v.flags = static_cast<int>(sv_player->v.flags) & ~FL_WATERJUMP;
 		sv_player->v.teleport_time = 0;
 	}
 	sv_player->v.velocity[0] = sv_player->v.movedir[0];
@@ -326,23 +312,21 @@ SV_AirMove
 */
 void SV_AirMove()
 {
-	int			i;
 	vec3_t		wishvel;
-	float		fmove, smove;
 
 	AngleVectors (sv_player->v.angles, forward, right, up);
 
-	fmove = cmd.forwardmove;
-	smove = cmd.sidemove;
+	auto fmove = cmd.forwardmove;
+	auto smove = cmd.sidemove;
 
 // hack to not let you back into teleporter
 	if (sv.time < sv_player->v.teleport_time && fmove < 0)
 		fmove = 0;
 
-	for (i=0 ; i<3 ; i++)
+	for (auto i = 0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*fmove + right[i]*smove;
 
-	if ( (int)sv_player->v.movetype != MOVETYPE_WALK)
+	if ( static_cast<int>(sv_player->v.movetype) != MOVETYPE_WALK)
 		wishvel[2] = cmd.upmove;
 	else
 		wishvel[2] = 0;
@@ -385,7 +369,7 @@ void SV_ClientThink()
 	if (sv_player->v.movetype == MOVETYPE_NONE)
 		return;
 
-	onground = (int)sv_player->v.flags & FL_ONGROUND;
+	onground = static_cast<int>(sv_player->v.flags) & FL_ONGROUND;
 
 	origin = sv_player->v.origin;
 	velocity = sv_player->v.velocity;
@@ -412,7 +396,7 @@ void SV_ClientThink()
 		angles[YAW] = v_angle[YAW];
 	}
 
-	if ( (int)sv_player->v.flags & FL_WATERJUMP )
+	if ( static_cast<int>(sv_player->v.flags) & FL_WATERJUMP )
 	{
 		SV_WaterJump ();
 		return;
@@ -440,9 +424,8 @@ void SV_ReadClientMove (usercmd_t *move)
 {
 	int		i;
 	vec3_t	angle;
-	int		bits;
 
-// read ping time
+	// read ping time
 	host_client->ping_times[host_client->num_pings%NUM_PING_TIMES]
 		= sv.time - MSG_ReadFloat ();
 	host_client->num_pings++;
@@ -464,7 +447,7 @@ void SV_ReadClientMove (usercmd_t *move)
 	move->upmove = MSG_ReadShort ();
 
 // read buttons
-	bits = MSG_ReadByte ();
+	auto bits = MSG_ReadByte ();
 	host_client->edict->v.button0 = bits & 1;
 	host_client->edict->v.button2 = (bits & 2)>>1;
 
@@ -480,11 +463,9 @@ SV_ReadClientMessage
 Returns false if the client should be killed
 ===================
 */
-qbbooloolean SV_ReadClientMessage()
+BOOL SV_ReadClientMessage()
 {
 	int		ret;
-	int		cmd;
-	char		*s;
 
 	do
 	{
@@ -500,7 +481,7 @@ nextmsg:
 
 		MSG_BeginReading ();
 
-		while (1)
+		while (true)
 		{
 			if (!host_client->active)
 				return false;	// a command caused an error
@@ -511,7 +492,7 @@ nextmsg:
 				return false;
 			}
 
-			cmd = MSG_ReadChar ();
+			int cmd = MSG_ReadChar ();
 
 			switch (cmd)
 			{
@@ -527,7 +508,7 @@ nextmsg:
 				break;
 
 			case clc_stringcmd:
-				s = MSG_ReadString ();
+				char *s = MSG_ReadString ();
 				if (host_client->privileged)
 					ret = 2;
 				else
@@ -573,7 +554,7 @@ nextmsg:
 				if (ret == 2)
 					Cbuf_InsertText (s);
 				else if (ret == 1)
-					Cmd_ExecuteString (s, src_client);
+					Cmd_ExecuteString (s, cmd_source_t::src_client);
 				else
 					Con_DPrintf("%s tried to %s\n", host_client->name, s);
 				break;
@@ -588,8 +569,6 @@ nextmsg:
 			}
 		}
 	} while (ret == 1);
-
-	return true;
 }
 
 
@@ -623,7 +602,7 @@ void SV_RunClients()
 		}
 
 // always pause in single player if in console or menus
-		if (!sv.paused && (svs.maxclients > 1 || key_dest == key_game) )
+		if (!sv.paused && (svs.maxclients > 1 || key_dest == keydest_t::key_game) )
 			SV_ClientThink ();
 	}
 }

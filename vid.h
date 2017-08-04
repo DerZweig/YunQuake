@@ -24,15 +24,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define VID_GRADES	(1 << VID_CBITS)
 
 // a pixel can be one, two, or four bytes
-typedef byte pixel_t;
+using pixel_t = byte ;
 
-typedef struct vrect_s
+struct vrect_t
 {
 	int				x,y,width,height;
-	struct vrect_s	*pnext;
-} vrect_t;
+	vrect_t	*pnext;
+} ;
 
-typedef struct
+struct viddef_t
 {
 	pixel_t			*buffer;		// invisible buffer
 	pixel_t			*colormap;		// 256 * VID_GRADES size
@@ -52,7 +52,7 @@ typedef struct
 	int				maxwarpheight;
 	pixel_t			*direct;		// direct drawing to framebuffer, if not
 									//  NULL
-} viddef_t;
+};
 
 extern	viddef_t	vid;				// global video state
 //extern	unsigned short	d_8to16table[256]; //johnfitz -- never used
@@ -74,5 +74,5 @@ int VID_SetMode (int modenum); //johnfitz -- removed palette from argument list
 // sets the mode; only used by the Quake engine for resetting to mode 0 (the
 // base mode) on memory allocation failures
 
-void VID_HandlePause (qboolean pause);
+void VID_HandlePause (bool pause);
 // called only on Win32, when pause happens, so the mouse can be released

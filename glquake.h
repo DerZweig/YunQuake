@@ -35,13 +35,13 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
 
 //johnfitz -- removed texture object stuff since they are standard in gl 1.1
-
-typedef struct
+ 
+struct glvert_t
 {
 	float	x, y, z;
 	float	s, t;
 	float	r, g, b;
-} glvert_t;
+} ;
 
 extern glvert_t glv;
 
@@ -74,22 +74,22 @@ void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
 texture_t *R_TextureAnimation (texture_t *base, int frame);
 
-typedef struct surfcache_s
+struct surfcache_t
 {
-	struct surfcache_s	*next;
-	struct surfcache_s 	**owner;		// NULL is an empty chunk of memory
+	surfcache_t	*next;
+	surfcache_t 	**owner;		// NULL is an empty chunk of memory
 	int					lightadj[MAXLIGHTMAPS]; // checked for strobe flush
 	int					dlight;
 	int					size;		// including header
 	unsigned			width;
 	unsigned			height;		// DEBUG only needed for debug
 	float				mipscale;
-	struct texture_s	*texture;	// checked for animating textures
+texture_t	*texture;	// checked for animating textures
 	byte				data[4];	// width*height elements
-} surfcache_t;
+} ;
 
 
-typedef struct
+struct drawsurf_t
 {
 	pixel_t		*surfdat;	// destination for generated surface
 	int			rowbytes;	// destination logical width in bytes
@@ -100,31 +100,32 @@ typedef struct
 	int			surfmip;	// mipmapped ratio of surface texels / world pixels
 	int			surfwidth;	// in mipmapped texels
 	int			surfheight;	// in mipmapped texels
-} drawsurf_t;
+} ;
 
 
-typedef enum {
+enum class ptype_t
+{
 	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
-} ptype_t;
+} ;
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
-typedef struct particle_s
+struct particle_t
 {
 // driver-usable fields
 	vec3_t		org;
 	float		color;
 // drivers never touch the following fields
-	struct particle_s	*next;
+	particle_t	*next;
 	vec3_t		vel;
 	float		ramp;
 	float		die;
 	ptype_t		type;
-} particle_t;
+} ;
 
 
 //====================================================
 
-extern	qboolean	r_cache_thrash;		// compatability
+extern	bool	r_cache_thrash;		// compatability
 extern	vec3_t		modelorg, r_entorigin;
 extern	entity_t	*currententity;
 extern	int			r_visframecount;	// ??? what difs?
@@ -146,7 +147,7 @@ extern	refdef_t	r_refdef;
 extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-extern	qboolean	envmap;
+extern	bool	envmap;
 
 extern	cvar_t	r_norefresh;
 extern	cvar_t	r_drawentities;
@@ -191,8 +192,8 @@ void R_TranslateNewPlayerSkin (int playernum); //johnfitz -- this handles cases 
 #endif
 
 //johnfitz -- modified multitexture support
-typedef void (APIENTRY *SELECTTEXFUNC) (GLenum);
-typedef void (APIENTRY *MTEXCOORDFUNC) (GLenum, GLfloat, GLfloat);
+using SELECTTEXFUNC = void (APIENTRY *) (GLenum);
+using MTEXCOORDFUNC = void (APIENTRY *) (GLenum, GLfloat, GLfloat);
 extern MTEXCOORDFUNC GL_MTexCoord2fFunc;
 extern SELECTTEXFUNC GL_SelectTextureFunc;
 #define	GL_TEXTURE0_ARB	0x84C0
@@ -227,12 +228,12 @@ void GL_PolygonOffset (int);
 #define GL_SOURCE1_RGB_EXT		0x8581
 #define GL_SOURCE0_ALPHA_EXT	0x8588
 #define GL_SOURCE1_ALPHA_EXT	0x8589
-extern qboolean gl_texture_env_combine;
+extern bool gl_texture_env_combine;
 //johnfitz
 
-extern qboolean gl_texture_env_add; //johnfitz -- for GL_EXT_texture_env_add
+extern bool gl_texture_env_add; //johnfitz -- for GL_EXT_texture_env_add
 
-extern qboolean isIntelVideo; //johnfitz -- intel video workarounds from Baker
+extern bool isIntelVideo; //johnfitz -- intel video workarounds from Baker
 
 //johnfitz -- rendering statistics
 extern int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;
@@ -242,7 +243,8 @@ extern float rs_megatexels;
 
 //johnfitz -- track developer statistics that vary every frame
 extern cvar_t devstats;
-typedef struct {
+struct devstats_t
+{
 	int		packetsize;
 	int		edicts;
 	int		visedicts;
@@ -250,16 +252,17 @@ typedef struct {
 	int		tempents;
 	int		beams;
 	int		dlights;
-} devstats_t;
+} ;
 devstats_t dev_stats, dev_peakstats;
 //johnfitz
 
 //ohnfitz -- reduce overflow warning spam
-typedef struct {
+struct overflowtimes_t
+{
 	double	packetsize;
 	double	efrags;
 	double	beams;
-} overflowtimes_t;
+} ;
 overflowtimes_t dev_overflows; //this stores the last time overflow messages were displayed, not the last time overflows occured
 #define CONSOLE_RESPAM_TIME 3 // seconds between repeated warning messages
 //johnfitz
@@ -271,7 +274,7 @@ gltexture_t *lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
 
 int gl_warpimagesize; //johnfitz -- for water warp
 
-qboolean r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
+bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
 
 //johnfitz -- fog functions called from outside gl_fog.c
 void Fog_ParseServerMessage (void);

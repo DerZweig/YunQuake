@@ -57,10 +57,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define BSPVERSION	29
 #define	TOOLVERSION	2
 
-typedef struct
+struct lump_t
 {
-	int		fileofs, filelen;
-} lump_t;
+	int fileofs, filelen;
+};
 
 #define	LUMP_ENTITIES	0
 #define	LUMP_PLANES		1
@@ -80,40 +80,41 @@ typedef struct
 
 #define	HEADER_LUMPS	15
 
-typedef struct
+struct dmodel_t
 {
-	float		mins[3], maxs[3];
-	float		origin[3];
-	int			headnode[MAX_MAP_HULLS];
-	int			visleafs;		// not including the solid leaf 0
-	int			firstface, numfaces;
-} dmodel_t;
+	float mins[3], maxs[3];
+	float origin[3];
+	int headnode[MAX_MAP_HULLS];
+	int visleafs; // not including the solid leaf 0
+	int firstface, numfaces;
+};
 
-typedef struct
+struct dheader_t
 {
-	int			version;
-	lump_t		lumps[HEADER_LUMPS];
-} dheader_t;
+	int version;
+	lump_t lumps[HEADER_LUMPS];
+};
 
-typedef struct
+struct dmiptexlump_t
 {
-	int			nummiptex;
-	int			dataofs[4];		// [nummiptex]
-} dmiptexlump_t;
+	int nummiptex;
+	int dataofs[4]; // [nummiptex]
+};
 
 #define	MIPLEVELS	4
-typedef struct miptex_s
+
+struct miptex_t
 {
-	char		name[16];
-	unsigned	width, height;
-	unsigned	offsets[MIPLEVELS];		// four mip maps stored
-} miptex_t;
+	char name[16];
+	unsigned width, height;
+	unsigned offsets[MIPLEVELS]; // four mip maps stored
+};
 
 
-typedef struct
+struct dvertex_t
 {
-	float	point[3];
-} dvertex_t;
+	float point[3];
+};
 
 
 // 0-2 are axial planes
@@ -126,13 +127,12 @@ typedef struct
 #define	PLANE_ANYY		4
 #define	PLANE_ANYZ		5
 
-typedef struct
+struct dplane_t
 {
-	float	normal[3];
-	float	dist;
-	int		type;		// PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
-} dplane_t;
-
+	float normal[3];
+	float dist;
+	int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
+};
 
 
 #define	CONTENTS_EMPTY		-1
@@ -153,54 +153,55 @@ typedef struct
 
 
 // !!! if this is changed, it must be changed in asm_i386.h too !!!
-typedef struct
+struct dnode_t
 {
-	int			planenum;
-	short		children[2];	// negative numbers are -(leafs+1), not nodes
-	short		mins[3];		// for sphere culling
-	short		maxs[3];
-	unsigned short	firstface;
-	unsigned short	numfaces;	// counting both sides
-} dnode_t;
+	int planenum;
+	short children[2]; // negative numbers are -(leafs+1), not nodes
+	short mins[3]; // for sphere culling
+	short maxs[3];
+	unsigned short firstface;
+	unsigned short numfaces; // counting both sides
+};
 
-typedef struct
+struct dclipnode_t
 {
-	int			planenum;
-	short		children[2];	// negative numbers are contents
-} dclipnode_t;
+	int planenum;
+	short children[2]; // negative numbers are contents
+};
 
 
-typedef struct texinfo_s
+struct texinfo_t
 {
-	float		vecs[2][4];		// [s/t][xyz offset]
-	int			miptex;
-	int			flags;
-} texinfo_t;
+	float vecs[2][4]; // [s/t][xyz offset]
+	int miptex;
+	int flags;
+};
+
 #define	TEX_SPECIAL		1		// sky or slime, no lightmap or 256 subdivision
 #define TEX_MISSING		2		// johnfitz -- this texinfo does not have a texture
 
 // note that edge 0 is never used, because negative edge nums are used for
 // counterclockwise use of the edge in a face
-typedef struct
+struct dedge_t
 {
-	unsigned short	v[2];		// vertex numbers
-} dedge_t;
+	unsigned short v[2]; // vertex numbers
+};
 
 #define	MAXLIGHTMAPS	4
-typedef struct
+
+struct dface_t
 {
-	short		planenum;
-	short		side;
+	short planenum;
+	short side;
 
-	int			firstedge;		// we must support > 64k edges
-	short		numedges;
-	short		texinfo;
+	int firstedge; // we must support > 64k edges
+	short numedges;
+	short texinfo;
 
-// lighting info
-	byte		styles[MAXLIGHTMAPS];
-	int			lightofs;		// start of [numstyles*surfsize] samples
-} dface_t;
-
+	// lighting info
+	byte styles[MAXLIGHTMAPS];
+	int lightofs; // start of [numstyles*surfsize] samples
+};
 
 
 #define	AMBIENT_WATER	0
@@ -212,115 +213,16 @@ typedef struct
 
 // leaf 0 is the generic CONTENTS_SOLID leaf, used for all solid areas
 // all other leafs need visibility info
-typedef struct
+struct dleaf_t
 {
-	int			contents;
-	int			visofs;				// -1 = no visibility info
+	int contents;
+	int visofs; // -1 = no visibility info
 
-	short		mins[3];			// for frustum culling
-	short		maxs[3];
+	short mins[3]; // for frustum culling
+	short maxs[3];
 
-	unsigned short		firstmarksurface;
-	unsigned short		nummarksurfaces;
+	unsigned short firstmarksurface;
+	unsigned short nummarksurfaces;
 
-	byte		ambient_level[NUM_AMBIENTS];
-} dleaf_t;
-
-
-//============================================================================
-
-#ifndef QUAKE_GAME
-
-#define	ANGLE_UP	-1
-#define	ANGLE_DOWN	-2
-
-
-// the utilities get to be lazy and just use large static arrays
-
-extern	int			nummodels;
-extern	dmodel_t	dmodels[MAX_MAP_MODELS];
-
-extern	int			visdatasize;
-extern	byte		dvisdata[MAX_MAP_VISIBILITY];
-
-extern	int			lightdatasize;
-extern	byte		dlightdata[MAX_MAP_LIGHTING];
-
-extern	int			texdatasize;
-extern	byte		dtexdata[MAX_MAP_MIPTEX]; // (dmiptexlump_t)
-
-extern	int			entdatasize;
-extern	char		dentdata[MAX_MAP_ENTSTRING];
-
-extern	int			numleafs;
-extern	dleaf_t		dleafs[MAX_MAP_LEAFS];
-
-extern	int			numplanes;
-extern	dplane_t	dplanes[MAX_MAP_PLANES];
-
-extern	int			numvertexes;
-extern	dvertex_t	dvertexes[MAX_MAP_VERTS];
-
-extern	int			numnodes;
-extern	dnode_t		dnodes[MAX_MAP_NODES];
-
-extern	int			numtexinfo;
-extern	texinfo_t	texinfo[MAX_MAP_TEXINFO];
-
-extern	int			numfaces;
-extern	dface_t		dfaces[MAX_MAP_FACES];
-
-extern	int			numclipnodes;
-extern	dclipnode_t	dclipnodes[MAX_MAP_CLIPNODES];
-
-extern	int			numedges;
-extern	dedge_t		dedges[MAX_MAP_EDGES];
-
-extern	int			nummarksurfaces;
-extern	unsigned short	dmarksurfaces[MAX_MAP_MARKSURFACES];
-
-extern	int			numsurfedges;
-extern	int			dsurfedges[MAX_MAP_SURFEDGES];
-
-
-void DecompressVis (byte *in, byte *decompressed);
-int CompressVis (byte *vis, byte *dest);
-
-void	LoadBSPFile (char *filename);
-void	WriteBSPFile (char *filename);
-void	PrintBSPFileSizes (void);
-
-//===============
-
-
-typedef struct epair_s
-{
-	struct epair_s	*next;
-	char	*key;
-	char	*value;
-} epair_t;
-
-typedef struct
-{
-	vec3_t		origin;
-	int			firstbrush;
-	int			numbrushes;
-	epair_t		*epairs;
-} entity_t;
-
-extern	int			num_entities;
-extern	entity_t	entities[MAX_MAP_ENTITIES];
-
-void	ParseEntities (void);
-void	UnparseEntities (void);
-
-void 	SetKeyValue (entity_t *ent, char *key, char *value);
-char 	*ValueForKey (entity_t *ent, char *key);
-// will return "" if not present
-
-vec_t	FloatForKey (entity_t *ent, char *key);
-void 	GetVectorForKey (entity_t *ent, char *key, vec3_t vec);
-
-epair_t *ParseEpair (void);
-
-#endif
+	byte ambient_level[NUM_AMBIENTS];
+};

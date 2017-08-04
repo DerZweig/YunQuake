@@ -28,13 +28,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //=============================================================================
 
-typedef struct efrag_s
+struct mleaf_t;
+struct entity_t;
+struct mnode_t;
+struct model_t;
+
+struct efrag_t
 {
-	struct mleaf_s		*leaf;
-	struct efrag_s		*leafnext;
-	struct entity_s		*entity;
-	struct efrag_s		*entnext;
-} efrag_t;
+	mleaf_t		*leaf;
+	efrag_t		*leafnext;
+	entity_t		*entity;
+	efrag_t	*entnext;
+};
 
 //johnfitz -- for lerping
 #define LERP_MOVESTEP	(1<<0) //this is a MOVETYPE_STEP entity, enable movement lerp
@@ -44,9 +49,9 @@ typedef struct efrag_s
 #define LERP_FINISH		(1<<4) //use lerpfinish time from server update instead of assuming interval of 0.1
 //johnfitz
 
-typedef struct entity_s
+struct entity_t
 {
-	qboolean				forcelink;		// model changed
+	bool					forcelink;		// model changed
 
 	int						update_type;
 
@@ -57,8 +62,8 @@ typedef struct entity_s
 	vec3_t					origin;
 	vec3_t					msg_angles[2];	// last two updates (0 is newest)
 	vec3_t					angles;
-	struct model_s			*model;			// NULL = no model
-	struct efrag_s			*efrag;			// linked list of efrags
+	model_t			*model;			// NULL = no model
+	efrag_t			*efrag;			// linked list of efrags
 	int						frame;
 	float					syncbase;		// for client-side animations
 	byte					*colormap;
@@ -72,7 +77,7 @@ typedef struct entity_s
 
 // FIXME: could turn these into a union
 	int						trivial_accept;
-	struct mnode_s			*topnode;		// for bmodels, first world node
+	mnode_t					*topnode;		// for bmodels, first world node
 											//  that splits bmodel, or NULL if
 											//  not split
 
@@ -89,10 +94,10 @@ typedef struct entity_s
 	vec3_t					currentorigin;	//johnfitz -- transform lerping
 	vec3_t					previousangles;	//johnfitz -- transform lerping
 	vec3_t					currentangles;	//johnfitz -- transform lerping
-} entity_t;
+} ;
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct
+struct refdef_t
 {
 	vrect_t		vrect;				// subwindow in video for refresh
 									// FIXME: not need vrect next field here?
@@ -120,7 +125,7 @@ typedef struct
 	float		fov_x, fov_y;
 
 	int			ambientlight;
-} refdef_t;
+};
 
 
 //
@@ -139,7 +144,8 @@ void R_InitEfrags (void);
 void R_RenderView (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change
-void R_InitSky (struct texture_s *mt);	// called at level load
+struct texture_t;
+void R_InitSky (texture_t *mt);	// called at level load
 
 void R_CheckEfrags (void); //johnfitz
 void R_AddEfrags (entity_t *ent);
@@ -165,7 +171,7 @@ void R_PushDlights (void);
 // surface cache related
 //
 extern	int		reinit_surfcache;	// if 1, surface cache is currently empty and
-extern qboolean	r_cache_thrash;	// set if thrashing the surface cache
+extern bool	r_cache_thrash;	// set if thrashing the surface cache
 
 int	D_SurfaceCacheForRes (int width, int height);
 void D_FlushCaches (void);

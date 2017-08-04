@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 
 // !!! if this is changed, it must be changed in r_shared.h too !!!
+#pragma once
 #define ALIAS_ONSEAM				0x0020
 
 // !!! if this is changed, it must be changed in d_iface.h too !!!

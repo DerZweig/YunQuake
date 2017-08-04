@@ -20,46 +20,41 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // comndef.h  -- general definitions
 
-#if !defined BYTE_DEFINED
-typedef unsigned char 		byte;
-#define BYTE_DEFINED 1
-#endif
+#pragma once
+#include "cvar.h"
+using byte = uint8_t;
 
-#undef true
-#undef false
-
-typedef enum {false, true}	qboolean;
 
 //============================================================================
 
-typedef struct sizebuf_s
+struct sizebuf_t
 {
-	qboolean	allowoverflow;	// if false, do a Sys_Error
-	qboolean	overflowed;		// set to true if the buffer size failed
-	byte	*data;
-	int		maxsize;
-	int		cursize;
-} sizebuf_t;
+	bool allowoverflow; // if false, do a Sys_Error
+	bool overflowed; // set to true if the buffer size failed
+	byte* data;
+	int maxsize;
+	int cursize;
+};
 
-void SZ_Alloc (sizebuf_t *buf, int startsize);
-void SZ_Free (sizebuf_t *buf);
-void SZ_Clear (sizebuf_t *buf);
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, void *data, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
+void SZ_Alloc(sizebuf_t* buf, int startsize);
+void SZ_Free(sizebuf_t* buf);
+void SZ_Clear(sizebuf_t* buf);
+void* SZ_GetSpace(sizebuf_t* buf, int length);
+void SZ_Write(sizebuf_t* buf, void* data, int length);
+void SZ_Print(sizebuf_t* buf, char* data); // strcats onto the sizebuf
 
 //============================================================================
 
-typedef struct link_s
+struct link_t
 {
-	struct link_s	*prev, *next;
-} link_t;
+	link_t *prev, *next;
+};
 
 
-void ClearLink (link_t *l);
-void RemoveLink (link_t *l);
-void InsertLinkBefore (link_t *l, link_t *before);
-void InsertLinkAfter (link_t *l, link_t *after);
+void ClearLink(link_t* l);
+void RemoveLink(link_t* l);
+void InsertLinkBefore(link_t* l, link_t* before);
+void InsertLinkAfter(link_t* l, link_t* after);
 
 // (type *)STRUCT_FROM_LINK(link_t *link, type, member)
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
@@ -86,101 +81,102 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-extern	qboolean		bigendien;
+extern bool bigendien;
 
-extern	short	(*BigShort) (short l);
-extern	short	(*LittleShort) (short l);
-extern	int	(*BigLong) (int l);
-extern	int	(*LittleLong) (int l);
-extern	float	(*BigFloat) (float l);
-extern	float	(*LittleFloat) (float l);
-
-//============================================================================
-
-void MSG_WriteChar (sizebuf_t *sb, int c);
-void MSG_WriteByte (sizebuf_t *sb, int c);
-void MSG_WriteShort (sizebuf_t *sb, int c);
-void MSG_WriteLong (sizebuf_t *sb, int c);
-void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
-void MSG_WriteCoord (sizebuf_t *sb, float f);
-void MSG_WriteAngle (sizebuf_t *sb, float f);
-void MSG_WriteAngle16 (sizebuf_t *sb, float f); //johnfitz
-
-extern	int			msg_readcount;
-extern	qboolean	msg_badread;		// set if a read goes beyond end of message
-
-void MSG_BeginReading (void);
-int MSG_ReadChar (void);
-int MSG_ReadByte (void);
-int MSG_ReadShort (void);
-int MSG_ReadLong (void);
-float MSG_ReadFloat (void);
-char *MSG_ReadString (void);
-
-float MSG_ReadCoord (void);
-float MSG_ReadAngle (void);
-float MSG_ReadAngle16 (void); //johnfitz
+extern short (*BigShort)(short l);
+extern short (*LittleShort)(short l);
+extern int (*BigLong)(int l);
+extern int (*LittleLong)(int l);
+extern float (*BigFloat)(float l);
+extern float (*LittleFloat)(float l);
 
 //============================================================================
 
-void Q_memset (void *dest, int fill, int count);
-void Q_memcpy (void *dest, void *src, int count);
-int Q_memcmp (void *m1, void *m2, int count);
-void Q_strcpy (char *dest, char *src);
-void Q_strncpy (char *dest, char *src, int count);
-int Q_strlen (char *str);
-char *Q_strrchr (char *s, char c);
-void Q_strcat (char *dest, char *src);
-int Q_strcmp (char *s1, char *s2);
-int Q_strncmp (char *s1, char *s2, int count);
-int Q_strcasecmp (char *s1, char *s2);
-int Q_strncasecmp (char *s1, char *s2, int n);
-int	Q_atoi (char *str);
-float Q_atof (char *str);
+void MSG_WriteChar(sizebuf_t* sb, int c);
+void MSG_WriteByte(sizebuf_t* sb, int c);
+void MSG_WriteShort(sizebuf_t* sb, int c);
+void MSG_WriteLong(sizebuf_t* sb, int c);
+void MSG_WriteFloat(sizebuf_t* sb, float f);
+void MSG_WriteString(sizebuf_t* sb, char* s);
+void MSG_WriteCoord(sizebuf_t* sb, float f);
+void MSG_WriteAngle(sizebuf_t* sb, float f);
+void MSG_WriteAngle16(sizebuf_t* sb, float f); //johnfitz
+
+extern int msg_readcount;
+extern bool msg_badread; // set if a read goes beyond end of message
+
+void MSG_BeginReading();
+int MSG_ReadChar();
+int MSG_ReadByte();
+int MSG_ReadShort();
+int MSG_ReadLong();
+float MSG_ReadFloat();
+char* MSG_ReadString();
+
+float MSG_ReadCoord();
+float MSG_ReadAngle();
+float MSG_ReadAngle16(); //johnfitz
 
 //============================================================================
 
-extern	char		com_token[1024];
-extern	qboolean	com_eof;
+void Q_memset(void* dest, int fill, int count);
+void Q_memcpy(void* dest, void* src, int count);
+int Q_memcmp(void* m1, void* m2, int count);
+void Q_strcpy(char* dest, char* src);
+void Q_strncpy(char* dest, char* src, int count);
+int Q_strlen(char* str);
+char* Q_strrchr(char* s, char c);
+void Q_strcat(char* dest, char* src);
+int Q_strcmp(char* s1, char* s2);
+int Q_strncmp(char* s1, char* s2, int count);
+int Q_strcasecmp(char* s1, char* s2);
+int Q_strncasecmp(char* s1, char* s2, int n);
+int Q_atoi(char* str);
+float Q_atof(char* str);
 
-char *COM_Parse (char *data);
+//============================================================================
+
+extern char com_token[1024];
+extern bool com_eof;
+
+char* COM_Parse(char* data);
 
 
-extern	int		com_argc;
-extern	char	**com_argv;
+extern int com_argc;
+extern char** com_argv;
 
-int COM_CheckParm (char *parm);
-void COM_Init (char *path);
-void COM_InitArgv (int argc, char **argv);
+int COM_CheckParm(char* parm);
+void COM_Init();
+void COM_InitArgv(int argc, char** argv);
 
-char *COM_SkipPath (char *pathname);
-void COM_StripExtension (char *in, char *out);
-void COM_FileBase (char *in, char *out);
-void COM_DefaultExtension (char *path, char *extension);
+char* COM_SkipPath(char* pathname);
+void COM_StripExtension(char* in, char* out);
+void COM_FileBase(char* in, char* out);
+void COM_DefaultExtension(char* path, char* extension);
 
-char	*va(char *format, ...);
+char* va(char* format, ...);
 // does a varargs printf into a temp buffer
 
 
 //============================================================================
 
 extern int com_filesize;
-struct cache_user_s;
 
-extern	char	com_gamedir[MAX_OSPATH];
+struct cache_user_t;
 
-void COM_WriteFile (char *filename, void *data, int len);
-int COM_OpenFile (char *filename, int *hndl);
-int COM_FOpenFile (char *filename, FILE **file);
-void COM_CloseFile (int h);
+extern char com_gamedir[MAX_OSPATH];
 
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
-byte *COM_LoadTempFile (char *path);
-byte *COM_LoadHunkFile (char *path);
-void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
+void COM_WriteFile(char* filename, void* data, int len);
+int COM_OpenFile(char* filename, int* hndl);
+int COM_FOpenFile(char* filename, FILE** file);
+void COM_CloseFile(int h);
+
+byte* COM_LoadStackFile(char* path, void* buffer, int bufsize);
+byte* COM_LoadTempFile(char* path);
+byte* COM_LoadHunkFile(char* path);
+void COM_LoadCacheFile(char* path, cache_user_t* cu);
 
 
-extern	struct cvar_s	registered;
+extern cvar_t registered;
 
-extern qboolean		standard_quake, rogue, hipnotic;
+extern bool standard_quake, rogue, hipnotic;

@@ -1,190 +1,187 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="cl_demo.c">
-      <Filter>client</Filter>
+    <ClCompile Include="sys_win.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="cl_input.c">
-      <Filter>client</Filter>
+    <ClCompile Include="snd_win.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="cl_main.c">
-      <Filter>client</Filter>
+    <ClCompile Include="net_wipx.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="cl_parse.c">
-      <Filter>client</Filter>
+    <ClCompile Include="net_wins.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="cl_tent.c">
-      <Filter>client</Filter>
+    <ClCompile Include="net_win.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="chase.c">
-      <Filter>misc</Filter>
+    <ClCompile Include="in_win.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="cmd.c">
-      <Filter>misc</Filter>
+    <ClCompile Include="gl_vidnt.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="common.c">
-      <Filter>misc</Filter>
+    <ClCompile Include="cd_win.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="conproc.c">
-      <Filter>misc</Filter>
+    <ClCompile Include="sv_main.cpp">
+      <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="console.c">
-      <Filter>misc</Filter>
+    <ClCompile Include="sv_phys.cpp">
+      <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="crc.c">
-      <Filter>misc</Filter>
+    <ClCompile Include="sv_user.cpp">
+      <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="cvar.c">
-      <Filter>misc</Filter>
+    <ClCompile Include="sv_move.cpp">
+      <Filter>server</Filter>
     </ClCompile>
-    <ClCompile Include="gl_draw.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_fog.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_mesh.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_model.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_refrag.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_rlight.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_rmain.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_rmisc.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_screen.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_sky.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_test.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_texmgr.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_warp.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
-    <ClCompile Include="snd_dma.c">
+    <ClCompile Include="snd_dma.cpp">
       <Filter>sound</Filter>
     </ClCompile>
-    <ClCompile Include="snd_mem.c">
+    <ClCompile Include="snd_mem.cpp">
       <Filter>sound</Filter>
     </ClCompile>
-    <ClCompile Include="snd_mix.c">
+    <ClCompile Include="snd_mix.cpp">
       <Filter>sound</Filter>
     </ClCompile>
-    <ClCompile Include="net_dgrm.c">
-      <Filter>network</Filter>
+    <ClCompile Include="cl_demo.cpp">
+      <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="net_loop.c">
-      <Filter>network</Filter>
+    <ClCompile Include="cl_input.cpp">
+      <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="net_main.c">
-      <Filter>network</Filter>
+    <ClCompile Include="cl_main.cpp">
+      <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="sv_main.c">
-      <Filter>server</Filter>
+    <ClCompile Include="cl_parse.cpp">
+      <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="sv_move.c">
-      <Filter>server</Filter>
+    <ClCompile Include="cl_tent.cpp">
+      <Filter>client</Filter>
     </ClCompile>
-    <ClCompile Include="sv_phys.c">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="sv_user.c">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="net_win.c">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="net_wins.c">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="in_win.c">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="host.c">
-      <Filter>game</Filter>
-    </ClCompile>
-    <ClCompile Include="host_cmd.c">
-      <Filter>game</Filter>
-    </ClCompile>
-    <ClCompile Include="image.c">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="mathlib.c">
+    <ClCompile Include="chase.cpp">
       <Filter>misc</Filter>
     </ClCompile>
-    <ClCompile Include="keys.c">
+    <ClCompile Include="cmd.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="console.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="crc.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="cvar.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="mathlib.cpp">
+      <Filter>misc</Filter>
+    </ClCompile>
+    <ClCompile Include="net_loop.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="net_main.cpp">
+      <Filter>network</Filter>
+    </ClCompile>
+    <ClCompile Include="host.cpp">
       <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="menu.c">
+    <ClCompile Include="host_cmd.cpp">
       <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="r_alias.c">
-      <Filter>renderer</Filter>
+    <ClCompile Include="keys.cpp">
+      <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="r_brush.c">
-      <Filter>renderer</Filter>
+    <ClCompile Include="menu.cpp">
+      <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="r_part.c">
-      <Filter>renderer</Filter>
+    <ClCompile Include="sbar.cpp">
+      <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="r_sprite.c">
-      <Filter>renderer</Filter>
+    <ClCompile Include="view.cpp">
+      <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="r_world.c">
-      <Filter>renderer</Filter>
+    <ClCompile Include="wad.cpp">
+      <Filter>game</Filter>
     </ClCompile>
-    <ClCompile Include="pr_cmds.c">
+    <ClCompile Include="world.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="zone.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="pr_cmds.cpp">
       <Filter>prog</Filter>
     </ClCompile>
-    <ClCompile Include="pr_edict.c">
+    <ClCompile Include="pr_edict.cpp">
       <Filter>prog</Filter>
     </ClCompile>
-    <ClCompile Include="pr_exec.c">
+    <ClCompile Include="pr_exec.cpp">
       <Filter>prog</Filter>
     </ClCompile>
-    <ClCompile Include="sbar.c">
-      <Filter>game</Filter>
+    <ClCompile Include="image.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="view.c">
-      <Filter>game</Filter>
+    <ClCompile Include="r_alias.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="wad.c">
-      <Filter>game</Filter>
+    <ClCompile Include="r_brush.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="world.c">
-      <Filter>game</Filter>
+    <ClCompile Include="r_part.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="zone.c">
-      <Filter>game</Filter>
+    <ClCompile Include="r_sprite.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="sys_win.c">
+    <ClCompile Include="r_world.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_draw.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_fog.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_model.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_mesh.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_refrag.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_rlight.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_rmain.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_rmisc.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_screen.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_sky.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_texmgr.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_warp.cpp">
+      <Filter>opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="conproc.cpp">
       <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="cd_win.c">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="net_wipx.c">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_vidnt.c">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="snd_win.c">
+    <ClCompile Include="net_dgrm.cpp">
       <Filter>win32</Filter>
     </ClCompile>
   </ItemGroup>
@@ -221,11 +218,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="progdefs.q1">
-      <Filter>prog</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="anorm_dots.h">
       <Filter>renderer</Filter>
     </ClInclude>
@@ -248,9 +240,6 @@
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
-      <Filter>misc</Filter>
-    </ClInclude>
-    <ClInclude Include="conproc.h">
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="console.h">
@@ -305,9 +294,6 @@
       <Filter>network</Filter>
     </ClInclude>
     <ClInclude Include="net_ser.h">
-      <Filter>network</Filter>
-    </ClInclude>
-    <ClInclude Include="net_dgrm.h">
       <Filter>network</Filter>
     </ClInclude>
     <ClInclude Include="pr_comp.h">
@@ -367,5 +353,16 @@
     <ClInclude Include="net_wipx.h">
       <Filter>win32</Filter>
     </ClInclude>
+    <ClInclude Include="conproc.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="net_dgrm.h">
+      <Filter>win32</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="progdefs.q1">
+      <Filter>prog</Filter>
+    </None>
   </ItemGroup>
 </Project>

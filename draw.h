@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // draw.h -- these are the only functions outside the refresh allowed
 // to touch the vid buffer
 
+enum class canvastype;
 extern	qpic_t		*draw_disc;	// also used on sbar
 
 void Draw_Init (void);
@@ -38,4 +39,4 @@ void Draw_String (int x, int y, char *str);
 qpic_t *Draw_PicFromWad (char *name);
 qpic_t *Draw_CachePic (char *path);
 
-void GL_SetCanvas (int canvastype); //johnfitz
+void GL_SetCanvas (canvastype canvastype); //johnfitz

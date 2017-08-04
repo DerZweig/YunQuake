@@ -50,14 +50,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // must match definition in spritegn.h
 #ifndef SYNCTYPE_T
 #define SYNCTYPE_T
-typedef enum {ST_SYNC=0, ST_RAND } synctype_t;
+enum class synctype_t
+{ST_SYNC=0, ST_RAND } ;
 #endif
 
-typedef enum { ALIAS_SINGLE=0, ALIAS_GROUP } aliasframetype_t;
+enum class aliasframetype_t
+{ ALIAS_SINGLE=0, ALIAS_GROUP } ;
 
-typedef enum { ALIAS_SKIN_SINGLE=0, ALIAS_SKIN_GROUP } aliasskintype_t;
+enum class aliasskintype_t
+{ ALIAS_SKIN_SINGLE=0, ALIAS_SKIN_GROUP } ;
 
-typedef struct {
+struct mdl_t
+{
 	int			ident;
 	int			version;
 	vec3_t		scale;
@@ -73,62 +77,71 @@ typedef struct {
 	synctype_t	synctype;
 	int			flags;
 	float		size;
-} mdl_t;
+} ;
 
 // TODO: could be shorts
 
-typedef struct {
+struct stvert_t
+{
 	int		onseam;
 	int		s;
 	int		t;
-} stvert_t;
+} ;
 
-typedef struct dtriangle_s {
+struct dtriangle_t
+{
 	int					facesfront;
 	int					vertindex[3];
-} dtriangle_t;
+} ;
 
 #define DT_FACES_FRONT				0x0010
 
 // This mirrors trivert_t in trilib.h, is present so Quake knows how to
 // load this data
 
-typedef struct {
+struct trivertx_t
+{
 	byte	v[3];
 	byte	lightnormalindex;
-} trivertx_t;
+} ;
 
-typedef struct {
+struct daliasframe_t
+{
 	trivertx_t	bboxmin;	// lightnormal isn't used
 	trivertx_t	bboxmax;	// lightnormal isn't used
 	char		name[16];	// frame name from grabbing
-} daliasframe_t;
+} ;
 
-typedef struct {
+struct daliasgroup_t
+{
 	int			numframes;
 	trivertx_t	bboxmin;	// lightnormal isn't used
 	trivertx_t	bboxmax;	// lightnormal isn't used
-} daliasgroup_t;
+} ;
 
-typedef struct {
+struct daliasskingroup_t
+{
 	int			numskins;
-} daliasskingroup_t;
+} ;
 
-typedef struct {
+struct daliasinterval_t{
 	float	interval;
-} daliasinterval_t;
+} ;
 
-typedef struct {
+struct daliasskininterval_t
+{
 	float	interval;
-} daliasskininterval_t;
+} ;
 
-typedef struct {
+struct daliasframetype_t
+{
 	aliasframetype_t	type;
-} daliasframetype_t;
+} ;
 
-typedef struct {
+struct daliasskintype_t
+{
 	aliasskintype_t	type;
-} daliasskintype_t;
+} ;
 
 #define IDPOLYHEADER	(('O'<<24)+('P'<<16)+('D'<<8)+'I')
 														// little-endian "IDPO"

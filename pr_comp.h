@@ -21,10 +21,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // this file is shared by quake and qcc
 
-typedef int	func_t;
-typedef int	string_t;
+using func_t=  int	;
+using string_t = int	;
 
-typedef enum {ev_void, ev_string, ev_float, ev_vector, ev_entity, ev_field, ev_function, ev_pointer} etype_t;
+enum class etype_t
+{ev_void, ev_string, ev_float, ev_vector, ev_entity, ev_field, ev_function, ev_pointer} ;
 
 
 #define	OFS_NULL		0
@@ -119,24 +120,24 @@ enum {
 };
 
 
-typedef struct statement_s
+struct dstatement_t
 {
 	unsigned short	op;
 	short	a,b,c;
-} dstatement_t;
+} ;
 
-typedef struct
+struct ddef_t
 {
 	unsigned short	type;		// if DEF_SAVEGLOBGAL bit is set
 								// the variable needs to be saved in savegames
 	unsigned short	ofs;
 	int			s_name;
-} ddef_t;
+} ;
 #define	DEF_SAVEGLOBAL	(1<<15)
 
 #define	MAX_PARMS	8
 
-typedef struct
+struct dfunction_t
 {
 	int		first_statement;	// negative numbers are builtins
 	int		parm_start;
@@ -149,11 +150,11 @@ typedef struct
 
 	int		numparms;
 	byte	parm_size[MAX_PARMS];
-} dfunction_t;
+} ;
 
 
 #define	PROG_VERSION	6
-typedef struct
+struct dprograms_t
 {
 	int		version;
 	int		crc;			// check of header file
@@ -177,5 +178,5 @@ typedef struct
 	int		numglobals;
 
 	int		entityfields;
-} dprograms_t;
+} ;
 

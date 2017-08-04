@@ -1,35 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-//
-// d_ifacea.h
-//
-// Include file for asm driver interface.
-//
-
-//
-// !!! note that this file must match the corresponding C structures in
-// d_iface.h at all times !!!
-//
-
-// !!! if this is changed, it must be changed in r_shared.h too !!!
 #pragma once
 #define ALIAS_ONSEAM				0x0020
 
@@ -63,8 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // finalvert_t structure
 // !!! if this is changed, it must be changed in d_iface.h too !!!
 #define fv_v				0	// !!! if this is moved, cases where the !!!
-								// !!! address of this field is pushed in !!!
-								// !!! d_polysa.s must be changed !!!
+// !!! address of this field is pushed in !!!
+// !!! d_polysa.s must be changed !!!
 #define fv_flags			24
 #define fv_reserved			28
 #define fv_size				32
@@ -97,4 +65,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define atd_drawtype		28
 #define atd_seamfixupX16	32
 #define atd_size			36
-

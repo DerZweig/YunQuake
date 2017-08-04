@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// protocol.h -- communications protocols
-
 #pragma once
 #define	PROTOCOL_NETQUAKE	15 //johnfitz -- standard quake protocol
 #define PROTOCOL_FITZQUAKE	666 //johnfitz -- added new protocol for fitzquake 0.85
@@ -143,12 +121,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	svc_time				7	// [float] server time
 #define	svc_print				8	// [string] nullptr terminated string
 #define	svc_stufftext			9	// [string] stuffed into client's console buffer
-									// the string should be \n terminated
+// the string should be \n terminated
 #define	svc_setangle			10	// [angle3] set the view angle to this absolute value
 #define	svc_serverinfo			11	// [long] version
-									// [string] signon string
-									// [string]..[0]model cache
-									// [string]...[0]sounds cache
+// [string] signon string
+// [string]..[0]model cache
+// [string]...[0]sounds cache
 #define	svc_lightstyle			12	// [byte] [string]
 #define	svc_updatename			13	// [byte] [string]
 #define	svc_updatefrags			14	// [byte] [short]
@@ -211,4 +189,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // PGM 01/21/97
 #define TE_BEAM				13
 // PGM 01/21/97
-

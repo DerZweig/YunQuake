@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// cl_main.c  -- client main loop
-
 #include "quakedef.h"
 
 // we need to declare some mouse variables here, because the menu system
@@ -79,11 +57,11 @@ void CL_ClearState()
 	SZ_Clear(&cls.message);
 
 	// clear other arrays
-	memset(cl_efrags, 0, sizeof(cl_efrags));
-	memset(cl_dlights, 0, sizeof(cl_dlights));
-	memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
-	memset(cl_temp_entities, 0, sizeof(cl_temp_entities));
-	memset(cl_beams, 0, sizeof(cl_beams));
+	memset(cl_efrags, 0, sizeof cl_efrags);
+	memset(cl_dlights, 0, sizeof cl_dlights);
+	memset(cl_lightstyle, 0, sizeof cl_lightstyle);
+	memset(cl_temp_entities, 0, sizeof cl_temp_entities);
+	memset(cl_beams, 0, sizeof cl_beams);
 
 	//johnfitz -- cl_entities is now dynamically allocated
 	cl_max_edicts = CLAMP (MIN_EDICTS,(int)max_edicts.value,MAX_EDICTS);
@@ -292,7 +270,7 @@ dlight_t* CL_AllocDlight(int key)
 		{
 			if (dl->key == key)
 			{
-				memset(dl, 0, sizeof(*dl));
+				memset(dl, 0, sizeof*dl);
 				dl->key = key;
 				dl->color[0] = dl->color[1] = dl->color[2] = 1; //johnfitz -- lit support via lordhavoc
 				return dl;
@@ -306,7 +284,7 @@ dlight_t* CL_AllocDlight(int key)
 	{
 		if (dl->die < cl.time)
 		{
-			memset(dl, 0, sizeof(*dl));
+			memset(dl, 0, sizeof*dl);
 			dl->key = key;
 			dl->color[0] = dl->color[1] = dl->color[2] = 1; //johnfitz -- lit support via lordhavoc
 			return dl;
@@ -314,7 +292,7 @@ dlight_t* CL_AllocDlight(int key)
 	}
 
 	dl = &cl_dlights[0];
-	memset(dl, 0, sizeof(*dl));
+	memset(dl, 0, sizeof*dl);
 	dl->key = key;
 	dl->color[0] = dl->color[1] = dl->color[2] = 1; //johnfitz -- lit support via lordhavoc
 	return dl;
@@ -473,7 +451,7 @@ void CL_RelinkEntities()
 			}
 
 			//johnfitz -- don't cl_lerp entities that will be r_lerped
-			if (r_lerpmove.value && (ent->lerpflags & LERP_MOVESTEP))
+			if (r_lerpmove.value && ent->lerpflags & LERP_MOVESTEP)
 				f = 1;
 			//johnfitz
 

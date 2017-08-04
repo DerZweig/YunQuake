@@ -1,23 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 #include "quakedef.h"
 
 #ifdef _WIN32
@@ -141,7 +121,7 @@ void M_Print(int cx, int cy, char* str)
 {
 	while (*str)
 	{
-		M_DrawCharacter(cx, cy, (*str) + 128);
+		M_DrawCharacter(cx, cy, *str + 128);
 		str++;
 		cx += 8;
 	}
@@ -450,7 +430,7 @@ void M_ScanSaves()
 			continue;
 		fscanf(f, "%i\n", &version);
 		fscanf(f, "%79s\n", name);
-		strncpy(m_filenames[i], name, sizeof(m_filenames[i]) - 1);
+		strncpy(m_filenames[i], name, sizeof m_filenames[i] - 1);
 
 		// change _ back to space
 		for (auto j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
@@ -615,7 +595,7 @@ void M_MultiPlayer_Draw()
 
 	if (serialAvailable || ipxAvailable || tcpipAvailable)
 		return;
-	M_PrintWhite((320 / 2) - ((27 * 8) / 2), 148, "No Communications Available");
+	M_PrintWhite(320 / 2 - 27 * 8 / 2, 148, "No Communications Available");
 }
 
 
@@ -1034,7 +1014,7 @@ void M_Menu_Options_f()
 	m_entersound = true;
 
 #ifdef _WIN32
-	if ((options_cursor == 13) && (modestate != modestate_t::MS_WINDOWED))
+	if (options_cursor == 13 && modestate != modestate_t::MS_WINDOWED)
 	{
 		options_cursor = 0;
 	}
@@ -1548,7 +1528,7 @@ void M_Menu_Quit_f()
 {
 	if (m_state == m_state_t::m_quit)
 		return;
-	wasInMenus = (key_dest == keydest_t::key_menu);
+	wasInMenus = key_dest == keydest_t::key_menu;
 	key_dest = keydest_t::key_menu;
 	m_quit_prevstate = m_state;
 	m_state = m_state_t::m_quit;
@@ -2553,7 +2533,7 @@ void M_GameOptions_Draw()
 
 	if (m_serverInfoMessage)
 	{
-		if ((realtime - m_serverInfoMessageTime) < 5.0)
+		if (realtime - m_serverInfoMessageTime < 5.0)
 		{
 			auto x = (320 - 26 * 8) / 2;
 			M_DrawTextBox(x, 138, 24, 4);
@@ -2758,7 +2738,7 @@ void M_Search_Draw()
 {
 	auto p = Draw_CachePic("gfx/p_multi.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
-	auto x = (320 / 2) - ((12 * 8) / 2) + 4;
+	auto x = 320 / 2 - 12 * 8 / 2 + 4;
 	M_DrawTextBox(x - 8, 32, 12, 1);
 	M_Print(x, 40, "Searching...");
 
@@ -2780,8 +2760,8 @@ void M_Search_Draw()
 		return;
 	}
 
-	M_PrintWhite((320 / 2) - ((22 * 8) / 2), 64, "No Quake servers found");
-	if ((realtime - searchCompleteTime) < 3.0)
+	M_PrintWhite(320 / 2 - 22 * 8 / 2, 64, "No Quake servers found");
+	if (realtime - searchCompleteTime < 3.0)
 		return;
 
 	M_Menu_LanConfig_f();
@@ -3104,7 +3084,6 @@ void M_Keydown(int key)
 
 	case m_state_t::m_slist:
 		M_ServerList_Key(key);
-		return;
 	}
 }
 

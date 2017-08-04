@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// mathlib.c -- math primitives
-
 #include <math.h>
 #include "quakedef.h"
 
@@ -99,7 +77,7 @@ float anglemod(float a)
 	else
 		a += 360*( 1 + (int)(-a/360) );
 #endif
-	a = (360.0 / 65536) * (static_cast<int>(a * (65536 / 360.0)) & 65535);
+	a = 360.0 / 65536 * (static_cast<int>(a * (65536 / 360.0)) & 65535);
 	return a;
 }
 
@@ -255,11 +233,11 @@ void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 	forward[0] = cp * cy;
 	forward[1] = cp * sy;
 	forward[2] = -sp;
-	right[0] = (-1 * sr * sp * cy + -1 * cr * -sy);
-	right[1] = (-1 * sr * sp * sy + -1 * cr * cy);
+	right[0] = -1 * sr * sp * cy + -1 * cr * -sy;
+	right[1] = -1 * sr * sp * sy + -1 * cr * cy;
 	right[2] = -1 * sr * cp;
-	up[0] = (cr * sp * cy + -sr * -sy);
-	up[1] = (cr * sp * sy + -sr * cy);
+	up[0] = cr * sp * cy + -sr * -sy;
+	up[1] = cr * sp * sy + -sr * cy;
 	up[2] = cr * cp;
 }
 
@@ -456,7 +434,7 @@ void FloorDivMod(double numer, double denom, int* quotient,
 	{
 		x = floor(numer / denom);
 		q = static_cast<int>(x);
-		r = static_cast<int>(floor(numer - (x * denom)));
+		r = static_cast<int>(floor(numer - x * denom));
 	}
 	else
 	{
@@ -465,7 +443,7 @@ void FloorDivMod(double numer, double denom, int* quotient,
 		//
 		x = floor(-numer / denom);
 		q = -static_cast<int>(x);
-		r = static_cast<int>(floor(-numer - (x * denom)));
+		r = static_cast<int>(floor(-numer - x * denom));
 		if (r != 0)
 		{
 			q--;
@@ -488,15 +466,12 @@ int GreatestCommonDivisor(int i1, int i2)
 	if (i1 > i2)
 	{
 		if (i2 == 0)
-			return (i1);
+			return i1;
 		return GreatestCommonDivisor(i2, i1 % i2);
 	}
-	else
-	{
-		if (i1 == 0)
-			return (i2);
-		return GreatestCommonDivisor(i1, i2 % i1);
-	}
+	if (i1 == 0)
+		return i2;
+	return GreatestCommonDivisor(i1, i2 % i1);
 }
 
 

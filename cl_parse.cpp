@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// cl_parse.c  -- parse a message received from the server
-
 #include "quakedef.h"
 
 char* svc_strings[] =
@@ -278,14 +256,14 @@ void CL_ParseServerInfo()
 		Con_Printf("Bad maxclients (%u) from server\n", cl.maxclients);
 		return;
 	}
-	cl.scores = reinterpret_cast<scoreboard_t*>(Hunk_AllocName(cl.maxclients * sizeof(*cl.scores), "scores"));
+	cl.scores = reinterpret_cast<scoreboard_t*>(Hunk_AllocName(cl.maxclients * sizeof*cl.scores, "scores"));
 
 	// parse gametype
 	cl.gametype = MSG_ReadByte();
 
 	// parse signon message
 	auto str = MSG_ReadString();
-	strncpy(cl.levelname, str, sizeof(cl.levelname) - 1);
+	strncpy(cl.levelname, str, sizeof cl.levelname - 1);
 
 	// seperate the printfs so the server message can have a color
 	Con_Printf("\n%s\n", Con_Quakebar(40)); //johnfitz
@@ -299,7 +277,7 @@ void CL_ParseServerInfo()
 	// needlessly purge it
 
 	// precache models
-	memset(cl.model_precache, 0, sizeof(cl.model_precache));
+	memset(cl.model_precache, 0, sizeof cl.model_precache);
 	for (nummodels = 1; ; nummodels++)
 	{
 		str = MSG_ReadString();
@@ -320,7 +298,7 @@ void CL_ParseServerInfo()
 	//johnfitz
 
 	// precache sounds
-	memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
+	memset(cl.sound_precache, 0, sizeof cl.sound_precache);
 	for (numsounds = 1; ; numsounds++)
 	{
 		str = MSG_ReadString();
@@ -381,9 +359,9 @@ void CL_ParseServerInfo()
 	warn_about_nehahra_protocol = true; //johnfitz -- warn about nehahra protocol hack once per server connection
 
 	//johnfitz -- reset developer stats
-	memset(&dev_stats, 0, sizeof(dev_stats));
-	memset(&dev_peakstats, 0, sizeof(dev_peakstats));
-	memset(&dev_overflows, 0, sizeof(dev_overflows));
+	memset(&dev_stats, 0, sizeof dev_stats);
+	memset(&dev_peakstats, 0, sizeof dev_peakstats);
+	memset(&dev_overflows, 0, sizeof dev_overflows);
 }
 
 /*
@@ -415,7 +393,7 @@ void CL_ParseUpdate(int bits)
 	if (bits & U_MOREBITS)
 	{
 		i = MSG_ReadByte();
-		bits |= (i << 8);
+		bits |= i << 8;
 	}
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
@@ -436,7 +414,7 @@ void CL_ParseUpdate(int bits)
 	ent = CL_EntityNum(num);
 
 	for (i = 0; i < 16; i++)
-		if (bits & (1 << i))
+		if (bits & 1 << i)
 			bitcounts[i]++;
 
 	if (ent->msgtime != cl.mtime[1])
@@ -541,12 +519,12 @@ void CL_ParseUpdate(int bits)
 		else
 			ent->alpha = ent->baseline.alpha;
 		if (bits & U_FRAME2)
-			ent->frame = (ent->frame & 0x00FF) | (MSG_ReadByte() << 8);
+			ent->frame = ent->frame & 0x00FF | MSG_ReadByte() << 8;
 		if (bits & U_MODEL2)
-			modnum = (modnum & 0x00FF) | (MSG_ReadByte() << 8);
+			modnum = modnum & 0x00FF | MSG_ReadByte() << 8;
 		if (bits & U_LERPFINISH)
 		{
-			ent->lerpfinish = ent->msgtime + (static_cast<float>(MSG_ReadByte()) / 255);
+			ent->lerpfinish = ent->msgtime + static_cast<float>(MSG_ReadByte()) / 255;
 			ent->lerpflags |= LERP_FINISH;
 		}
 		else
@@ -617,9 +595,9 @@ CL_ParseBaseline
 void CL_ParseBaseline(entity_t* ent, int version) //johnfitz -- added argument
 {
 	//johnfitz -- PROTOCOL_FITZQUAKE
-	int bits = (version == 2) ? MSG_ReadByte() : 0;
-	ent->baseline.modelindex = (bits & B_LARGEMODEL) ? MSG_ReadShort() : MSG_ReadByte();
-	ent->baseline.frame = (bits & B_LARGEFRAME) ? MSG_ReadShort() : MSG_ReadByte();
+	int bits = version == 2 ? MSG_ReadByte() : 0;
+	ent->baseline.modelindex = bits & B_LARGEMODEL ? MSG_ReadShort() : MSG_ReadByte();
+	ent->baseline.frame = bits & B_LARGEFRAME ? MSG_ReadShort() : MSG_ReadByte();
 	//johnfitz
 
 	ent->baseline.colormap = MSG_ReadByte();
@@ -630,7 +608,7 @@ void CL_ParseBaseline(entity_t* ent, int version) //johnfitz -- added argument
 		ent->baseline.angles[i] = MSG_ReadAngle();
 	}
 
-	ent->baseline.alpha = (bits & B_ALPHA) ? MSG_ReadByte() : ENTALPHA_DEFAULT; //johnfitz -- PROTOCOL_FITZQUAKE
+	ent->baseline.alpha = bits & B_ALPHA ? MSG_ReadByte() : ENTALPHA_DEFAULT; //johnfitz -- PROTOCOL_FITZQUAKE
 }
 
 
@@ -649,9 +627,9 @@ void CL_ParseClientdata()
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (bits & SU_EXTEND1)
-		bits |= (MSG_ReadByte() << 16);
+		bits |= MSG_ReadByte() << 16;
 	if (bits & SU_EXTEND2)
-		bits |= (MSG_ReadByte() << 24);
+		bits |= MSG_ReadByte() << 24;
 	//johnfitz
 
 	if (bits & SU_VIEWHEIGHT)
@@ -667,12 +645,12 @@ void CL_ParseClientdata()
 	VectorCopy (cl.mvelocity[0], cl.mvelocity[1]);
 	for (i = 0; i < 3; i++)
 	{
-		if (bits & (SU_PUNCH1 << i))
+		if (bits & SU_PUNCH1 << i)
 			cl.punchangle[i] = MSG_ReadChar();
 		else
 			cl.punchangle[i] = 0;
 
-		if (bits & (SU_VELOCITY1 << i))
+		if (bits & SU_VELOCITY1 << i)
 			cl.mvelocity[0][i] = MSG_ReadChar() * 16;
 		else
 			cl.mvelocity[0][i] = 0;
@@ -693,7 +671,7 @@ void CL_ParseClientdata()
 	{ // set flash times
 		Sbar_Changed();
 		for (j = 0; j < 32; j++)
-			if ((i & (1 << j)) && !(cl.items & (1 << j)))
+			if (i & 1 << j && !(cl.items & 1 << j))
 				cl.item_gettime[j] = cl.time;
 		cl.items = i;
 	}
@@ -767,30 +745,30 @@ void CL_ParseClientdata()
 	}
 	else
 	{
-		if (cl.stats[STAT_ACTIVEWEAPON] != (1 << i))
+		if (cl.stats[STAT_ACTIVEWEAPON] != 1 << i)
 		{
-			cl.stats[STAT_ACTIVEWEAPON] = (1 << i);
+			cl.stats[STAT_ACTIVEWEAPON] = 1 << i;
 			Sbar_Changed();
 		}
 	}
 
 	//johnfitz -- PROTOCOL_FITZQUAKE
 	if (bits & SU_WEAPON2)
-		cl.stats[STAT_WEAPON] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_WEAPON] |= MSG_ReadByte() << 8;
 	if (bits & SU_ARMOR2)
-		cl.stats[STAT_ARMOR] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_ARMOR] |= MSG_ReadByte() << 8;
 	if (bits & SU_AMMO2)
-		cl.stats[STAT_AMMO] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_AMMO] |= MSG_ReadByte() << 8;
 	if (bits & SU_SHELLS2)
-		cl.stats[STAT_SHELLS] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_SHELLS] |= MSG_ReadByte() << 8;
 	if (bits & SU_NAILS2)
-		cl.stats[STAT_NAILS] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_NAILS] |= MSG_ReadByte() << 8;
 	if (bits & SU_ROCKETS2)
-		cl.stats[STAT_ROCKETS] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_ROCKETS] |= MSG_ReadByte() << 8;
 	if (bits & SU_CELLS2)
-		cl.stats[STAT_CELLS] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_CELLS] |= MSG_ReadByte() << 8;
 	if (bits & SU_WEAPONFRAME2)
-		cl.stats[STAT_WEAPONFRAME] |= (MSG_ReadByte() << 8);
+		cl.stats[STAT_WEAPONFRAME] |= MSG_ReadByte() << 8;
 	if (bits & SU_WEAPONALPHA)
 		cl.viewent.alpha = MSG_ReadByte();
 	else
@@ -811,7 +789,7 @@ void CL_NewTranslation(int slot)
 		Sys_Error("CL_NewTranslation: slot > cl.maxclients");
 	auto dest = cl.scores[slot].translations;
 	auto source = vid.colormap;
-	memcpy(dest, vid.colormap, sizeof(cl.scores[slot].translations));
+	memcpy(dest, vid.colormap, sizeof cl.scores[slot].translations);
 	auto top = cl.scores[slot].colors & 0xf0;
 	auto bottom = (cl.scores[slot].colors & 15) << 4;
 	R_TranslatePlayerSkin(slot);
@@ -1133,7 +1111,7 @@ void CL_ParseServerMessage()
 			i = MSG_ReadByte();
 			if (i < 0 || i >= MAX_CL_STATS)
 				Sys_Error("svc_updatestat: %i is invalid", i);
-			cl.stats[i] = MSG_ReadLong();;
+			cl.stats[i] = MSG_ReadLong();
 			break;
 
 		case svc_spawnstaticsound:
@@ -1143,7 +1121,7 @@ void CL_ParseServerMessage()
 		case svc_cdtrack:
 			cl.cdtrack = MSG_ReadByte();
 			cl.looptrack = MSG_ReadByte();
-			if ((cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1))
+			if ((cls.demoplayback || cls.demorecording) && cls.forcetrack != -1)
 				CDAudio_Play(static_cast<byte>(cls.forcetrack), true);
 			else
 				CDAudio_Play(static_cast<byte>(cl.cdtrack), true);

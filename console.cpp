@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// console.c
-
 #ifdef NeXT
 #include <libc.h>
 #endif
@@ -188,7 +166,7 @@ void Con_Dump_f()
 	// skip initial empty lines
 	for (l = con_current - con_totallines + 1; l <= con_current; l++)
 	{
-		line = con_text + (l % con_totallines) * con_linewidth;
+		line = con_text + l % con_totallines * con_linewidth;
 		for (x = 0; x < con_linewidth; x++)
 			if (line[x] != ' ')
 				break;
@@ -200,7 +178,7 @@ void Con_Dump_f()
 	buffer[con_linewidth] = 0;
 	for (; l <= con_current; l++)
 	{
-		line = con_text + (l % con_totallines) * con_linewidth;
+		line = con_text + l % con_totallines * con_linewidth;
 		strncpy(buffer, line, con_linewidth);
 		for (x = con_linewidth - 1; x >= 0; x--)
 		{
@@ -296,7 +274,7 @@ void Con_CheckResize()
 		for (auto j = 0; j < numchars; j++)
 		{
 			con_text[(con_totallines - 1 - i) * con_linewidth + j] =
-				tbuf[((con_current - i + oldtotallines) % oldtotallines) * oldwidth + j];
+				tbuf[(con_current - i + oldtotallines) % oldtotallines * oldwidth + j];
 		}
 	}
 
@@ -324,7 +302,7 @@ void Con_Init()
 
 	if (con_debuglog)
 	{
-		if (strlen(com_gamedir) < (MAXGAMEDIRLEN - strlen(t2)))
+		if (strlen(com_gamedir) < MAXGAMEDIRLEN - strlen(t2))
 		{
 			sprintf(temp, "%s%s", com_gamedir, t2);
 			unlink(temp);
@@ -382,7 +360,7 @@ void Con_Linefeed()
 
 	con_x = 0;
 	con_current++;
-	Q_memset(&con_text[(con_current % con_totallines) * con_linewidth]
+	Q_memset(&con_text[con_current % con_totallines * con_linewidth]
 	         , ' ', con_linewidth);
 }
 
@@ -427,7 +405,7 @@ void Con_Print(char* txt)
 				break;
 
 		// word wrap
-		if (l != con_linewidth && (con_x + l > con_linewidth))
+		if (l != con_linewidth && con_x + l > con_linewidth)
 			con_x = 0;
 
 		txt++;
@@ -727,7 +705,7 @@ struct cmdalias_t
 	cmdalias_t* next;
 	char name[MAX_ALIAS_NAME];
 	char* value;
-} ;
+};
 
 extern cmdalias_t* cmd_alias;
 
@@ -929,12 +907,12 @@ void Con_DrawNotify()
 		time = realtime - time;
 		if (time > con_notifytime.value)
 			continue;
-		auto text = con_text + (i % con_totallines) * con_linewidth;
+		auto text = con_text + i % con_totallines * con_linewidth;
 
 		clearnotify = 0;
 
 		for (x = 0; x < con_linewidth; x++)
-			Draw_Character((x + 1) << 3, v, text[x]);
+			Draw_Character(x + 1 << 3, v, text[x]);
 
 		v += 8;
 
@@ -961,10 +939,10 @@ void Con_DrawNotify()
 
 		while (chat_buffer[x])
 		{
-			Draw_Character((x + strlen(say_prompt) + 2) << 3, v, chat_buffer[x]); //johnfitz
+			Draw_Character(x + strlen(say_prompt) + 2 << 3, v, chat_buffer[x]); //johnfitz
 			x++;
 		}
-		Draw_Character((x + strlen(say_prompt) + 2) << 3, v, 10 + (static_cast<int>(realtime * con_cursorspeed) & 1)); //johnfitz
+		Draw_Character(x + strlen(say_prompt) + 2 << 3, v, 10 + (static_cast<int>(realtime * con_cursorspeed) & 1)); //johnfitz
 
 		scr_tileclear_updates = 0; //johnfitz
 	}
@@ -1000,11 +978,11 @@ void Con_DrawInput()
 
 	// draw input string
 	for (auto i = 0; i <= strlen(text) - 1; i++) //only write enough letters to go from *text to cursor
-		Draw_Character((i + 1) << 3, vid.conheight - 16, text[i]);
+		Draw_Character(i + 1 << 3, vid.conheight - 16, text[i]);
 
 	// johnfitz -- new cursor handling
 	if (!(static_cast<int>((realtime - key_blinktime) * con_cursorspeed) & 1))
-		Draw_Pic((key_linepos + 1) << 3, vid.conheight - 16, key_insert ? pic_ins : pic_ovr);
+		Draw_Pic(key_linepos + 1 << 3, vid.conheight - 16, key_insert ? pic_ins : pic_ovr);
 }
 
 /*
@@ -1033,17 +1011,17 @@ void Con_DrawConsole(int lines, bool drawinput)
 	auto rows = (con_vislines + 7) / 8;
 	int y = vid.conheight - rows * 8;
 	rows -= 2; //for input and version lines
-	auto sb = (con_backscroll) ? 2 : 0;
+	auto sb = con_backscroll ? 2 : 0;
 
 	for (auto i = con_current - rows + 1; i <= con_current - sb; i++ , y += 8)
 	{
 		auto j = i - con_backscroll;
 		if (j < 0)
 			j = 0;
-		auto text = con_text + (j % con_totallines) * con_linewidth;
+		auto text = con_text + j % con_totallines * con_linewidth;
 
 		for (x = 0; x < con_linewidth; x++)
-			Draw_Character((x + 1) << 3, y, text[x]);
+			Draw_Character(x + 1 << 3, y, text[x]);
 	}
 
 	// draw scrollback arrows
@@ -1051,7 +1029,7 @@ void Con_DrawConsole(int lines, bool drawinput)
 	{
 		y += 8; // blank line
 		for (x = 0; x < con_linewidth; x += 4)
-			Draw_Character((x + 1) << 3, y, '^');
+			Draw_Character(x + 1 << 3, y, '^');
 		y += 8;
 	}
 
@@ -1063,7 +1041,7 @@ void Con_DrawConsole(int lines, bool drawinput)
 	y += 8;
 	sprintf(ver, "FitzQuake %1.2f"/*" beta2"*/, (float)FITZQUAKE_VERSION);
 	for (x = 0; x < strlen(ver); x++)
-		Draw_Character((con_linewidth - strlen(ver) + x + 2) << 3, y, ver[x] /*+ 128*/);
+		Draw_Character(con_linewidth - strlen(ver) + x + 2 << 3, y, ver[x] /*+ 128*/);
 }
 
 

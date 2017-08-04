@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// sbar.c -- status bar code
-
 #include "quakedef.h"
 
 int sb_updates; // if >= vid.numpages, no update needed
@@ -311,7 +289,7 @@ void Sbar_DrawScrollString(int x, int y, int width, char* str)
 	float scale = CLAMP (1.0, scr_sbarscale.value, (float)glwidth / 320.0);
 	int left = x * scale;
 	if (cl.gametype != GAME_DEATHMATCH)
-		left += ((static_cast<float>(glwidth) - 320.0 * scale) / 2);
+		left += (static_cast<float>(glwidth) - 320.0 * scale) / 2;
 
 	glEnable(GL_SCISSOR_TEST);
 	glScissor(left, 0, width * scale, glheight);
@@ -376,7 +354,7 @@ void Sbar_DrawNum(int x, int y, int num, int digits, int color)
 	auto l = Sbar_itoa(num, str);
 	auto ptr = str;
 	if (l > digits)
-		ptr += (l - digits);
+		ptr += l - digits;
 	if (l < digits)
 		x += (digits - l) * 24;
 
@@ -448,7 +426,7 @@ void Sbar_UpdateScoreboard()
 	Sbar_SortFrags();
 
 	// draw the text
-	memset(scoreboardtext, 0, sizeof(scoreboardtext));
+	memset(scoreboardtext, 0, sizeof scoreboardtext);
 
 	for (auto i = 0; i < scoreboardlines; i++)
 	{
@@ -533,19 +511,19 @@ void Sbar_DrawInventory()
 	// weapons
 	for (i = 0; i < 7; i++)
 	{
-		if (cl.items & (IT_SHOTGUN << i))
+		if (cl.items & IT_SHOTGUN << i)
 		{
 			time = cl.item_gettime[i];
 			flashon = static_cast<int>((cl.time - time) * 10);
 			if (flashon >= 10)
 			{
-				if (cl.stats[STAT_ACTIVEWEAPON] == (IT_SHOTGUN << i))
+				if (cl.stats[STAT_ACTIVEWEAPON] == IT_SHOTGUN << i)
 					flashon = 1;
 				else
 					flashon = 0;
 			}
 			else
-				flashon = (flashon % 5) + 2;
+				flashon = flashon % 5 + 2;
 
 			Sbar_DrawPic(i * 24, -16, sb_weapons[flashon][i]);
 
@@ -561,19 +539,19 @@ void Sbar_DrawInventory()
 		int grenadeflashing = 0;
 		for (i = 0; i < 4; i++)
 		{
-			if (cl.items & (1 << hipweapons[i]))
+			if (cl.items & 1 << hipweapons[i])
 			{
 				time = cl.item_gettime[hipweapons[i]];
 				flashon = static_cast<int>((cl.time - time) * 10);
 				if (flashon >= 10)
 				{
-					if (cl.stats[STAT_ACTIVEWEAPON] == (1 << hipweapons[i]))
+					if (cl.stats[STAT_ACTIVEWEAPON] == 1 << hipweapons[i])
 						flashon = 1;
 					else
 						flashon = 0;
 				}
 				else
-					flashon = (flashon % 5) + 2;
+					flashon = flashon % 5 + 2;
 
 				// check grenade launcher
 				if (i == 2)
@@ -589,7 +567,7 @@ void Sbar_DrawInventory()
 				}
 				else if (i == 3)
 				{
-					if (cl.items & (IT_SHOTGUN << 4))
+					if (cl.items & IT_SHOTGUN << 4)
 					{
 						if (flashon && !grenadeflashing)
 						{
@@ -604,7 +582,7 @@ void Sbar_DrawInventory()
 						Sbar_DrawPic(96, -16, hsb_weapons[flashon][4]);
 				}
 				else
-					Sbar_DrawPic(176 + (i * 24), -16, hsb_weapons[flashon][i]);
+					Sbar_DrawPic(176 + i * 24, -16, hsb_weapons[flashon][i]);
 				if (flashon > 1)
 					sb_updates = 0; // force update to remove flash
 			}
@@ -618,7 +596,7 @@ void Sbar_DrawInventory()
 		{
 			for (i = 0; i < 5; i++)
 			{
-				if (cl.stats[STAT_ACTIVEWEAPON] == (RIT_LAVA_NAILGUN << i))
+				if (cl.stats[STAT_ACTIVEWEAPON] == RIT_LAVA_NAILGUN << i)
 				{
 					Sbar_DrawPic((i + 2) * 24, -16, rsb_weapons[i]);
 				}
@@ -641,7 +619,7 @@ void Sbar_DrawInventory()
 	flashon = 0;
 	// items
 	for (i = 0; i < 6; i++)
-		if (cl.items & (1 << (17 + i)))
+		if (cl.items & 1 << 17 + i)
 		{
 			time = cl.item_gettime[17 + i];
 			if (time && time > cl.time - 2 && flashon)
@@ -651,7 +629,7 @@ void Sbar_DrawInventory()
 			else
 			{
 				//MED 01/04/97 changed keys
-				if (!hipnotic || (i > 1))
+				if (!hipnotic || i > 1)
 				{
 					Sbar_DrawPic(192 + i * 16, -16, sb_items[i]);
 				}
@@ -664,7 +642,7 @@ void Sbar_DrawInventory()
 	if (hipnotic)
 	{
 		for (i = 0; i < 2; i++)
-			if (cl.items & (1 << (24 + i)))
+			if (cl.items & 1 << 24 + i)
 			{
 				time = cl.item_gettime[24 + i];
 				if (time && time > cl.time - 2 && flashon)
@@ -685,7 +663,7 @@ void Sbar_DrawInventory()
 		// new rogue items
 		for (i = 0; i < 2; i++)
 		{
-			if (cl.items & (1 << (29 + i)))
+			if (cl.items & 1 << 29 + i)
 			{
 				time = cl.item_gettime[29 + i];
 
@@ -708,7 +686,7 @@ void Sbar_DrawInventory()
 		// sigils
 		for (i = 0; i < 4; i++)
 		{
-			if (cl.items & (1 << (28 + i)))
+			if (cl.items & 1 << 28 + i)
 			{
 				time = cl.item_gettime[28 + i];
 				if (time && time > cl.time - 2 && flashon)
@@ -786,7 +764,7 @@ void Sbar_DrawFace()
 
 	// PGM 01/19/97 - team color drawing
 	// PGM 03/02/97 - fixed so color swatch only appears in CTF modes
-	if (rogue && (cl.maxclients != 1) && (teamplay.value > 3) && (teamplay.value < 7))
+	if (rogue && cl.maxclients != 1 && teamplay.value > 3 && teamplay.value < 7)
 	{
 		int xofs;
 		char num[12];
@@ -801,7 +779,7 @@ void Sbar_DrawFace()
 		if (cl.gametype == GAME_DEATHMATCH)
 			xofs = 113;
 		else
-			xofs = ((vid.width - 320) >> 1) + 113;
+			xofs = (vid.width - 320 >> 1) + 113;
 
 		Sbar_DrawPic(112, 0, rsb_teambord);
 		Draw_Fill(xofs, /*vid.height-*/24 + 3, 22, 9, top, 1); //johnfitz -- sbar coords are now relative
@@ -1026,7 +1004,7 @@ void Sbar_IntermissionNumber(int x, int y, int num, int digits, int color)
 	auto l = Sbar_itoa(num, str);
 	auto ptr = str;
 	if (l > digits)
-		ptr += (l - digits);
+		ptr += l - digits;
 	if (l < digits)
 		x += (digits - l) * 24;
 
@@ -1142,7 +1120,7 @@ void Sbar_MiniDeathmatchOverlay()
 	Sbar_SortFrags();
 
 	// draw the text
-	auto numlines = (scr_viewsize.value >= 110) ? 3 : 6; //johnfitz
+	auto numlines = scr_viewsize.value >= 110 ? 3 : 6; //johnfitz
 
 	//find us
 	for (i = 0; i < scoreboardlines; i++)
@@ -1158,7 +1136,7 @@ void Sbar_MiniDeathmatchOverlay()
 		i = 0;
 
 	auto x = 324;
-	auto y = (scr_viewsize.value >= 110) ? 24 : 0; //johnfitz -- start at the right place
+	auto y = scr_viewsize.value >= 110 ? 24 : 0; //johnfitz -- start at the right place
 	for (; i < scoreboardlines && y <= 48; i++ , y += 8) //johnfitz -- change y init, test, inc
 	{
 		auto k = fragsort[i];

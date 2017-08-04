@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// host.c -- coordinates spawning and killing of local servers
-
 #include "quakedef.h"
 
 /*
@@ -180,7 +158,7 @@ void Host_FindMaxClients()
 	if (i)
 	{
 		cls.state = cactive_t::ca_dedicated;
-		if (i != (com_argc - 1))
+		if (i != com_argc - 1)
 		{
 			svs.maxclients = Q_atoi(com_argv[i + 1]);
 		}
@@ -195,7 +173,7 @@ void Host_FindMaxClients()
 	{
 		if (cls.state == cactive_t::ca_dedicated)
 			Sys_Error("Only one of -dedicated or -listen can be specified");
-		if (i != (com_argc - 1))
+		if (i != com_argc - 1)
 			svs.maxclients = Q_atoi(com_argv[i + 1]);
 		else
 			svs.maxclients = 8;
@@ -480,7 +458,7 @@ void Host_ShutdownServer(bool crash)
 				}
 			}
 		}
-		if ((Sys_FloatTime() - start) > 3.0)
+		if (Sys_FloatTime() - start > 3.0)
 			break;
 	}
 	while (count);
@@ -501,7 +479,7 @@ void Host_ShutdownServer(bool crash)
 	//
 	// clear structures
 	//
-	memset(&sv, 0, sizeof(sv));
+	memset(&sv, 0, sizeof sv);
 	memset(svs.clients, 0, svs.maxclientslimit * sizeof(client_t));
 }
 
@@ -523,8 +501,8 @@ void Host_ClearMemory()
 		Hunk_FreeToLowMark(host_hunklevel);
 
 	cls.signon = 0;
-	memset(&sv, 0, sizeof(sv));
-	memset(&cl, 0, sizeof(cl));
+	memset(&sv, 0, sizeof sv);
+	memset(&cl, 0, sizeof cl);
 }
 
 

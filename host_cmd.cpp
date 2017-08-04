@@ -1860,7 +1860,7 @@ void Host_Give_f()
 			sv_player->v.items = sv_player->v.items - (static_cast<int>(sv_player->v.items) & static_cast<int>(IT_ARMOR1 | IT_ARMOR2 | IT_ARMOR3)) + IT_ARMOR1;
 		}
 		break;
-	default: break;;
+	default: break;
 		//johnfitz
 	}
 

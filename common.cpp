@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// common.c -- misc functions used in client and server
-
 #include "quakedef.h"
 
 #define NUM_SAFE_ARGVS  7
@@ -158,7 +136,7 @@ void Q_memset(void* dest, int fill, int count)
 	if (((reinterpret_cast<long>(dest) | count) & 3) == 0)
 	{
 		count >>= 2;
-		fill = fill | (fill << 8) | (fill << 16) | (fill << 24);
+		fill = fill | fill << 8 | fill << 16 | fill << 24;
 		for (i = 0; i < count; i++)
 			static_cast<int *>(dest)[i] = fill;
 	}
@@ -277,9 +255,9 @@ int Q_strncasecmp(char* s1, char* s2, int n)
 		if (c1 != c2)
 		{
 			if (c1 >= 'a' && c1 <= 'z')
-				c1 -= ('a' - 'A');
+				c1 -= 'a' - 'A';
 			if (c2 >= 'a' && c2 <= 'z')
-				c2 -= ('a' - 'A');
+				c2 -= 'a' - 'A';
 			if (c1 != c2)
 				return -1; // strings not equal
 		}
@@ -374,11 +352,11 @@ float Q_atof(char* str)
 		{
 			c = *str++;
 			if (c >= '0' && c <= '9')
-				val = (val * 16) + c - '0';
+				val = val * 16 + c - '0';
 			else if (c >= 'a' && c <= 'f')
-				val = (val * 16) + c - 'a' + 10;
+				val = val * 16 + c - 'a' + 10;
 			else if (c >= 'A' && c <= 'F')
-				val = (val * 16) + c - 'A' + 10;
+				val = val * 16 + c - 'A' + 10;
 			else
 				return val * sign;
 		}
@@ -698,7 +676,7 @@ char* MSG_ReadString()
 		string[l] = c;
 		l++;
 	}
-	while (l < sizeof(string) - 1);
+	while (l < sizeof string - 1);
 
 	string[l] = 0;
 
@@ -873,7 +851,8 @@ void COM_FileBase(char* in, char* out)
 		s--;
 
 	for (s2 = s; *s2 && *s2 != '/'; s2--)
-	{}
+	{
+	}
 
 	if (s - s2 < 2)
 		strcpy(out, "?model?");
@@ -1038,7 +1017,7 @@ void COM_CheckRegistered()
 		return;
 	}
 
-	Sys_FileRead(h, check, sizeof(check));
+	Sys_FileRead(h, check, sizeof check);
 	COM_CloseFile(h);
 
 	for (auto i = 0; i < 128; i++)
@@ -1348,10 +1327,10 @@ void COM_CopyFile(char* netpath, char* cachepath)
 
 	while (remaining)
 	{
-		if (remaining < sizeof(buf))
+		if (remaining < sizeof buf)
 			count = remaining;
 		else
-			count = sizeof(buf);
+			count = sizeof buf;
 		Sys_FileRead(in, buf, count);
 		Sys_FileWrite(out, buf, count);
 		remaining -= count;
@@ -1721,7 +1700,7 @@ void COM_InitFilesystem() //johnfitz -- modified based on topaz's tutorial
 	int j = strlen(basedir);
 	if (j > 0)
 	{
-		if ((basedir[j - 1] == '\\') || (basedir[j - 1] == '/'))
+		if (basedir[j - 1] == '\\' || basedir[j - 1] == '/')
 			basedir[j - 1] = 0;
 	}
 

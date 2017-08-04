@@ -256,6 +256,7 @@ void Host_InitLocal()
 }
 
 void VID_SyncCvars();
+
 /*
 ===============
 Host_WriteConfiguration

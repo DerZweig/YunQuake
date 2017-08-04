@@ -20,22 +20,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // world.h
 
+#pragma once
+
 struct plane_t
 {
-	vec3_t	normal;
-	float	dist;
-} ;
+	vec3_t normal;
+	float dist;
+};
 
 struct trace_t
 {
-	bool	allsolid;	// if true, plane is not valid
-	bool	startsolid;	// if true, the initial point was in a solid area
-	bool	inopen, inwater;
-	float	fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t	endpos;			// final position
-	plane_t	plane;			// surface normal at impact
-	edict_t	*ent;			// entity the surface is on
-} ;
+	bool allsolid; // if true, plane is not valid
+	bool startsolid; // if true, the initial point was in a solid area
+	bool inopen, inwater;
+	float fraction; // time completed, 1.0 = didn't hit anything
+	vec3_t endpos; // final position
+	plane_t plane; // surface normal at impact
+	edict_t* ent; // entity the surface is on
+};
 
 
 #define	MOVE_NORMAL		0
@@ -46,26 +48,26 @@ struct trace_t
 void SV_ClearWorld();
 // called after the world model has been loaded, before linking any entities
 
-void SV_UnlinkEdict (edict_t *ent);
+void SV_UnlinkEdict(edict_t* ent);
 // call before removing an entity, and before trying to move one,
 // so it doesn't clip against itself
 // flags ent->v.modified
 
-void SV_LinkEdict (edict_t *ent, bool touch_triggers);
+void SV_LinkEdict(edict_t* ent, bool touch_triggers);
 // Needs to be called any time an entity changes origin, mins, maxs, or solid
 // flags ent->v.modified
 // sets ent->v.absmin and ent->v.absmax
 // if touchtriggers, calls prog functions for the intersected triggers
 
-int SV_PointContents (vec3_t p);
-int SV_TruePointContents (vec3_t p);
+int SV_PointContents(vec3_t p);
+int SV_TruePointContents(vec3_t p);
 // returns the CONTENTS_* value from the world at the given point.
 // does not check any entities at all
 // the non-true version remaps the water current contents to content_water
 
-edict_t	*SV_TestEntityPosition (edict_t *ent);
+edict_t* SV_TestEntityPosition(edict_t* ent);
 
-trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t *passedict);
+trace_t SV_Move(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t* passedict);
 // mins and maxs are reletive
 
 // if the entire move stays in a solid volume, trace.allsolid will be set

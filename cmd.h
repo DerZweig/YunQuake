@@ -58,7 +58,7 @@ void Cbuf_Execute();
 
 /*
 
-Command execution takes a null terminated string, breaks it into tokens,
+Command execution takes a nullptr terminated string, breaks it into tokens,
 then searches for a command or variable that matches the first token.
 
 Commands can come from three sources, but the handler functions may choose
@@ -90,13 +90,13 @@ bool Cmd_Exists(char* cmd_name);
 
 char* Cmd_CompleteCommand(char* partial);
 // attempts to match a partial command for automatic command line completion
-// returns NULL if nothing fits
+// returns nullptr if nothing fits
 
 int Cmd_Argc();
 char* Cmd_Argv(int arg);
 char* Cmd_Args();
 // The functions that execute commands get their parameters with these
-// functions. Cmd_Argv () will return an empty string, not a NULL
+// functions. Cmd_Argv () will return an empty string, not a nullptr
 // if arg > argc, so string operations are allways safe.
 
 int Cmd_CheckParm(char* parm);
@@ -104,7 +104,7 @@ int Cmd_CheckParm(char* parm);
 // where the given parameter apears, or 0 if not present
 
 void Cmd_TokenizeString(char* text);
-// Takes a null terminated string.  Does not need to be /n terminated.
+// Takes a nullptr terminated string.  Does not need to be /n terminated.
 // breaks the string up into arg tokens.
 
 void Cmd_ExecuteString(char* text, cmd_source_t src);

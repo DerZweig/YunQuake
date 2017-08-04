@@ -301,7 +301,7 @@ gltexture_t* TexMgr_FindTexture(model_t* owner, char* name)
 				return glt;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -335,9 +335,9 @@ void TexMgr_FreeTexture(gltexture_t* kill)
 {
 	gltexture_t* glt;
 
-	if (kill == NULL)
+	if (kill == nullptr)
 	{
-		Con_Printf("TexMgr_FreeTexture: NULL texture\n");
+		Con_Printf("TexMgr_FreeTexture: nullptr texture\n");
 		return;
 	}
 
@@ -547,22 +547,22 @@ void TexMgr_Init(void)
 {
 	int i, mark;
 	static byte notexture_data[16] = {159,91,83,255,0,0,0,255,0,0,0,255,159,91,83,255}; //black and pink checker
-	static byte nulltexture_data[16] = {127,191,255,255,0,0,0,255,0,0,0,255,127,191,255,255}; //black and blue checker
+	static byte nullptrtexture_data[16] = {127,191,255,255,0,0,0,255,0,0,0,255,127,191,255,255}; //black and blue checker
 	extern texture_t *r_notexture_mip, *r_notexture_mip2;
 
 	// init texture list
 	free_gltextures = (gltexture_t *)Hunk_AllocName(MAX_GLTEXTURES * sizeof(gltexture_t), "gltextures");
-	active_gltextures = NULL;
+	active_gltextures = nullptr;
 	for (i = 0; i < MAX_GLTEXTURES - 1; i++)
 		free_gltextures[i].next = &free_gltextures[i + 1];
-	free_gltextures[i].next = NULL;
+	free_gltextures[i].next = nullptr;
 	numgltextures = 0;
 
 	// palette
 	TexMgr_LoadPalette();
 
-	Cvar_RegisterVariable(&gl_max_size, NULL);
-	Cvar_RegisterVariable(&gl_picmip, NULL);
+	Cvar_RegisterVariable(&gl_max_size, nullptr);
+	Cvar_RegisterVariable(&gl_picmip, nullptr);
 	Cvar_RegisterVariable(&gl_texture_anisotropy, &TexMgr_Anisotropy_f);
 	Cmd_AddCommand("gl_texturemode", &TexMgr_TextureMode_f);
 	Cmd_AddCommand("gl_describetexturemodes", &TexMgr_DescribeTextureModes_f);
@@ -573,8 +573,8 @@ void TexMgr_Init(void)
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gl_hardware_maxsize);
 
 	// load notexture images
-	notexture = TexMgr_LoadImage(NULL, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (unsigned)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
-	nulltexture = TexMgr_LoadImage(NULL, "nulltexture", 2, 2, SRC_RGBA, nulltexture_data, "", (unsigned)nulltexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	notexture = TexMgr_LoadImage(nullptr, "notexture", 2, 2, SRC_RGBA, notexture_data, "", (unsigned)notexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
+	nullptrtexture = TexMgr_LoadImage(nullptr, "nullptrtexture", 2, 2, SRC_RGBA, nullptrtexture_data, "", (unsigned)nullptrtexture_data, TEXPREF_NEAREST | TEXPREF_PERSIST | TEXPREF_NOPICMIP);
 
 	//have to assign these here becuase Mod_Init is called before TexMgr_Init
 	r_notexture_mip->gltexture = r_notexture_mip2->gltexture = notexture;
@@ -1180,7 +1180,7 @@ gltexture_t* TexMgr_LoadImage(model_t* owner, char* name, int width, int height,
 	int mark, bytes;
 
 	if (isDedicated)
-		return NULL;
+		return nullptr;
 
 	// cache check
 	switch (format)
@@ -1255,7 +1255,7 @@ TexMgr_ReloadImage -- reloads a texture, and colormaps it if needed
 void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
 {
 	byte translation[256];
-	byte *src, *dst, *data = NULL, *translated;
+	byte *src, *dst, *data = nullptr, *translated;
 	int mark, size, i;
 	//
 	// get source data
@@ -1460,7 +1460,7 @@ GL_Bind -- johnfitz -- heavy revision
 void GL_Bind(gltexture_t* texture)
 {
 	if (!texture)
-		texture = nulltexture;
+		texture = nullptrtexture;
 
 	if (texture->texnum != currenttexture)
 	{

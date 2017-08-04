@@ -162,7 +162,7 @@ keyname_t keynames[] =
 
 	{"SEMICOLON", ';'},	// because a raw semicolon seperates commands
 
-	{NULL,0}
+	{nullptr,0}
 };
 
 /*
@@ -349,7 +349,7 @@ void Key_Console (int key)
 		char	*clipText;
 		int		i;
 
-		if (OpenClipboard(NULL)) {
+		if (OpenClipboard(nullptr)) {
 			th = GetClipboardData(CF_TEXT);
 			if (th) {
 				clipText = GlobalLock(th);
@@ -397,7 +397,7 @@ void Key_Console (int key)
 				key_lines[edit_line][i + 1] = key_lines[edit_line][i];
 		}
 
-		// only null terminate if at the end
+		// only nullptr terminate if at the end
 		i = key_lines[edit_line][key_linepos];
 		key_lines[edit_line][key_linepos] = key;
 		key_linepos++;
@@ -537,7 +537,7 @@ void Key_SetBinding (int keynum, char *binding)
 	if (keybindings[keynum])
 	{
 		Z_Free (keybindings[keynum]);
-		keybindings[keynum] = NULL;
+		keybindings[keynum] = nullptr;
 	}
 
 // allocate memory for new binding
@@ -636,7 +636,7 @@ void Key_Bind_f (void)
 	}
 
 // copy the rest of the command line
-	cmd[0] = 0;		// start out with a null string
+	cmd[0] = 0;		// start out with a nullptr string
 	for (i=2 ; i< c ; i++)
 	{
 		if (i > 2)

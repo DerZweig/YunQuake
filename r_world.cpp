@@ -98,10 +98,10 @@ void R_MarkSurfaces (void)
 		}
 	}
 
-	// set all chains to null
+	// set all chains to nullptr
 	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 		if (cl.worldmodel->textures[i])
- 			cl.worldmodel->textures[i]->texturechain = NULL;
+ 			cl.worldmodel->textures[i]->texturechain = nullptr;
 
 	// rebuild chains
 

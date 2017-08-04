@@ -60,7 +60,7 @@ struct lumpinfo_t
 	char		type;
 	char		compression;
 	char		pad1, pad2;
-	char		name[16];				// must be null terminated
+	char		name[16];				// must be nullptr terminated
 } ;
 
 extern	int			wad_numlumps;

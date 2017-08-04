@@ -80,7 +80,7 @@ void R_RemoveEfrags (entity_t *ent)
 		cl.free_efrags = old;
 	}
 
-	ent->efrag = NULL;
+	ent->efrag = nullptr;
 }
 
 /*
@@ -129,7 +129,7 @@ void R_SplitEntityOnNode (mnode_t *node)
 // add the entity link
 		*lastlink = ef;
 		lastlink = &ef->entnext;
-		ef->entnext = NULL;
+		ef->entnext = nullptr;
 
 // set the leaf links
 		ef->leaf = leaf;
@@ -199,7 +199,7 @@ void R_AddEfrags (entity_t *ent)
 	r_addent = ent;
 
 	lastlink = &ent->efrag;
-	r_pefragtopnode = NULL;
+	r_pefragtopnode = nullptr;
 
 	entmodel = ent->model;
 
@@ -227,7 +227,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 	entity_t	*pent;
 	efrag_t		*pefrag;
 
-	while ((pefrag = *ppefrag) != NULL)
+	while ((pefrag = *ppefrag) != nullptr)
 	{
 		pent = pefrag->entity;
 

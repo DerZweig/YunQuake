@@ -215,7 +215,7 @@ areanode_t *SV_CreateAreaNode (int depth, vec3_t mins, vec3_t maxs)
 	if (depth == AREA_DEPTH)
 	{
 		anode->axis = -1;
-		anode->children[0] = anode->children[1] = NULL;
+		anode->children[0] = anode->children[1] = nullptr;
 		return anode;
 	}
 
@@ -266,7 +266,7 @@ void SV_UnlinkEdict (edict_t *ent)
 	if (!ent->area.prev)
 		return;		// not linked in anywhere
 	RemoveLink (&ent->area);
-	ent->area.prev = ent->area.next = NULL;
+	ent->area.prev = ent->area.next = nullptr;
 }
 
 
@@ -287,7 +287,7 @@ void SV_TouchLinks ( edict_t *ent, areanode_t *node )
 		//johnfitz -- fixes a crash when a touch function deletes an entity which comes later in the list
 		if (!l)
 		{
-			Con_Printf ("SV_TouchLinks: null link\n");
+			Con_Printf ("SV_TouchLinks: nullptr link\n");
 			break;
 		}
 		//johnfitz
@@ -389,7 +389,7 @@ SV_LinkEdict
 void SV_LinkEdict (edict_t *ent, bool touch_triggers)
 {
 	areanode_t	*node;
-	model_t		*mod = NULL; //johnfitz
+	model_t		*mod = nullptr; //johnfitz
 
 	if (ent->area.prev)
 		SV_UnlinkEdict (ent);	// unlink from old position
@@ -547,7 +547,7 @@ edict_t	*SV_TestEntityPosition (edict_t *ent)
 	if (trace.startsolid)
 		return sv.edicts;
 
-	return NULL;
+	return nullptr;
 }
 
 

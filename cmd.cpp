@@ -342,7 +342,7 @@ void Cmd_Alias_f()
 		strcpy(a->name, s);
 
 		// copy the rest of the command line
-		cmd[0] = 0; // start out with a null string
+		cmd[0] = 0; // start out with a nullptr string
 		auto c = Cmd_Argc();
 		for (i = 2; i < c; i++)
 		{
@@ -424,7 +424,7 @@ struct cmd_function_t
 
 static int cmd_argc;
 static char* cmd_argv[MAX_ARGS];
-static char* cmd_null_string = "";
+static char* cmd_nullptr_string = "";
 static char* cmd_args = nullptr;
 
 cmd_source_t cmd_source;
@@ -511,7 +511,7 @@ Cmd_Argv
 char* Cmd_Argv(int arg)
 {
 	if (static_cast<unsigned>(arg) >= cmd_argc)
-		return cmd_null_string;
+		return cmd_nullptr_string;
 	return cmd_argv[arg];
 }
 
@@ -751,7 +751,7 @@ where the given parameter apears, or 0 if not present
 int Cmd_CheckParm(char* parm)
 {
 	if (!parm)
-		Sys_Error("Cmd_CheckParm: NULL");
+		Sys_Error("Cmd_CheckParm: nullptr");
 
 	for (auto i = 1; i < Cmd_Argc(); i++)
 		if (!Q_strcasecmp(parm, Cmd_Argv(i)))

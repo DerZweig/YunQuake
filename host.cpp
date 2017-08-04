@@ -227,30 +227,30 @@ void Host_InitLocal(void)
 {
 	Host_InitCommands();
 
-	Cvar_RegisterVariable(&host_framerate, NULL);
-	Cvar_RegisterVariable(&host_speeds, NULL);
-	Cvar_RegisterVariable(&host_maxfps, NULL); //johnfitz
-	Cvar_RegisterVariable(&host_timescale, NULL); //johnfitz
+	Cvar_RegisterVariable(&host_framerate, nullptr);
+	Cvar_RegisterVariable(&host_speeds, nullptr);
+	Cvar_RegisterVariable(&host_maxfps, nullptr); //johnfitz
+	Cvar_RegisterVariable(&host_timescale, nullptr); //johnfitz
 
 	Cvar_RegisterVariable(&max_edicts, Max_Edicts_f); //johnfitz
-	Cvar_RegisterVariable(&devstats, NULL); //johnfitz
+	Cvar_RegisterVariable(&devstats, nullptr); //johnfitz
 
-	Cvar_RegisterVariable(&sys_ticrate, NULL);
-	Cvar_RegisterVariable(&serverprofile, NULL);
+	Cvar_RegisterVariable(&sys_ticrate, nullptr);
+	Cvar_RegisterVariable(&serverprofile, nullptr);
 
-	Cvar_RegisterVariable(&fraglimit, NULL);
-	Cvar_RegisterVariable(&timelimit, NULL);
-	Cvar_RegisterVariable(&teamplay, NULL);
-	Cvar_RegisterVariable(&samelevel, NULL);
-	Cvar_RegisterVariable(&noexit, NULL);
-	Cvar_RegisterVariable(&skill, NULL);
-	Cvar_RegisterVariable(&developer, NULL);
-	Cvar_RegisterVariable(&deathmatch, NULL);
-	Cvar_RegisterVariable(&coop, NULL);
+	Cvar_RegisterVariable(&fraglimit, nullptr);
+	Cvar_RegisterVariable(&timelimit, nullptr);
+	Cvar_RegisterVariable(&teamplay, nullptr);
+	Cvar_RegisterVariable(&samelevel, nullptr);
+	Cvar_RegisterVariable(&noexit, nullptr);
+	Cvar_RegisterVariable(&skill, nullptr);
+	Cvar_RegisterVariable(&developer, nullptr);
+	Cvar_RegisterVariable(&deathmatch, nullptr);
+	Cvar_RegisterVariable(&coop, nullptr);
 
-	Cvar_RegisterVariable(&pausable, NULL);
+	Cvar_RegisterVariable(&pausable, nullptr);
 
-	Cvar_RegisterVariable(&temp1, NULL);
+	Cvar_RegisterVariable(&temp1, nullptr);
 
 	Host_FindMaxClients();
 
@@ -416,7 +416,7 @@ void SV_DropClient(bool crash)
 
 	// break the net connection
 	NET_Close(host_client->netconnection);
-	host_client->netconnection = NULL;
+	host_client->netconnection = nullptr;
 
 	// free the client (the body stays around)
 	host_client->active = false;

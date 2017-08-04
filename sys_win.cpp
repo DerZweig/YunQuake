@@ -183,7 +183,7 @@ void Sys_FileClose (int handle)
 
 	t = VID_ForceUnlockedAndReturnState ();
 	fclose (sys_handles[handle]);
-	sys_handles[handle] = NULL;
+	sys_handles[handle] = nullptr;
 	VID_ForceLockState (t);
 }
 
@@ -346,11 +346,11 @@ void Sys_Error (char *error, ...)
 		va_end (argptr);
 
 		sprintf (text2, "ERROR: %s\n", text);
-		WriteFile (houtput, text5, strlen (text5), &dummy, NULL);
-		WriteFile (houtput, text4, strlen (text4), &dummy, NULL);
-		WriteFile (houtput, text2, strlen (text2), &dummy, NULL);
-		WriteFile (houtput, text3, strlen (text3), &dummy, NULL);
-		WriteFile (houtput, text4, strlen (text4), &dummy, NULL);
+		WriteFile (houtput, text5, strlen (text5), &dummy, nullptr);
+		WriteFile (houtput, text4, strlen (text4), &dummy, nullptr);
+		WriteFile (houtput, text2, strlen (text2), &dummy, nullptr);
+		WriteFile (houtput, text3, strlen (text3), &dummy, nullptr);
+		WriteFile (houtput, text4, strlen (text4), &dummy, nullptr);
 
 
 		starttime = Sys_FloatTime ();
@@ -369,12 +369,12 @@ void Sys_Error (char *error, ...)
 		{
 			in_sys_error0 = 1;
 			VID_SetDefaultMode ();
-			MessageBox(NULL, text, "Quake Error",
+			MessageBox(nullptr, text, "Quake Error",
 					   MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
 		}
 		else
 		{
-			MessageBox(NULL, text, "Double Quake Error",
+			MessageBox(nullptr, text, "Double Quake Error",
 					   MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
 		}
 	}
@@ -407,7 +407,7 @@ void Sys_Printf (char *fmt, ...)
 		vsprintf (text, fmt, argptr);
 		va_end (argptr);
 
-		WriteFile(houtput, text, strlen (text), &dummy, NULL);
+		WriteFile(houtput, text, strlen (text), &dummy, nullptr);
 	}
 }
 
@@ -530,7 +530,7 @@ char *Sys_ConsoleInput (void)
 	int		ch, numread, numevents;
 
 	if (!isDedicated)
-		return NULL;
+		return nullptr;
 
 
 	for ( ;; )
@@ -556,7 +556,7 @@ char *Sys_ConsoleInput (void)
 				switch (ch)
 				{
 					case '\r':
-						WriteFile(houtput, "\r\n", 2, &dummy, NULL);
+						WriteFile(houtput, "\r\n", 2, &dummy, nullptr);
 
 						if (len)
 						{
@@ -575,7 +575,7 @@ char *Sys_ConsoleInput (void)
 						break;
 
 					case '\b':
-						WriteFile(houtput, "\b \b", 3, &dummy, NULL);
+						WriteFile(houtput, "\b \b", 3, &dummy, nullptr);
 						if (len)
 						{
 							len--;
@@ -585,7 +585,7 @@ char *Sys_ConsoleInput (void)
 					default:
 						if (ch >= ' ')
 						{
-							WriteFile(houtput, &ch, 1, &dummy, NULL);
+							WriteFile(houtput, &ch, 1, &dummy, nullptr);
 							text[len] = ch;
 							len = (len + 1) & 0xff;
 						}
@@ -597,7 +597,7 @@ char *Sys_ConsoleInput (void)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 void Sys_Sleep (void)
@@ -610,12 +610,12 @@ void Sys_SendKeyEvents (void)
 {
     MSG        msg;
 
-	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
+	while (PeekMessage (&msg, nullptr, 0, 0, PM_NOREMOVE))
 	{
 	// we always update if there are any event, even if we're paused
 		scr_skipupdate = 0;
 
-		if (!GetMessage (&msg, NULL, 0, 0))
+		if (!GetMessage (&msg, nullptr, 0, 0))
 			Sys_Quit ();
 
       	TranslateMessage (&msg);
@@ -683,7 +683,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		cwd[Q_strlen(cwd)-1] = 0;
 
 	parms.basedir = cwd;
-	parms.cachedir = NULL;
+	parms.cachedir = nullptr;
 
 	parms.argc = 1;
 	argv[0] = empty_string;
@@ -749,7 +749,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	Sys_PageIn (parms.membase, parms.memsize);
 
-	tevent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	tevent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
 	if (!tevent)
 		Sys_Error ("Couldn't create event");

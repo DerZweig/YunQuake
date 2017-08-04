@@ -60,7 +60,7 @@ struct gltexture_t
 } ;
 
 gltexture_t *notexture;
-gltexture_t *nulltexture;
+gltexture_t *nullptrtexture;
 
 unsigned int d_8to24table[256];
 unsigned int d_8to24table_fbright[256];

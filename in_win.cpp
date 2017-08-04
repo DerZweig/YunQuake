@@ -299,7 +299,7 @@ void IN_DeactivateMouse (void)
 			if (restore_spi)
 				SystemParametersInfo (SPI_SETMOUSE, 0, originalmouseparms, 0);
 
-			ClipCursor (NULL);
+			ClipCursor (nullptr);
 			ReleaseCapture ();
 		}
 
@@ -350,7 +350,7 @@ bool IN_InitDInput (void)
 	{
 		hInstDI = LoadLibrary("dinput.dll");
 
-		if (hInstDI == NULL)
+		if (hInstDI == nullptr)
 		{
 			Con_SafePrintf ("Couldn't load dinput.dll\n");
 			return false;
@@ -369,7 +369,7 @@ bool IN_InitDInput (void)
 	}
 
 // register with DirectInput and get an IDirectInput to play with.
-	hr = iDirectInputCreate(global_hInstance, DIRECTINPUT_VERSION, &g_pdi, NULL);
+	hr = iDirectInputCreate(global_hInstance, DIRECTINPUT_VERSION, &g_pdi, nullptr);
 
 	if (FAILED(hr))
 	{
@@ -377,7 +377,7 @@ bool IN_InitDInput (void)
 	}
 
 // obtain an interface to the system mouse device.
-	hr = IDirectInput_CreateDevice(g_pdi, &GUID_SysMouse, &g_pMouse, NULL);
+	hr = IDirectInput_CreateDevice(g_pdi, &GUID_SysMouse, &g_pMouse, nullptr);
 
 	if (FAILED(hr))
 	{
@@ -493,31 +493,31 @@ void IN_Init (void)
 	//johnfitz
 
 	// mouse variables
-	Cvar_RegisterVariable (&m_filter, NULL);
+	Cvar_RegisterVariable (&m_filter, nullptr);
 
 	//johnfitz
-	Cvar_RegisterVariable (&cl_keypad, NULL);
+	Cvar_RegisterVariable (&cl_keypad, nullptr);
 
 	// joystick variables
-	Cvar_RegisterVariable (&in_joystick, NULL);
-	Cvar_RegisterVariable (&joy_name, NULL);
-	Cvar_RegisterVariable (&joy_advanced, NULL);
-	Cvar_RegisterVariable (&joy_advaxisx, NULL);
-	Cvar_RegisterVariable (&joy_advaxisy, NULL);
-	Cvar_RegisterVariable (&joy_advaxisz, NULL);
-	Cvar_RegisterVariable (&joy_advaxisr, NULL);
-	Cvar_RegisterVariable (&joy_advaxisu, NULL);
-	Cvar_RegisterVariable (&joy_advaxisv, NULL);
-	Cvar_RegisterVariable (&joy_forwardthreshold, NULL);
-	Cvar_RegisterVariable (&joy_sidethreshold, NULL);
-	Cvar_RegisterVariable (&joy_pitchthreshold, NULL);
-	Cvar_RegisterVariable (&joy_yawthreshold, NULL);
-	Cvar_RegisterVariable (&joy_forwardsensitivity, NULL);
-	Cvar_RegisterVariable (&joy_sidesensitivity, NULL);
-	Cvar_RegisterVariable (&joy_pitchsensitivity, NULL);
-	Cvar_RegisterVariable (&joy_yawsensitivity, NULL);
-	Cvar_RegisterVariable (&joy_wwhack1, NULL);
-	Cvar_RegisterVariable (&joy_wwhack2, NULL);
+	Cvar_RegisterVariable (&in_joystick, nullptr);
+	Cvar_RegisterVariable (&joy_name, nullptr);
+	Cvar_RegisterVariable (&joy_advanced, nullptr);
+	Cvar_RegisterVariable (&joy_advaxisx, nullptr);
+	Cvar_RegisterVariable (&joy_advaxisy, nullptr);
+	Cvar_RegisterVariable (&joy_advaxisz, nullptr);
+	Cvar_RegisterVariable (&joy_advaxisr, nullptr);
+	Cvar_RegisterVariable (&joy_advaxisu, nullptr);
+	Cvar_RegisterVariable (&joy_advaxisv, nullptr);
+	Cvar_RegisterVariable (&joy_forwardthreshold, nullptr);
+	Cvar_RegisterVariable (&joy_sidethreshold, nullptr);
+	Cvar_RegisterVariable (&joy_pitchthreshold, nullptr);
+	Cvar_RegisterVariable (&joy_yawthreshold, nullptr);
+	Cvar_RegisterVariable (&joy_forwardsensitivity, nullptr);
+	Cvar_RegisterVariable (&joy_sidesensitivity, nullptr);
+	Cvar_RegisterVariable (&joy_pitchsensitivity, nullptr);
+	Cvar_RegisterVariable (&joy_yawsensitivity, nullptr);
+	Cvar_RegisterVariable (&joy_wwhack1, nullptr);
+	Cvar_RegisterVariable (&joy_wwhack2, nullptr);
 
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 	Cmd_AddCommand ("joyadvancedupdate", Joy_AdvancedUpdate_f);
@@ -542,13 +542,13 @@ void IN_Shutdown (void)
     if (g_pMouse)
 	{
 		IDirectInputDevice_Release(g_pMouse);
-		g_pMouse = NULL;
+		g_pMouse = nullptr;
 	}
 
     if (g_pdi)
 	{
 		IDirectInput_Release(g_pdi);
-		g_pdi = NULL;
+		g_pdi = nullptr;
 	}
 }
 

@@ -32,7 +32,7 @@ char* svc_strings[] =
 	"svc_setview", // [short] entity number
 	"svc_sound", // <see code>
 	"svc_time", // [float] server time
-	"svc_print", // [string] null terminated string
+	"svc_print", // [string] nullptr terminated string
 	"svc_stufftext", // [string] stuffed into client's console buffer
 	// the string should be \n terminated
 	"svc_setangle", // [vec3] set the view angle to this absolute value
@@ -585,13 +585,13 @@ void CL_ParseUpdate(int bits)
 		// or randomized
 		if (model)
 		{
-			if (model->synctype == ST_RAND)
+			if (model->synctype == synctype_t::ST_RAND)
 				ent->syncbase = static_cast<float>(rand() & 0x7fff) / 0x7fff;
 			else
 				ent->syncbase = 0.0;
 		}
 		else
-			forcelink = true; // hack to make null model players work
+			forcelink = true; // hack to make nullptr model players work
 		if (num > 0 && num <= cl.maxclients)
 			R_TranslateNewPlayerSkin(num - 1); //johnfitz -- was R_TranslatePlayerSkin
 
@@ -1178,7 +1178,7 @@ void CL_ParseServerMessage()
 			break;
 
 		case svc_sellscreen:
-			Cmd_ExecuteString("help", src_command);
+			Cmd_ExecuteString("help", cmd_source_t::src_command);
 			break;
 
 			//johnfitz -- new svc types
@@ -1187,7 +1187,7 @@ void CL_ParseServerMessage()
 			break;
 
 		case svc_bf:
-			Cmd_ExecuteString("bf", src_command);
+			Cmd_ExecuteString("bf", cmd_source_t::src_command);
 			break;
 
 		case svc_fog:

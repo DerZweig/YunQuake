@@ -62,13 +62,13 @@ struct gefv_cache
 	char	field[MAX_FIELD_LEN];
 } ;
 
-static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
+static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{nullptr, ""}, {nullptr, ""}};
 
 /*
 =================
 ED_ClearEdict
 
-Sets everything to NULL
+Sets everything to nullptr
 =================
 */
 void ED_ClearEdict (edict_t *e)
@@ -120,7 +120,7 @@ edict_t *ED_Alloc (void)
 ED_Free
 
 Marks the edict as free
-FIXME: walk all entities and NULL out references to this entity
+FIXME: walk all entities and nullptr out references to this entity
 =================
 */
 void ED_Free (edict_t *ed)
@@ -161,7 +161,7 @@ ddef_t *ED_GlobalAtOfs (int ofs)
 		if (def->ofs == ofs)
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -180,7 +180,7 @@ ddef_t *ED_FieldAtOfs (int ofs)
 		if (def->ofs == ofs)
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -199,7 +199,7 @@ ddef_t *ED_FindField (char *name)
 		if (!strcmp(pr_strings + def->s_name,name) )
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -219,7 +219,7 @@ ddef_t *ED_FindGlobal (char *name)
 		if (!strcmp(pr_strings + def->s_name,name) )
 			return def;
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -239,7 +239,7 @@ dfunction_t *ED_FindFunction (char *name)
 		if (!strcmp(pr_strings + func->s_name,name) )
 			return func;
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -249,7 +249,7 @@ GetEdictFieldValue
 */
 eval_t *GetEdictFieldValue(edict_t *ed, char *field)
 {
-	ddef_t			*def = NULL;
+	ddef_t			*def = nullptr;
 	int				i;
 	static int		rep = 0;
 
@@ -273,7 +273,7 @@ eval_t *GetEdictFieldValue(edict_t *ed, char *field)
 
 Done:
 	if (!def)
-		return NULL;
+		return nullptr;
 
 	return (eval_t *)((char *)&ed->v + def->ofs*4);
 }
@@ -931,7 +931,7 @@ void ED_LoadFromFile (char *data)
 	int			inhibit;
 	dfunction_t	*func;
 
-	ent = NULL;
+	ent = nullptr;
 	inhibit = 0;
 	pr_global_struct->time = sv.time;
 
@@ -1101,17 +1101,17 @@ void PR_Init (void)
 	Cmd_AddCommand ("edicts", ED_PrintEdicts);
 	Cmd_AddCommand ("edictcount", ED_Count);
 	Cmd_AddCommand ("profile", PR_Profile_f);
-	Cvar_RegisterVariable (&nomonsters, NULL);
-	Cvar_RegisterVariable (&gamecfg, NULL);
-	Cvar_RegisterVariable (&scratch1, NULL);
-	Cvar_RegisterVariable (&scratch2, NULL);
-	Cvar_RegisterVariable (&scratch3, NULL);
-	Cvar_RegisterVariable (&scratch4, NULL);
-	Cvar_RegisterVariable (&savedgamecfg, NULL);
-	Cvar_RegisterVariable (&saved1, NULL);
-	Cvar_RegisterVariable (&saved2, NULL);
-	Cvar_RegisterVariable (&saved3, NULL);
-	Cvar_RegisterVariable (&saved4, NULL);
+	Cvar_RegisterVariable (&nomonsters, nullptr);
+	Cvar_RegisterVariable (&gamecfg, nullptr);
+	Cvar_RegisterVariable (&scratch1, nullptr);
+	Cvar_RegisterVariable (&scratch2, nullptr);
+	Cvar_RegisterVariable (&scratch3, nullptr);
+	Cvar_RegisterVariable (&scratch4, nullptr);
+	Cvar_RegisterVariable (&savedgamecfg, nullptr);
+	Cvar_RegisterVariable (&saved1, nullptr);
+	Cvar_RegisterVariable (&saved2, nullptr);
+	Cvar_RegisterVariable (&saved3, nullptr);
+	Cvar_RegisterVariable (&saved4, nullptr);
 }
 
 

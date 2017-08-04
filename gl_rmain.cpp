@@ -784,7 +784,7 @@ void R_RenderView (void)
 		return;
 
 	if (!cl.worldmodel)
-		Sys_Error ("R_RenderView: NULL worldmodel");
+		Sys_Error ("R_RenderView: nullptr worldmodel");
 
 	if (r_speeds.value)
 	{

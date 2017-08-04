@@ -76,7 +76,7 @@ BOOL PASCAL FAR BlockingHook(void)
 	}
 
     /* get the next message, if any */
-    ret = (BOOL) PeekMessage(&msg, NULL, 0, 0, PM_REMOVE);
+    ret = (BOOL) PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE);
 
     /* if we got one, process it */
     if (ret) {
@@ -91,7 +91,7 @@ BOOL PASCAL FAR BlockingHook(void)
 
 void WINS_GetLocalAddress()
 {
-	struct hostent	*local = NULL;
+	struct hostent	*local = nullptr;
 	char			buff[MAXHOSTNAMELEN];
 	unsigned long	addr;
 
@@ -105,7 +105,7 @@ void WINS_GetLocalAddress()
 	WSASetBlockingHook(BlockingHook);
 	local = pgethostbyname(buff);
 	WSAUnhookBlockingHook();
-	if (local == NULL)
+	if (local == nullptr)
 		return;
 
 	myAddr = *(int *)local->h_addr_list[0];
@@ -128,7 +128,7 @@ int WINS_Init (void)
 // so we can run on Win 3.1, where there isn't necessarily Winsock)
     hInst = LoadLibrary("wsock32.dll");
 
-	if (hInst == NULL)
+	if (hInst == nullptr)
 	{
 		Con_SafePrintf ("Failed to load winsock.dll\n");
 		winsock_lib_initialized = false;
@@ -386,7 +386,7 @@ int WINS_CheckNewConnections (void)
 	if (net_acceptsocket == -1)
 		return -1;
 
-	if (precvfrom (net_acceptsocket, buf, sizeof(buf), MSG_PEEK, NULL, NULL) > 0)
+	if (precvfrom (net_acceptsocket, buf, sizeof(buf), MSG_PEEK, nullptr, nullptr) > 0)
 	{
 		return net_acceptsocket;
 	}

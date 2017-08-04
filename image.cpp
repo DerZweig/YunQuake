@@ -47,7 +47,7 @@ byte *Image_LoadImage (char *name, int *width, int *height)
 	if (f)
 		return Image_LoadPCX (f, width, height);
 
-	return NULL;
+	return nullptr;
 }
 
 //==============================================================================

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int				wad_numlumps;
 lumpinfo_t		*wad_lumps;
-byte			*wad_base = NULL; //johnfitz -- set to null
+byte			*wad_base = nullptr; //johnfitz -- set to nullptr
 
 void SwapPic (qpic_t *pic);
 
@@ -127,7 +127,7 @@ lumpinfo_t	*W_GetLumpinfo (char *name)
 	}
 
 	Con_SafePrintf ("W_GetLumpinfo: %s not found\n", name); //johnfitz -- was Sys_Error
-	return NULL;
+	return nullptr;
 }
 
 void *W_GetLumpName (char *name)
@@ -136,7 +136,7 @@ void *W_GetLumpName (char *name)
 
 	lump = W_GetLumpinfo (name);
 
-	if (!lump) return NULL; //johnfitz
+	if (!lump) return nullptr; //johnfitz
 
 	return (void *)(wad_base + lump->filepos);
 }

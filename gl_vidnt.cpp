@@ -132,13 +132,13 @@ PROC glVertexPointerEXT;
 
 using lp3DFXFUNC = void (APIENTRY *) (int, int, int, int, int, const void*);
 
-extern MTEXCOORDFUNC GL_MTexCoord2fFunc = NULL; //johnfitz
-extern SELECTTEXFUNC GL_SelectTextureFunc = NULL; //johnfitz
+extern MTEXCOORDFUNC GL_MTexCoord2fFunc = nullptr; //johnfitz
+extern SELECTTEXFUNC GL_SelectTextureFunc = nullptr; //johnfitz
 
 using SETSWAPFUNC= BOOL (APIENTRY * ) (int); //johnfitz
 using GETSWAPFUNC =int (APIENTRY * ) (void); //johnfitz
-SETSWAPFUNC wglSwapIntervalEXT = NULL; //johnfitz
-GETSWAPFUNC wglGetSwapIntervalEXT = NULL; //johnfitz
+SETSWAPFUNC wglSwapIntervalEXT = nullptr; //johnfitz
+GETSWAPFUNC wglGetSwapIntervalEXT = nullptr; //johnfitz
 
 bool isPermedia = false;
 bool isIntelVideo = false; //johnfitz -- intel video workarounds from Baker
@@ -334,7 +334,7 @@ void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify)
 		CenterX >>= 1;	// dual screens
 	CenterX = (CenterX < 0) ? 0: CenterX;
 	CenterY = (CenterY < 0) ? 0: CenterY;
-	SetWindowPos (hWndCenter, NULL, CenterX, CenterY, 0, 0,
+	SetWindowPos (hWndCenter, nullptr, CenterX, CenterY, 0, 0,
 			SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_DRAWFRAME);
 }
 
@@ -382,10 +382,10 @@ bool VID_SetWindowedMode (int modenum)
 		 rect.left, rect.top,
 		 width,
 		 height,
-		 NULL,
-		 NULL,
+		 nullptr,
+		 nullptr,
 		 global_hInstance,
-		 NULL);
+		 nullptr);
 
 	if (!dibwindow)
 		Sys_Error ("Couldn't create DIB window");
@@ -399,7 +399,7 @@ bool VID_SetWindowedMode (int modenum)
 
 	modestate = MS_WINDOWED;
 
-// because we have set the background brush for the window to NULL
+// because we have set the background brush for the window to nullptr
 // (to avoid flickering when re-sizing the window on the desktop),
 // we clear the window to black when created, otherwise it will be
 // empty while Quake starts up.
@@ -480,10 +480,10 @@ bool VID_SetFullDIBMode (int modenum)
 		 rect.left, rect.top,
 		 width,
 		 height,
-		 NULL,
-		 NULL,
+		 nullptr,
+		 nullptr,
 		 global_hInstance,
-		 NULL);
+		 nullptr);
 
 	if (!dibwindow)
 		Sys_Error ("Couldn't create DIB window");
@@ -491,7 +491,7 @@ bool VID_SetFullDIBMode (int modenum)
 	ShowWindow (dibwindow, SW_SHOWDEFAULT);
 	UpdateWindow (dibwindow);
 
-// Because we have set the background brush for the window to NULL
+// Because we have set the background brush for the window to nullptr
 // (to avoid flickering when re-sizing the window on the desktop), we
 // clear the window to black when created, otherwise it will be
 // empty while Quake starts up.
@@ -603,7 +603,7 @@ int VID_SetMode (int modenum)
 	SetForegroundWindow (mainwindow);
 	vid_modenum = modenum;
 
-	while (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
+	while (PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE))
 	{
       	TranslateMessage (&msg);
       	DispatchMessage (&msg);
@@ -721,14 +721,14 @@ void VID_Restart (void)
 		}
 		else //not fullscreen
 		{
-			hdc = GetDC (NULL);
+			hdc = GetDC (nullptr);
 			if (GetDeviceCaps(hdc, RASTERCAPS) & RC_PALETTE)
 			{
 				Con_Printf ("Can't run windowed on non-RGB desktop\n");
-				ReleaseDC (NULL, hdc);
+				ReleaseDC (nullptr, hdc);
 				return;
 			}
-			ReleaseDC (NULL, hdc);
+			ReleaseDC (nullptr, hdc);
 
 			if (vid_width.value < 320)
 			{
@@ -758,17 +758,17 @@ void VID_Restart (void)
 //
 		hrc = wglGetCurrentContext();
 		hdc = wglGetCurrentDC();
-		wglMakeCurrent(NULL, NULL);
+		wglMakeCurrent(nullptr, nullptr);
 
 		vid_canalttab = false;
 
 		if (hdc && dibwindow)
 			ReleaseDC (dibwindow, hdc);
 		if (modestate == MS_FULLDIB)
-			ChangeDisplaySettings (NULL, 0);
+			ChangeDisplaySettings (nullptr, 0);
 		if (maindc && dibwindow)
 			ReleaseDC (dibwindow, maindc);
-		maindc = NULL;
+		maindc = nullptr;
 		if (dibwindow)
 			DestroyWindow (dibwindow);
 //
@@ -788,7 +788,7 @@ void VID_Restart (void)
 				char szBuf[80];
 				LPVOID lpMsgBuf;
 				DWORD dw = GetLastError();
-				FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, NULL );
+				FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, nullptr, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &lpMsgBuf, 0, nullptr );
 				sprintf(szBuf, "VID_Restart: wglMakeCurrent failed with error %d: %s", dw, lpMsgBuf);
  				Sys_Error (szBuf);
 			}
@@ -934,7 +934,7 @@ char *GL_MakeNiceExtensionsList (const char *in)
 	copy = Z_Malloc(strlen(in) + 1);
 	strcpy(copy, in);
 
-	for (token = strtok(copy, " "); token; token = strtok(NULL, " "))
+	for (token = strtok(copy, " "); token; token = strtok(nullptr, " "))
 	{
 		strcat(out, "\n   ");
 		strcat(out, token);
@@ -951,8 +951,8 @@ GL_Info_f -- johnfitz
 */
 void GL_Info_f (void)
 {
-	static char *gl_extensions_nice = NULL;
-	static char *wgl_extensions_nice = NULL;
+	static char *gl_extensions_nice = nullptr;
+	static char *wgl_extensions_nice = nullptr;
 
 	if (!gl_extensions_nice)
 		gl_extensions_nice = GL_MakeNiceExtensionsList (gl_extensions);
@@ -983,10 +983,10 @@ void CheckArrayExtensions (void)
 		if (strncmp((const char*)tmp, "GL_EXT_vertex_array", strlen("GL_EXT_vertex_array")) == 0)
 		{
 			if (
-((glArrayElementEXT = wglGetProcAddress("glArrayElementEXT")) == NULL) ||
-((glColorPointerEXT = wglGetProcAddress("glColorPointerEXT")) == NULL) ||
-((glTexCoordPointerEXT = wglGetProcAddress("glTexCoordPointerEXT")) == NULL) ||
-((glVertexPointerEXT = wglGetProcAddress("glVertexPointerEXT")) == NULL) )
+((glArrayElementEXT = wglGetProcAddress("glArrayElementEXT")) == nullptr) ||
+((glColorPointerEXT = wglGetProcAddress("glColorPointerEXT")) == nullptr) ||
+((glTexCoordPointerEXT = wglGetProcAddress("glTexCoordPointerEXT")) == nullptr) ||
+((glVertexPointerEXT = wglGetProcAddress("glVertexPointerEXT")) == nullptr) )
 			{
 				Sys_Error ("GetProcAddress for vertex extension failed");
 				return;
@@ -1297,7 +1297,7 @@ void	VID_Shutdown (void)
 		hRC = wglGetCurrentContext();
     	hDC = wglGetCurrentDC();
 
-    	wglMakeCurrent(NULL, NULL);
+    	wglMakeCurrent(nullptr, nullptr);
 
     	if (hRC)
     	    wglDeleteContext(hRC);
@@ -1308,7 +1308,7 @@ void	VID_Shutdown (void)
 			ReleaseDC(dibwindow, hDC);
 
 		if (modestate == MS_FULLDIB)
-			ChangeDisplaySettings (NULL, 0);
+			ChangeDisplaySettings (nullptr, 0);
 
 		if (maindc && dibwindow)
 			ReleaseDC (dibwindow, maindc);
@@ -1347,7 +1347,7 @@ BOOL bSetupPixelFormat(HDC hDC)
 
     if ( (pixelformat = ChoosePixelFormat(hDC, &pfd)) == 0 )
     {
-        MessageBox(NULL, "ChoosePixelFormat failed", "Error", MB_OK);
+        MessageBox(nullptr, "ChoosePixelFormat failed", "Error", MB_OK);
         return FALSE;
     }
 
@@ -1355,7 +1355,7 @@ BOOL bSetupPixelFormat(HDC hDC)
 
     if (SetPixelFormat(hDC, pixelformat, &pfd) == FALSE)
     {
-        MessageBox(NULL, "SetPixelFormat failed", "Error", MB_OK);
+        MessageBox(nullptr, "SetPixelFormat failed", "Error", MB_OK);
         return FALSE;
     }
 
@@ -1552,7 +1552,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 			IN_DeactivateMouse ();
 			IN_ShowMouse ();
 			if (vid_canalttab) {
-				ChangeDisplaySettings (NULL, 0);
+				ChangeDisplaySettings (nullptr, 0);
 				vid_wassuspended = true;
 			}
 		}
@@ -1736,7 +1736,7 @@ char *VID_GetModeDescription (int mode)
 	static char	temp[100];
 
 	if ((mode < 0) || (mode >= nummodes))
-		return NULL;
+		return nullptr;
 
 	if (!leavecurrentmode)
 	{
@@ -1767,7 +1767,7 @@ char *VID_GetExtModeDescription (int mode)
 	vmode_t		*pv;
 
 	if ((mode < 0) || (mode >= nummodes))
-		return NULL;
+		return nullptr;
 
 	pv = VID_GetModePtr (mode);
 	if (modelist[mode].type == MS_FULLDIB)
@@ -1870,8 +1870,8 @@ void VID_InitDIB (HINSTANCE hInstance)
     wc.cbWndExtra    = 0;
     wc.hInstance     = hInstance;
     wc.hIcon         = 0;
-    wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
-	wc.hbrBackground = NULL;
+    wc.hCursor       = LoadCursor (nullptr,IDC_ARROW);
+	wc.hbrBackground = nullptr;
     wc.lpszMenuName  = 0;
     wc.lpszClassName = "FitzQuake"; //johnfitz -- was WinQuake
 
@@ -1897,13 +1897,13 @@ void VID_InitDIB (HINSTANCE hInstance)
 		modelist[0].height = 200; //johnfitz -- was 240
 
 	//johnfitz -- get desktop bit depth
-	hdc = GetDC(NULL);
+	hdc = GetDC(nullptr);
 	modelist[0].bpp = GetDeviceCaps(hdc, BITSPIXEL);
-	ReleaseDC(NULL, hdc);
+	ReleaseDC(nullptr, hdc);
 	//johnfitz
 
 	//johnfitz -- get refreshrate
-	if (EnumDisplaySettings (NULL, ENUM_CURRENT_SETTINGS, &devmode))
+	if (EnumDisplaySettings (nullptr, ENUM_CURRENT_SETTINGS, &devmode))
 		modelist[0].refreshrate = devmode.dmDisplayFrequency;
 	//johnfitz
 
@@ -1939,7 +1939,7 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 
 	do
 	{
-		stat = EnumDisplaySettings (NULL, modenum, &devmode);
+		stat = EnumDisplaySettings (nullptr, modenum, &devmode);
 
 		if ((devmode.dmBitsPerPel >= 15) &&
 			(devmode.dmPelsWidth <= MAXWIDTH) &&
@@ -2102,12 +2102,12 @@ void	VID_Init (void)
 
 	memset(&devmode, 0, sizeof(devmode));
 
-	Cvar_RegisterVariable (&vid_fullscreen, NULL); //johnfitz
-	Cvar_RegisterVariable (&vid_width, NULL); //johnfitz
-	Cvar_RegisterVariable (&vid_height, NULL); //johnfitz
-	Cvar_RegisterVariable (&vid_bpp, NULL); //johnfitz
-	Cvar_RegisterVariable (&vid_refreshrate, NULL); //johnfitz
-	Cvar_RegisterVariable (&_windowed_mouse, NULL);
+	Cvar_RegisterVariable (&vid_fullscreen, nullptr); //johnfitz
+	Cvar_RegisterVariable (&vid_width, nullptr); //johnfitz
+	Cvar_RegisterVariable (&vid_height, nullptr); //johnfitz
+	Cvar_RegisterVariable (&vid_bpp, nullptr); //johnfitz
+	Cvar_RegisterVariable (&vid_refreshrate, nullptr); //johnfitz
+	Cvar_RegisterVariable (&_windowed_mouse, nullptr);
 
 	Cmd_AddCommand ("vid_unlock", VID_Unlock); //johnfitz
 	Cmd_AddCommand ("vid_restart", VID_Restart); //johnfitz
@@ -2115,7 +2115,7 @@ void	VID_Init (void)
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
 	Cmd_AddCommand ("vid_describemodes", VID_DescribeModes_f);
 
-	hIcon = LoadIcon (NULL, IDI_WINLOGO);
+	hIcon = LoadIcon (nullptr, IDI_WINLOGO);
 
 	InitCommonControls();
 
@@ -2126,14 +2126,14 @@ void	VID_Init (void)
 
 	if (COM_CheckParm("-window"))
 	{
-		hdc = GetDC (NULL);
+		hdc = GetDC (nullptr);
 
 		if (GetDeviceCaps(hdc, RASTERCAPS) & RC_PALETTE)
 		{
 			Sys_Error ("Can't run in non-RGB mode");
 		}
 
-		ReleaseDC (NULL, hdc);
+		ReleaseDC (nullptr, hdc);
 
 		windowed = true;
 

@@ -373,25 +373,25 @@ SCR_Init
 void SCR_Init (void)
 {
 	//johnfitz -- new cvars
-	Cvar_RegisterVariable (&scr_menuscale, NULL);
-	Cvar_RegisterVariable (&scr_sbarscale, NULL);
-	Cvar_RegisterVariable (&scr_sbaralpha, NULL);
+	Cvar_RegisterVariable (&scr_menuscale, nullptr);
+	Cvar_RegisterVariable (&scr_sbarscale, nullptr);
+	Cvar_RegisterVariable (&scr_sbaralpha, nullptr);
 	Cvar_RegisterVariable (&scr_conwidth, &SCR_Conwidth_f);
 	Cvar_RegisterVariable (&scr_conscale, &SCR_Conwidth_f);
-	Cvar_RegisterVariable (&scr_crosshaircale, NULL);
-	Cvar_RegisterVariable (&scr_showfps, NULL);
-	Cvar_RegisterVariable (&scr_clock, NULL);
+	Cvar_RegisterVariable (&scr_crosshaircale, nullptr);
+	Cvar_RegisterVariable (&scr_showfps, nullptr);
+	Cvar_RegisterVariable (&scr_clock, nullptr);
 	//johnfitz
 
-	Cvar_RegisterVariable (&scr_fov, NULL);
-	Cvar_RegisterVariable (&scr_viewsize, NULL);
-	Cvar_RegisterVariable (&scr_conspeed, NULL);
-	Cvar_RegisterVariable (&scr_showram, NULL);
-	Cvar_RegisterVariable (&scr_showturtle, NULL);
-	Cvar_RegisterVariable (&scr_showpause, NULL);
-	Cvar_RegisterVariable (&scr_centertime, NULL);
-	Cvar_RegisterVariable (&scr_printspeed, NULL);
-	Cvar_RegisterVariable (&gl_triplebuffer, NULL);
+	Cvar_RegisterVariable (&scr_fov, nullptr);
+	Cvar_RegisterVariable (&scr_viewsize, nullptr);
+	Cvar_RegisterVariable (&scr_conspeed, nullptr);
+	Cvar_RegisterVariable (&scr_showram, nullptr);
+	Cvar_RegisterVariable (&scr_showturtle, nullptr);
+	Cvar_RegisterVariable (&scr_showpause, nullptr);
+	Cvar_RegisterVariable (&scr_centertime, nullptr);
+	Cvar_RegisterVariable (&scr_printspeed, nullptr);
+	Cvar_RegisterVariable (&gl_triplebuffer, nullptr);
 
 	Cmd_AddCommand ("screenshot",SCR_ScreenShot_f);
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);

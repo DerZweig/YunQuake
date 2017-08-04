@@ -162,14 +162,14 @@ void FreeSound (void)
 
 	}
 
-	pDS = NULL;
-	pDSBuf = NULL;
-	pDSPBuf = NULL;
+	pDS = nullptr;
+	pDSBuf = nullptr;
+	pDSPBuf = nullptr;
 	hWaveOut = 0;
 	hData = 0;
 	hWaveHdr = 0;
-	lpData = NULL;
-	lpWaveHdr = NULL;
+	lpData = nullptr;
+	lpWaveHdr = nullptr;
 	dsound_init = false;
 	wav_init = false;
 }
@@ -215,7 +215,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	{
 		hInstDS = LoadLibrary("dsound.dll");
 
-		if (hInstDS == NULL)
+		if (hInstDS == nullptr)
 		{
 			Con_SafePrintf ("Couldn't load dsound.dll\n");
 			return SIS_FAILURE;
@@ -230,7 +230,7 @@ sndinitstat SNDDMA_InitDirect (void)
 		}
 	}
 
-	while ((hresult = iDirectSoundCreate(NULL, &pDS, NULL)) != DS_OK)
+	while ((hresult = iDirectSoundCreate(nullptr, &pDS, nullptr)) != DS_OK)
 	{
 		if (hresult != DSERR_ALLOCATED)
 		{
@@ -238,7 +238,7 @@ sndinitstat SNDDMA_InitDirect (void)
 			return SIS_FAILURE;
 		}
 
-		if (MessageBox (NULL,
+		if (MessageBox (nullptr,
 						"The sound hardware is in use by another app.\n\n"
 					    "Select Retry to try to start sound again or Cancel to run Quake with no sound.",
 						"Sound not available",
@@ -277,7 +277,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	dsbuf.dwSize = sizeof(DSBUFFERDESC);
 	dsbuf.dwFlags = DSBCAPS_PRIMARYBUFFER;
 	dsbuf.dwBufferBytes = 0;
-	dsbuf.lpwfxFormat = NULL;
+	dsbuf.lpwfxFormat = nullptr;
 
 	memset(&dsbcaps, 0, sizeof(dsbcaps));
 	dsbcaps.dwSize = sizeof(dsbcaps);
@@ -285,7 +285,7 @@ sndinitstat SNDDMA_InitDirect (void)
 
 	if (!COM_CheckParm ("-snoforceformat"))
 	{
-		if (DS_OK == pDS->lpVtbl->CreateSoundBuffer(pDS, &dsbuf, &pDSPBuf, NULL))
+		if (DS_OK == pDS->lpVtbl->CreateSoundBuffer(pDS, &dsbuf, &pDSPBuf, nullptr))
 		{
 			pformat = format;
 
@@ -316,7 +316,7 @@ sndinitstat SNDDMA_InitDirect (void)
 		memset(&dsbcaps, 0, sizeof(dsbcaps));
 		dsbcaps.dwSize = sizeof(dsbcaps);
 
-		if (DS_OK != pDS->lpVtbl->CreateSoundBuffer(pDS, &dsbuf, &pDSBuf, NULL))
+		if (DS_OK != pDS->lpVtbl->CreateSoundBuffer(pDS, &dsbuf, &pDSBuf, nullptr))
 		{
 			Con_SafePrintf ("DS:CreateSoundBuffer Failed");
 			FreeSound ();
@@ -370,7 +370,7 @@ sndinitstat SNDDMA_InitDirect (void)
 // initialize the buffer
 	reps = 0;
 
-	while ((hresult = pDSBuf->lpVtbl->Lock(pDSBuf, 0, gSndBufSize, &lpData, &dwSize, NULL, NULL, 0)) != DS_OK)
+	while ((hresult = pDSBuf->lpVtbl->Lock(pDSBuf, 0, gSndBufSize, &lpData, &dwSize, nullptr, nullptr, 0)) != DS_OK)
 	{
 		if (hresult != DSERR_BUFFERLOST)
 		{
@@ -391,10 +391,10 @@ sndinitstat SNDDMA_InitDirect (void)
 	memset(lpData, 0, dwSize);
 //		lpData[4] = lpData[5] = 0x7f;	// force a pop for debugging
 
-	pDSBuf->lpVtbl->Unlock(pDSBuf, lpData, dwSize, NULL, 0);
+	pDSBuf->lpVtbl->Unlock(pDSBuf, lpData, dwSize, nullptr, 0);
 
 	/* we don't want anyone to access the buffer directly w/o locking it first. */
-	lpData = NULL;
+	lpData = nullptr;
 
 	pDSBuf->lpVtbl->Stop(pDSBuf);
 	pDSBuf->lpVtbl->GetCurrentPosition(pDSBuf, &mmstarttime.u.sample, &dwWrite);
@@ -450,7 +450,7 @@ bool SNDDMA_InitWav (void)
 	/* Open a waveform device for output using window callback. */
 	while ((hr = waveOutOpen((LPHWAVEOUT)&hWaveOut, WAVE_MAPPER,
 					&format,
-					0, 0L, CALLBACK_NULL)) != MMSYSERR_NOERROR)
+					0, 0L, CALLBACK_nullptr)) != MMSYSERR_NOERROR)
 	{
 		if (hr != MMSYSERR_ALLOCATED)
 		{
@@ -458,7 +458,7 @@ bool SNDDMA_InitWav (void)
 			return false;
 		}
 
-		if (MessageBox (NULL,
+		if (MessageBox (nullptr,
 						"The sound hardware is in use by another app.\n\n"
 					    "Select Retry to try to start sound again or Cancel to run Quake with no sound.",
 						"Sound not available",
@@ -501,7 +501,7 @@ bool SNDDMA_InitWav (void)
 	hWaveHdr = GlobalAlloc(GMEM_MOVEABLE | GMEM_SHARE,
 		(DWORD) sizeof(WAVEHDR) * WAV_BUFFERS);
 
-	if (hWaveHdr == NULL)
+	if (hWaveHdr == nullptr)
 	{
 		Con_SafePrintf ("Sound: Failed to Alloc header.\n");
 		FreeSound ();
@@ -510,7 +510,7 @@ bool SNDDMA_InitWav (void)
 
 	lpWaveHdr = (LPWAVEHDR) GlobalLock(hWaveHdr);
 
-	if (lpWaveHdr == NULL)
+	if (lpWaveHdr == nullptr)
 	{
 		Con_SafePrintf ("Sound: Failed to lock header.\n");
 		FreeSound ();

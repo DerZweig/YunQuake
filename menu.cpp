@@ -862,7 +862,7 @@ char *net_helpMessage [] =
 
   "                        ",
   " Two computers connected",
-  " by a null-modem cable. ",
+  " by a nullptr-modem cable. ",
   "                        ",
 
   " Novell network LANs    ",
@@ -908,7 +908,7 @@ void M_Net_Draw (void)
 	else
 	{
 #ifdef _WIN32
-		p = NULL;
+		p = nullptr;
 #else
 		p = Draw_CachePic ("gfx/dim_modm.lmp");
 #endif
@@ -926,7 +926,7 @@ void M_Net_Draw (void)
 	else
 	{
 #ifdef _WIN32
-		p = NULL;
+		p = nullptr;
 #else
 		p = Draw_CachePic ("gfx/dim_drct.lmp");
 #endif
@@ -1285,7 +1285,7 @@ void M_Options_Key (int k)
 		break;
 	}
 
-	if (options_cursor == 12 && vid_menudrawfn == NULL)
+	if (options_cursor == 12 && vid_menudrawfn == nullptr)
 	{
 		if (k == K_UPARROW)
 			options_cursor = 11;

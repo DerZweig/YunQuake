@@ -373,7 +373,7 @@ void Fog_Init (void)
 {
 	Cmd_AddCommand ("fog",Fog_FogCommand_f);
 
-	//Cvar_RegisterVariable (&r_vfog, NULL);
+	//Cvar_RegisterVariable (&r_vfog, nullptr);
 
 	//set up global fog
 	fog_density = 0.0;

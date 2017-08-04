@@ -199,7 +199,7 @@ void Scrap_Upload (void)
 	for (i=0; i<MAX_SCRAPS; i++)
 	{
 		sprintf (name, "scrap%i", i);
-		scrap_textures[i] = TexMgr_LoadImage (NULL, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i],
+		scrap_textures[i] = TexMgr_LoadImage (nullptr, name, BLOCK_WIDTH, BLOCK_HEIGHT, SRC_INDEXED, scrap_texels[i],
 			"", (unsigned)scrap_texels[i], TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
 	}
 
@@ -248,7 +248,7 @@ qpic_t *Draw_PicFromWad (char *name)
 
 		offset = (unsigned)p - (unsigned)wad_base + sizeof(int)*2; //johnfitz
 
-		gl->gltexture = TexMgr_LoadImage (NULL, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILENAME,
+		gl->gltexture = TexMgr_LoadImage (nullptr, texturename, p->width, p->height, SRC_INDEXED, p->data, WADFILENAME,
 										  offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP); //johnfitz -- TexMgr
 		gl->sl = 0;
 		gl->sh = (float)p->width/(float)TexMgr_PadConditional(p->width); //johnfitz
@@ -298,7 +298,7 @@ qpic_t	*Draw_CachePic (char *path)
 	pic->pic.height = dat->height;
 
 	gl = (glpic_t *)pic->pic.data;
-	gl->gltexture = TexMgr_LoadImage (NULL, path, dat->width, dat->height, SRC_INDEXED, dat->data, path,
+	gl->gltexture = TexMgr_LoadImage (nullptr, path, dat->width, dat->height, SRC_INDEXED, dat->data, path,
 									  sizeof(int)*2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP); //johnfitz -- TexMgr
 	gl->sl = 0;
 	gl->sh = (float)dat->width/(float)TexMgr_PadConditional(dat->width); //johnfitz
@@ -324,7 +324,7 @@ qpic_t *Draw_MakePic (char *name, int width, int height, byte *data)
 	pic->height = height;
 
 	gl = (glpic_t *)pic->data;
-	gl->gltexture = TexMgr_LoadImage (NULL, name, width, height, SRC_INDEXED, data, "", (unsigned)data, flags);
+	gl->gltexture = TexMgr_LoadImage (nullptr, name, width, height, SRC_INDEXED, data, "", (unsigned)data, flags);
 	gl->sl = 0;
 	gl->sh = (float)width/(float)TexMgr_PadConditional(width);
 	gl->tl = 0;
@@ -352,7 +352,7 @@ void Draw_LoadPics (void)
 	data = W_GetLumpName ("conchars");
 	if (!data) Sys_Error ("Draw_LoadPics: couldn't load conchars");
 	offset = (unsigned)data - (unsigned)wad_base;
-	char_texture = TexMgr_LoadImage (NULL, WADFILENAME":conchars", 128, 128, SRC_INDEXED, data,
+	char_texture = TexMgr_LoadImage (nullptr, WADFILENAME":conchars", 128, 128, SRC_INDEXED, data,
 		WADFILENAME, offset, TEXPREF_ALPHA | TEXPREF_NEAREST | TEXPREF_NOPICMIP | TEXPREF_CONCHARS);
 
 	draw_disc = Draw_PicFromWad ("disc");
@@ -394,7 +394,7 @@ Draw_Init -- johnfitz -- rewritten
 */
 void Draw_Init (void)
 {
-	Cvar_RegisterVariable (&scr_conalpha, NULL);
+	Cvar_RegisterVariable (&scr_conalpha, nullptr);
 
 	// clear scrap and allocate gltextures
 	memset(&scrap_allocated, 0, sizeof(scrap_allocated));

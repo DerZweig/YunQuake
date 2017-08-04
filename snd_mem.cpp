@@ -122,14 +122,14 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	if (!data)
 	{
 		Con_Printf ("Couldn't load %s\n", namebuffer);
-		return NULL;
+		return nullptr;
 	}
 
 	info = GetWavinfo (s->name, data, com_filesize);
 	if (info.channels != 1)
 	{
 		Con_Printf ("%s is a stereo sample\n",s->name);
-		return NULL;
+		return nullptr;
 	}
 
 	stepscale = (float)info.rate / shm->speed;
@@ -139,7 +139,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	sc = Cache_Alloc ( &s->cache, len + sizeof(sfxcache_t), s->name);
 	if (!sc)
-		return NULL;
+		return nullptr;
 
 	sc->length = info.samples;
 	sc->loopstart = info.loopstart;
@@ -198,7 +198,7 @@ void FindNextChunk(char *name)
 
 		if (data_p >= iff_end)
 		{	// didn't find the chunk
-			data_p = NULL;
+			data_p = nullptr;
 			return;
 		}
 
@@ -206,7 +206,7 @@ void FindNextChunk(char *name)
 		iff_chunk_len = GetLittleLong();
 		if (iff_chunk_len < 0)
 		{
-			data_p = NULL;
+			data_p = nullptr;
 			return;
 		}
 //		if (iff_chunk_len > 1024*1024)

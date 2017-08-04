@@ -121,7 +121,7 @@ qsocket_t *NET_NewQSocket ()
 	Q_strcpy (sock->address,"UNSET ADDRESS");
 	sock->driver = net_driverlevel;
 	sock->socket = 0;
-	sock->driverdata = NULL;
+	sock->driverdata = nullptr;
 	sock->canSend = true;
 	sock->sendNext = false;
 	sock->lastMessageTime = net_time;
@@ -365,7 +365,7 @@ qsocket_t *NET_Connect (char *host)
 	SetNetTime();
 
 	if (host && *host == 0)
-		host = NULL;
+		host = nullptr;
 
 	if (host)
 	{
@@ -394,10 +394,10 @@ qsocket_t *NET_Connect (char *host)
 	while(slistInProgress)
 		NET_Poll();
 
-	if (host == NULL)
+	if (host == nullptr)
 	{
 		if (hostCacheCount != 1)
-			return NULL;
+			return nullptr;
 		host = hostcache[0].cname;
 		Con_Printf("Connecting to...\n%s @ %s\n\n", hostcache[0].name, host);
 	}
@@ -428,7 +428,7 @@ JustDoIt:
 		PrintSlistTrailer();
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 
@@ -457,7 +457,7 @@ qsocket_t *NET_CheckNewConnections (void)
 		}
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 /*
@@ -743,16 +743,16 @@ void NET_Init (void)
 	// allocate space for network message buffer
 	SZ_Alloc (&net_message, NET_MAXMESSAGE);
 
-	Cvar_RegisterVariable (&net_messagetimeout, NULL);
-	Cvar_RegisterVariable (&hostname, NULL);
-	Cvar_RegisterVariable (&config_com_port, NULL);
-	Cvar_RegisterVariable (&config_com_irq, NULL);
-	Cvar_RegisterVariable (&config_com_baud, NULL);
-	Cvar_RegisterVariable (&config_com_modem, NULL);
-	Cvar_RegisterVariable (&config_modem_dialtype, NULL);
-	Cvar_RegisterVariable (&config_modem_clear, NULL);
-	Cvar_RegisterVariable (&config_modem_init, NULL);
-	Cvar_RegisterVariable (&config_modem_hangup, NULL);
+	Cvar_RegisterVariable (&net_messagetimeout, nullptr);
+	Cvar_RegisterVariable (&hostname, nullptr);
+	Cvar_RegisterVariable (&config_com_port, nullptr);
+	Cvar_RegisterVariable (&config_com_irq, nullptr);
+	Cvar_RegisterVariable (&config_com_baud, nullptr);
+	Cvar_RegisterVariable (&config_com_modem, nullptr);
+	Cvar_RegisterVariable (&config_modem_dialtype, nullptr);
+	Cvar_RegisterVariable (&config_modem_clear, nullptr);
+	Cvar_RegisterVariable (&config_modem_init, nullptr);
+	Cvar_RegisterVariable (&config_modem_hangup, nullptr);
 
 	Cmd_AddCommand ("slist", NET_Slist_f);
 	Cmd_AddCommand ("listen", NET_Listen_f);
@@ -806,7 +806,7 @@ void		NET_Shutdown (void)
 }
 
 
-static PollProcedure *pollProcedureList = NULL;
+static PollProcedure *pollProcedureList = nullptr;
 
 void NET_Poll(void)
 {
@@ -844,14 +844,14 @@ void SchedulePollProcedure(PollProcedure *proc, double timeOffset)
 	PollProcedure *pp, *prev;
 
 	proc->nextTime = Sys_FloatTime() + timeOffset;
-	for (pp = pollProcedureList, prev = NULL; pp; pp = pp->next)
+	for (pp = pollProcedureList, prev = nullptr; pp; pp = pp->next)
 	{
 		if (pp->nextTime >= proc->nextTime)
 			break;
 		prev = pp;
 	}
 
-	if (prev == NULL)
+	if (prev == nullptr)
 	{
 		proc->next = pollProcedureList;
 		pollProcedureList = proc;

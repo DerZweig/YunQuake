@@ -133,7 +133,7 @@ void S_TransferStereo16 (int endtime)
 
 #ifdef _WIN32
 	if (pDSBuf)
-		pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, NULL, 0);
+		pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, nullptr, 0);
 #endif
 }
 
@@ -237,7 +237,7 @@ void S_TransferPaintBuffer(int endtime)
 
 		ir += il;
 
-		pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, NULL, 0);
+		pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, nullptr, 0);
 
 		pDSBuf->lpVtbl->GetCurrentPosition(pDSBuf, &dwNewpos, &dwWrite);
 
@@ -318,7 +318,7 @@ void S_PaintChannels(int endtime)
 					}
 					else
 					{	// channel just stopped
-						ch->sfx = NULL;
+						ch->sfx = nullptr;
 						break;
 					}
 				}

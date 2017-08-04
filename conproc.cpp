@@ -57,7 +57,7 @@ void InitConProc (HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
 	heventChildSend = heventChild;
 
 // so we'll know when to go away.
-	heventDone = CreateEvent (NULL, FALSE, FALSE, NULL);
+	heventDone = CreateEvent (nullptr, FALSE, FALSE, nullptr);
 
 	if (!heventDone)
 	{
@@ -65,7 +65,7 @@ void InitConProc (HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
 		return;
 	}
 
-	if (!CreateThread (NULL,
+	if (!CreateThread (nullptr,
 					   0,
 					   (LPTHREAD_START_ROUTINE) RequestProc,
 					   0,
@@ -209,7 +209,7 @@ BOOL ReadText (LPTSTR pszText, int iBeginLine, int iEndLine)
 		coord,
 		&dwRead);
 
-	// Make sure it's null terminated.
+	// Make sure it's nullptr terminated.
 	if (bRet)
 		pszText[dwRead] = '\0';
 

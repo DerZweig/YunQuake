@@ -190,50 +190,50 @@ void R_Init (void)
 	Cmd_AddCommand ("envmap", R_Envmap_f);
 	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);
 
-	Cvar_RegisterVariable (&r_norefresh, NULL);
-	Cvar_RegisterVariable (&r_lightmap, NULL);
-	Cvar_RegisterVariable (&r_fullbright, NULL);
-	Cvar_RegisterVariable (&r_drawentities, NULL);
-	Cvar_RegisterVariable (&r_drawviewmodel, NULL);
-	Cvar_RegisterVariable (&r_shadows, NULL);
-	Cvar_RegisterVariable (&r_wateralpha, NULL);
-	Cvar_RegisterVariable (&r_dynamic, NULL);
+	Cvar_RegisterVariable (&r_norefresh, nullptr);
+	Cvar_RegisterVariable (&r_lightmap, nullptr);
+	Cvar_RegisterVariable (&r_fullbright, nullptr);
+	Cvar_RegisterVariable (&r_drawentities, nullptr);
+	Cvar_RegisterVariable (&r_drawviewmodel, nullptr);
+	Cvar_RegisterVariable (&r_shadows, nullptr);
+	Cvar_RegisterVariable (&r_wateralpha, nullptr);
+	Cvar_RegisterVariable (&r_dynamic, nullptr);
 	Cvar_RegisterVariable (&r_novis, R_Novis_f);
-	Cvar_RegisterVariable (&r_speeds, NULL);
+	Cvar_RegisterVariable (&r_speeds, nullptr);
 
-	Cvar_RegisterVariable (&gl_finish, NULL);
-	Cvar_RegisterVariable (&gl_clear, NULL);
-	Cvar_RegisterVariable (&gl_cull, NULL);
-	Cvar_RegisterVariable (&gl_smoothmodels, NULL);
-	Cvar_RegisterVariable (&gl_affinemodels, NULL);
-	Cvar_RegisterVariable (&gl_polyblend, NULL);
-	Cvar_RegisterVariable (&gl_flashblend, NULL);
-	Cvar_RegisterVariable (&gl_playermip, NULL);
-	Cvar_RegisterVariable (&gl_nocolors, NULL);
+	Cvar_RegisterVariable (&gl_finish, nullptr);
+	Cvar_RegisterVariable (&gl_clear, nullptr);
+	Cvar_RegisterVariable (&gl_cull, nullptr);
+	Cvar_RegisterVariable (&gl_smoothmodels, nullptr);
+	Cvar_RegisterVariable (&gl_affinemodels, nullptr);
+	Cvar_RegisterVariable (&gl_polyblend, nullptr);
+	Cvar_RegisterVariable (&gl_flashblend, nullptr);
+	Cvar_RegisterVariable (&gl_playermip, nullptr);
+	Cvar_RegisterVariable (&gl_nocolors, nullptr);
 
 	//johnfitz -- new cvars
-	Cvar_RegisterVariable (&r_stereo, NULL);
-	Cvar_RegisterVariable (&r_stereodepth, NULL);
+	Cvar_RegisterVariable (&r_stereo, nullptr);
+	Cvar_RegisterVariable (&r_stereodepth, nullptr);
 	Cvar_RegisterVariable (&r_clearcolor, R_SetClearColor_f);
-	Cvar_RegisterVariable (&r_waterquality, NULL);
-	Cvar_RegisterVariable (&r_oldwater, NULL);
-	Cvar_RegisterVariable (&r_waterwarp, NULL);
-	Cvar_RegisterVariable (&r_drawflat, NULL);
-	Cvar_RegisterVariable (&r_flatlightstyles, NULL);
+	Cvar_RegisterVariable (&r_waterquality, nullptr);
+	Cvar_RegisterVariable (&r_oldwater, nullptr);
+	Cvar_RegisterVariable (&r_waterwarp, nullptr);
+	Cvar_RegisterVariable (&r_drawflat, nullptr);
+	Cvar_RegisterVariable (&r_flatlightstyles, nullptr);
 	Cvar_RegisterVariable (&r_oldskyleaf, R_OldSkyLeaf_f);
-	Cvar_RegisterVariable (&r_drawworld, NULL);
-	Cvar_RegisterVariable (&r_showtris, NULL);
-	Cvar_RegisterVariable (&r_showbboxes, NULL);
-	Cvar_RegisterVariable (&gl_farclip, NULL);
+	Cvar_RegisterVariable (&r_drawworld, nullptr);
+	Cvar_RegisterVariable (&r_showtris, nullptr);
+	Cvar_RegisterVariable (&r_showbboxes, nullptr);
+	Cvar_RegisterVariable (&gl_farclip, nullptr);
 	Cvar_RegisterVariable (&gl_fullbrights, GL_Fullbrights_f);
 	Cvar_RegisterVariable (&gl_overbright, GL_Overbright_f);
-	Cvar_RegisterVariable (&gl_overbright_models, NULL);
-	Cvar_RegisterVariable (&r_lerpmodels, NULL);
-	Cvar_RegisterVariable (&r_lerpmove, NULL);
+	Cvar_RegisterVariable (&gl_overbright_models, nullptr);
+	Cvar_RegisterVariable (&r_lerpmodels, nullptr);
+	Cvar_RegisterVariable (&r_lerpmove, nullptr);
 	Cvar_RegisterVariable (&r_nolerp_list, R_NoLerpList_f);
 	//johnfitz
 
-	Cvar_RegisterVariable (&gl_subdivide_size, NULL); //johnfitz -- moved here from gl_model.c
+	Cvar_RegisterVariable (&gl_subdivide_size, nullptr); //johnfitz -- moved here from gl_model.c
 
 	R_InitParticles ();
 	R_SetClearColor_f (); //johnfitz
@@ -330,7 +330,7 @@ void R_NewGame (void)
 
 	//clear playertexture pointers (the textures themselves were freed by texmgr_newgame)
 	for (i=0; i<MAX_SCOREBOARD; i++)
-		playertextures[i] = NULL;
+		playertextures[i] = nullptr;
 }
 
 /*
@@ -348,9 +348,9 @@ void R_NewMap (void)
 // clear out efrags in case the level hasn't been reloaded
 // FIXME: is this one short?
 	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
-		cl.worldmodel->leafs[i].efrags = NULL;
+		cl.worldmodel->leafs[i].efrags = nullptr;
 
-	r_viewleaf = NULL;
+	r_viewleaf = nullptr;
 	R_ClearParticles ();
 
 	GL_BuildLightmaps ();

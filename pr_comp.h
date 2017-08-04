@@ -28,7 +28,7 @@ enum class etype_t
 {ev_void, ev_string, ev_float, ev_vector, ev_entity, ev_field, ev_function, ev_pointer} ;
 
 
-#define	OFS_NULL		0
+#define	OFS_nullptr		0
 #define	OFS_RETURN		1
 #define	OFS_PARM0		4		// leave 3 ofs for each parm to hold vectors
 #define	OFS_PARM1		7
@@ -172,7 +172,7 @@ struct dprograms_t
 	int		numfunctions;	// function 0 is an empty
 
 	int		ofs_strings;
-	int		numstrings;		// first string is a null string
+	int		numstrings;		// first string is a nullptr string
 
 	int		ofs_globals;
 	int		numglobals;

@@ -456,7 +456,7 @@ void R_DrawAliasModel (entity_t *e)
 		    tx = playertextures[i - 1];
 	}
 	if (!gl_fullbrights.value)
-		fb = NULL;
+		fb = nullptr;
 
 	//
 	// draw it

@@ -873,9 +873,9 @@ void GL_BuildLightmaps (void)
 
 	r_framecount = 1; // no dlightcache
 
-	//johnfitz -- null out array (the gltexture objects themselves were already freed by Mod_ClearAll)
+	//johnfitz -- nullptr out array (the gltexture objects themselves were already freed by Mod_ClearAll)
 	for (i=0; i < MAX_LIGHTMAPS; i++)
-		lightmap_textures[i] = NULL;
+		lightmap_textures[i] = nullptr;
 	//johnfitz
 
 	gl_lightmap_format = GL_RGB; //johnfitz

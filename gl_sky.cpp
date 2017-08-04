@@ -161,7 +161,7 @@ void Sky_LoadSkyBox (char *name)
 	{
 		if (skybox_textures[i] && skybox_textures[i] != notexture)
 			TexMgr_FreeTexture (skybox_textures[i]);
-		skybox_textures[i] = NULL;
+		skybox_textures[i] = nullptr;
 	}
 
 	//turn off skybox if sky is set to ""
@@ -196,7 +196,7 @@ void Sky_LoadSkyBox (char *name)
 		{
 			if (skybox_textures[i] && skybox_textures[i] != notexture)
 				TexMgr_FreeTexture (skybox_textures[i]);
-			skybox_textures[i] = NULL;
+			skybox_textures[i] = nullptr;
 		}
 		skybox_name[0] = 0;
 		return;
@@ -221,7 +221,7 @@ void Sky_NewMap (void)
 	//
 	skybox_name[0] = 0;
 	for (i=0; i<6; i++)
-		skybox_textures[i] = NULL;
+		skybox_textures[i] = nullptr;
 
 	//
 	// read worldspawn (this is so ugly, and shouldn't it be done on the server?)
@@ -295,15 +295,15 @@ void Sky_Init (void)
 {
 	int		i;
 
-	Cvar_RegisterVariable (&r_fastsky, NULL);
-	Cvar_RegisterVariable (&r_sky_quality, NULL);
-	Cvar_RegisterVariable (&r_skyalpha, NULL);
-	Cvar_RegisterVariable (&r_skyfog, NULL);
+	Cvar_RegisterVariable (&r_fastsky, nullptr);
+	Cvar_RegisterVariable (&r_sky_quality, nullptr);
+	Cvar_RegisterVariable (&r_skyalpha, nullptr);
+	Cvar_RegisterVariable (&r_skyfog, nullptr);
 
 	Cmd_AddCommand ("sky",Sky_SkyCommand_f);
 
 	for (i=0; i<6; i++)
-		skybox_textures[i] = NULL;
+		skybox_textures[i] = nullptr;
 }
 
 //==============================================================================

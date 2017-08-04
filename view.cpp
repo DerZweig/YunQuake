@@ -709,7 +709,7 @@ void V_CalcIntermissionRefdef (void)
 
 	VectorCopy (ent->origin, r_refdef.vieworg);
 	VectorCopy (ent->angles, r_refdef.viewangles);
-	view->model = NULL;
+	view->model = nullptr;
 
 // allways idle in intermission
 	old = v_idlescale.value;
@@ -888,33 +888,33 @@ void V_Init (void)
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 
-	Cvar_RegisterVariable (&v_centermove, NULL);
-	Cvar_RegisterVariable (&v_centerspeed, NULL);
+	Cvar_RegisterVariable (&v_centermove, nullptr);
+	Cvar_RegisterVariable (&v_centerspeed, nullptr);
 
-	Cvar_RegisterVariable (&v_iyaw_cycle, NULL);
-	Cvar_RegisterVariable (&v_iroll_cycle, NULL);
-	Cvar_RegisterVariable (&v_ipitch_cycle, NULL);
-	Cvar_RegisterVariable (&v_iyaw_level, NULL);
-	Cvar_RegisterVariable (&v_iroll_level, NULL);
-	Cvar_RegisterVariable (&v_ipitch_level, NULL);
+	Cvar_RegisterVariable (&v_iyaw_cycle, nullptr);
+	Cvar_RegisterVariable (&v_iroll_cycle, nullptr);
+	Cvar_RegisterVariable (&v_ipitch_cycle, nullptr);
+	Cvar_RegisterVariable (&v_iyaw_level, nullptr);
+	Cvar_RegisterVariable (&v_iroll_level, nullptr);
+	Cvar_RegisterVariable (&v_ipitch_level, nullptr);
 
-	Cvar_RegisterVariable (&v_idlescale, NULL);
-	Cvar_RegisterVariable (&crosshair, NULL);
-	Cvar_RegisterVariable (&gl_cshiftpercent, NULL);
+	Cvar_RegisterVariable (&v_idlescale, nullptr);
+	Cvar_RegisterVariable (&crosshair, nullptr);
+	Cvar_RegisterVariable (&gl_cshiftpercent, nullptr);
 
-	Cvar_RegisterVariable (&scr_ofsx, NULL);
-	Cvar_RegisterVariable (&scr_ofsy, NULL);
-	Cvar_RegisterVariable (&scr_ofsz, NULL);
-	Cvar_RegisterVariable (&cl_rollspeed, NULL);
-	Cvar_RegisterVariable (&cl_rollangle, NULL);
-	Cvar_RegisterVariable (&cl_bob, NULL);
-	Cvar_RegisterVariable (&cl_bobcycle, NULL);
-	Cvar_RegisterVariable (&cl_bobup, NULL);
+	Cvar_RegisterVariable (&scr_ofsx, nullptr);
+	Cvar_RegisterVariable (&scr_ofsy, nullptr);
+	Cvar_RegisterVariable (&scr_ofsz, nullptr);
+	Cvar_RegisterVariable (&cl_rollspeed, nullptr);
+	Cvar_RegisterVariable (&cl_rollangle, nullptr);
+	Cvar_RegisterVariable (&cl_bob, nullptr);
+	Cvar_RegisterVariable (&cl_bobcycle, nullptr);
+	Cvar_RegisterVariable (&cl_bobup, nullptr);
 
-	Cvar_RegisterVariable (&v_kicktime, NULL);
-	Cvar_RegisterVariable (&v_kickroll, NULL);
-	Cvar_RegisterVariable (&v_kickpitch, NULL);
-	Cvar_RegisterVariable (&v_gunkick, NULL); //johnfitz
+	Cvar_RegisterVariable (&v_kicktime, nullptr);
+	Cvar_RegisterVariable (&v_kickroll, nullptr);
+	Cvar_RegisterVariable (&v_kickpitch, nullptr);
+	Cvar_RegisterVariable (&v_gunkick, nullptr); //johnfitz
 }
 
 

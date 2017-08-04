@@ -229,7 +229,7 @@ void ExtraMaps_Add (char *name)
 	strcpy (level->name, name);
 
 	//insert each entry in alphabetical order
-    if (extralevels == NULL || stricmp(level->name, extralevels->name) < 0) //insert at front
+    if (extralevels == nullptr || stricmp(level->name, extralevels->name) < 0) //insert at front
 	{
         level->next = extralevels;
         extralevels = level;
@@ -354,7 +354,7 @@ void Modlist_Add (char *name)
 	strcpy (mod->name, name);
 
 	//insert each entry in alphabetical order
-    if (modlist == NULL || _stricmp(mod->name, modlist->name) < 0) //insert at front
+    if (modlist == nullptr || _stricmp(mod->name, modlist->name) < 0) //insert at front
 	{
         mod->next = modlist;
         modlist = mod;
@@ -1267,7 +1267,7 @@ void Host_Say(bool teamonly)
 	else
 		sprintf (text, "%c<%s> ", 1, hostname.string);
 
-	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and null terminator
+	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and nullptr terminator
 	if (Q_strlen(p) > j)
 		p[j] = 0;
 
@@ -1331,7 +1331,7 @@ void Host_Tell_f(void)
 	}
 
 // check length & truncate if necessary
-	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and null terminator
+	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and nullptr terminator
 	if (Q_strlen(p) > j)
 		p[j] = 0;
 
@@ -1644,7 +1644,7 @@ Kicks a user off of the server
 void Host_Kick_f (void)
 {
 	char		*who;
-	char		*message = NULL;
+	char		*message = nullptr;
 	client_t	*save;
 	int			i;
 	bool	byNumber = false;
@@ -1957,7 +1957,7 @@ edict_t	*FindViewthing (void)
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");
-	return NULL;
+	return nullptr;
 }
 
 /*

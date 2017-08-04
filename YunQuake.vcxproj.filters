@@ -73,9 +73,6 @@
     <ClCompile Include="gl_texmgr.c">
       <Filter>opengl</Filter>
     </ClCompile>
-    <ClCompile Include="gl_vidnt.c">
-      <Filter>opengl</Filter>
-    </ClCompile>
     <ClCompile Include="gl_warp.c">
       <Filter>opengl</Filter>
     </ClCompile>
@@ -88,9 +85,6 @@
     <ClCompile Include="snd_mix.c">
       <Filter>sound</Filter>
     </ClCompile>
-    <ClCompile Include="snd_win.c">
-      <Filter>sound</Filter>
-    </ClCompile>
     <ClCompile Include="net_dgrm.c">
       <Filter>network</Filter>
     </ClCompile>
@@ -98,9 +92,6 @@
       <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="net_main.c">
-      <Filter>network</Filter>
-    </ClCompile>
-    <ClCompile Include="net_wipx.c">
       <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="sv_main.c">
@@ -120,12 +111,6 @@
     </ClCompile>
     <ClCompile Include="net_wins.c">
       <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="sys_win.c">
-      <Filter>server</Filter>
-    </ClCompile>
-    <ClCompile Include="cd_win.c">
-      <Filter>network</Filter>
     </ClCompile>
     <ClCompile Include="in_win.c">
       <Filter>win32</Filter>
@@ -186,6 +171,21 @@
     </ClCompile>
     <ClCompile Include="zone.c">
       <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="sys_win.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="cd_win.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="net_wipx.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_vidnt.c">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="snd_win.c">
+      <Filter>win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -307,12 +307,6 @@
     <ClInclude Include="net_ser.h">
       <Filter>network</Filter>
     </ClInclude>
-    <ClInclude Include="net_wins.h">
-      <Filter>network</Filter>
-    </ClInclude>
-    <ClInclude Include="net_wipx.h">
-      <Filter>network</Filter>
-    </ClInclude>
     <ClInclude Include="net_dgrm.h">
       <Filter>network</Filter>
     </ClInclude>
@@ -366,6 +360,12 @@
     </ClInclude>
     <ClInclude Include="zone.h">
       <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="net_wins.h">
+      <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="net_wipx.h">
+      <Filter>win32</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

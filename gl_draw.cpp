@@ -214,7 +214,7 @@ qpic_t* Draw_PicFromWad(char* name)
 		char texturename[64]; //johnfitz
 		sprintf(texturename, "%s:%s", WADFILENAME, name); //johnfitz
 
-		unsigned offset = reinterpret_cast<unsigned>(p) - reinterpret_cast<unsigned>(wad_base) + sizeof(int) * 2; //johnfitz
+		auto offset = reinterpret_cast<unsigned>(p) - reinterpret_cast<unsigned>(wad_base) + sizeof(int) * 2; //johnfitz
 
 		gl->gltexture = TexMgr_LoadImage(nullptr, texturename, p->width, p->height, srcformat::SRC_INDEXED, p->data, WADFILENAME,
 		                                 offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP); //johnfitz -- TexMgr

@@ -125,64 +125,64 @@
       <Filter>prog</Filter>
     </ClCompile>
     <ClCompile Include="image.cpp">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClCompile>
     <ClCompile Include="r_alias.cpp">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClCompile>
     <ClCompile Include="r_brush.cpp">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClCompile>
     <ClCompile Include="r_part.cpp">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClCompile>
     <ClCompile Include="r_sprite.cpp">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClCompile>
     <ClCompile Include="r_world.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_draw.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer</Filter>
     </ClCompile>
     <ClCompile Include="gl_fog.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_model.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_mesh.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_refrag.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_rlight.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_rmain.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_rmisc.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_screen.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_sky.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_texmgr.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="gl_warp.cpp">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
     <ClCompile Include="conproc.cpp">
       <Filter>win32</Filter>
     </ClCompile>
     <ClCompile Include="net_dgrm.cpp">
       <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="gl_draw.cpp">
+      <Filter>win32\renderer\opengl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -191,9 +191,6 @@
     </Filter>
     <Filter Include="misc">
       <UniqueIdentifier>{5bee84da-9bce-4166-af1f-fad8b8a873c8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="opengl">
-      <UniqueIdentifier>{e52fbd89-bb72-42cd-aeb3-8581fb89a728}</UniqueIdentifier>
     </Filter>
     <Filter Include="sound">
       <UniqueIdentifier>{5eb73144-8c65-4c58-a499-c25db81af43a}</UniqueIdentifier>
@@ -210,19 +207,22 @@
     <Filter Include="game">
       <UniqueIdentifier>{5c259eb8-5bb8-4bfe-bceb-1a214bc23818}</UniqueIdentifier>
     </Filter>
-    <Filter Include="renderer">
-      <UniqueIdentifier>{54f2975d-fbe7-4ab0-8d00-f33b3917ef0d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="prog">
       <UniqueIdentifier>{6f7a7b31-de49-4b17-b284-a98493f5608b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32\renderer">
+      <UniqueIdentifier>{54f2975d-fbe7-4ab0-8d00-f33b3917ef0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="win32\renderer\opengl">
+      <UniqueIdentifier>{e52fbd89-bb72-42cd-aeb3-8581fb89a728}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="anorm_dots.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="anorms.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="asm_i386.h">
       <Filter>misc</Filter>
@@ -255,22 +255,22 @@
       <Filter>misc</Filter>
     </ClInclude>
     <ClInclude Include="draw.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="gl_model.h">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClInclude>
     <ClInclude Include="gl_texmgr.h">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClInclude>
     <ClInclude Include="gl_warp_sin.h">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClInclude>
     <ClInclude Include="glquake.h">
-      <Filter>opengl</Filter>
+      <Filter>win32\renderer\opengl</Filter>
     </ClInclude>
     <ClInclude Include="image.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="input.h">
       <Filter>game</Filter>
@@ -285,7 +285,7 @@
       <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="modelgen.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="net.h">
       <Filter>network</Filter>
@@ -313,26 +313,26 @@
     </ClInclude>
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="render.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="sbar.h">
       <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="screen.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="sound.h">
       <Filter>sound</Filter>
     </ClInclude>
     <ClInclude Include="spritegn.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="sys.h" />
     <ClInclude Include="vid.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="view.h">
-      <Filter>renderer</Filter>
+      <Filter>win32\renderer</Filter>
     </ClInclude>
     <ClInclude Include="wad.h">
       <Filter>game</Filter>

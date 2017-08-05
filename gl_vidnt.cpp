@@ -376,22 +376,6 @@ VID_SetFullDIBMode
 */
 bool VID_SetFullDIBMode(int modenum)
 {
-	if (!leavecurrentmode)
-	{
-		gdevmode.dmFields = DM_BITSPERPEL |
-			DM_PELSWIDTH |
-			DM_PELSHEIGHT |
-			DM_DISPLAYFREQUENCY; //johnfitz -- refreshrate
-		gdevmode.dmBitsPerPel = modelist[modenum].bpp;
-		gdevmode.dmPelsWidth = modelist[modenum].width << modelist[modenum].halfscreen;
-		gdevmode.dmPelsHeight = modelist[modenum].height;
-		gdevmode.dmDisplayFrequency = modelist[modenum].refreshrate; //johnfitz -- refreshrate
-		gdevmode.dmSize = sizeof gdevmode;
-
-		if (ChangeDisplaySettings(&gdevmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-			Sys_Error("Couldn't set fullscreen DIB mode");
-	}
-
 	modestate = modestate_t::MS_FULLDIB;
 
 	WindowRect.top = WindowRect.left = 0;
@@ -412,18 +396,17 @@ bool VID_SetFullDIBMode(int modenum)
 	int height = rect.bottom - rect.top;
 
 	// Create the DIB window
-	dibwindow = CreateWindowEx(
-		ExWindowStyle,
-		"FitzQuake", //johnfitz -- was "WinQuake"
-		"FitzQuake", //johnfitz -- was "GLQuake"
-		WindowStyle,
-		rect.left, rect.top,
-		width,
-		height,
-		nullptr,
-		nullptr,
-		global_hInstance,
-		nullptr);
+	dibwindow = CreateWindowEx(ExWindowStyle,
+	                           "FitzQuake", //johnfitz -- was "WinQuake"
+	                           "FitzQuake", //johnfitz -- was "GLQuake"
+	                           WindowStyle,
+	                           rect.left, rect.top,
+	                           width,
+	                           height,
+	                           nullptr,
+	                           nullptr,
+	                           global_hInstance,
+	                           nullptr);
 
 	if (!dibwindow)
 		Sys_Error("Couldn't create DIB window");
@@ -695,8 +678,6 @@ void VID_Restart()
 
 		if (hdc && dibwindow)
 			ReleaseDC(dibwindow, hdc);
-		if (modestate == modestate_t::MS_FULLDIB)
-		ChangeDisplaySettings(nullptr, 0);
 		if (maindc && dibwindow)
 			ReleaseDC(dibwindow, maindc);
 		maindc = nullptr;
@@ -1220,9 +1201,6 @@ void VID_Shutdown()
 		if (hDC && dibwindow)
 			ReleaseDC(dibwindow, hDC);
 
-		if (modestate == modestate_t::MS_FULLDIB)
-		ChangeDisplaySettings(nullptr, 0);
-
 		if (maindc && dibwindow)
 			ReleaseDC(dibwindow, maindc);
 
@@ -1453,7 +1431,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 			if (vid_canalttab && vid_wassuspended)
 			{
 				vid_wassuspended = false;
-				ChangeDisplaySettings(&gdevmode, CDS_FULLSCREEN);
+				//ChangeDisplaySettings(&gdevmode, CDS_FULLSCREEN);
 				ShowWindow(mainwindow, SW_SHOWNORMAL);
 				MoveWindow(mainwindow, 0, 0, gdevmode.dmPelsWidth, gdevmode.dmPelsHeight, false); //johnfitz -- alt-tab fix via Baker
 			}
@@ -1472,11 +1450,6 @@ void AppActivate(BOOL fActive, BOOL minimize)
 		{
 			IN_DeactivateMouse();
 			IN_ShowMouse();
-			if (vid_canalttab)
-			{
-				ChangeDisplaySettings(nullptr, 0);
-				vid_wassuspended = true;
-			}
 		}
 		else if (modestate == modestate_t::MS_WINDOWED && _windowed_mouse.value)
 		{
@@ -1862,58 +1835,6 @@ void VID_InitFullDIB(HINSTANCE hInstance)
 				DM_PELSWIDTH |
 				DM_PELSHEIGHT |
 				DM_DISPLAYFREQUENCY; //johnfitz -- refreshrate
-
-			if (ChangeDisplaySettings(&devmode, CDS_TEST | CDS_FULLSCREEN) ==
-				DISP_CHANGE_SUCCESSFUL)
-			{
-				modelist[nummodes].type = modestate_t::MS_FULLDIB;
-				modelist[nummodes].width = devmode.dmPelsWidth;
-				modelist[nummodes].height = devmode.dmPelsHeight;
-				modelist[nummodes].modenum = 0;
-				modelist[nummodes].halfscreen = 0;
-				modelist[nummodes].dib = 1;
-				modelist[nummodes].fullscreen = 1;
-				modelist[nummodes].bpp = devmode.dmBitsPerPel;
-				modelist[nummodes].refreshrate = devmode.dmDisplayFrequency; //johnfitz -- refreshrate
-				sprintf(modelist[nummodes].modedesc, "%dx%dx%d %dHz", //johnfitz -- refreshrate
-				        devmode.dmPelsWidth,
-				        devmode.dmPelsHeight,
-				        devmode.dmBitsPerPel,
-				        devmode.dmDisplayFrequency); //johnfitz -- refreshrate
-
-				// if the width is more than twice the height, reduce it by half because this
-				// is probably a dual-screen monitor
-				if (!COM_CheckParm("-noadjustaspect"))
-				{
-					if (modelist[nummodes].width > modelist[nummodes].height << 1)
-					{
-						modelist[nummodes].width >>= 1;
-						modelist[nummodes].halfscreen = 1;
-						sprintf(modelist[nummodes].modedesc, "%dx%dx%d %dHz", //johnfitz -- refreshrate
-						        modelist[nummodes].width,
-						        modelist[nummodes].height,
-						        modelist[nummodes].bpp,
-						        modelist[nummodes].refreshrate); //johnfitz -- refreshrate
-					}
-				}
-
-				for (i = originalnummodes , existingmode = 0; i < nummodes; i++)
-				{
-					if (modelist[nummodes].width == modelist[i].width &&
-						modelist[nummodes].height == modelist[i].height &&
-						modelist[nummodes].bpp == modelist[i].bpp &&
-						modelist[nummodes].refreshrate == modelist[i].refreshrate) //johnfitz -- refreshrate
-					{
-						existingmode = 1;
-						break;
-					}
-				}
-
-				if (!existingmode)
-				{
-					nummodes++;
-				}
-			}
 		}
 
 		modenum++;
@@ -1933,42 +1854,6 @@ void VID_InitFullDIB(HINSTANCE hInstance)
 			devmode.dmPelsWidth = lowresmodes[j].width;
 			devmode.dmPelsHeight = lowresmodes[j].height;
 			devmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY; //johnfitz -- refreshrate;
-
-			if (ChangeDisplaySettings(&devmode, CDS_TEST | CDS_FULLSCREEN) ==
-				DISP_CHANGE_SUCCESSFUL)
-			{
-				modelist[nummodes].type = modestate_t::MS_FULLDIB;
-				modelist[nummodes].width = devmode.dmPelsWidth;
-				modelist[nummodes].height = devmode.dmPelsHeight;
-				modelist[nummodes].modenum = 0;
-				modelist[nummodes].halfscreen = 0;
-				modelist[nummodes].dib = 1;
-				modelist[nummodes].fullscreen = 1;
-				modelist[nummodes].bpp = devmode.dmBitsPerPel;
-				modelist[nummodes].refreshrate = devmode.dmDisplayFrequency; //johnfitz -- refreshrate
-				sprintf(modelist[nummodes].modedesc, "%dx%dx%d %dHz", //johnfitz -- refreshrate
-				        devmode.dmPelsWidth,
-				        devmode.dmPelsHeight,
-				        devmode.dmBitsPerPel,
-				        devmode.dmDisplayFrequency); //johnfitz -- refreshrate
-
-				for (i = originalnummodes , existingmode = 0; i < nummodes; i++)
-				{
-					if (modelist[nummodes].width == modelist[i].width &&
-						modelist[nummodes].height == modelist[i].height &&
-						modelist[nummodes].bpp == modelist[i].bpp &&
-						modelist[nummodes].refreshrate == modelist[i].refreshrate) //johnfitz -- refreshrate
-					{
-						existingmode = 1;
-						break;
-					}
-				}
-
-				if (!existingmode)
-				{
-					nummodes++;
-				}
-			}
 		}
 		switch (bpp)
 		{
@@ -2031,170 +1916,18 @@ void VID_Init()
 
 	VID_InitFullDIB(global_hInstance);
 
-	if (COM_CheckParm("-window"))
+	auto hdc = GetDC(nullptr);
+
+	if (GetDeviceCaps(hdc, RASTERCAPS) & RC_PALETTE)
 	{
-		auto hdc = GetDC(nullptr);
-
-		if (GetDeviceCaps(hdc, RASTERCAPS) & RC_PALETTE)
-		{
-			Sys_Error("Can't run in non-RGB mode");
-		}
-
-		ReleaseDC(nullptr, hdc);
-
-		windowed = true;
-
-		vid_default = MODE_WINDOWED;
+		Sys_Error("Can't run in non-RGB mode");
 	}
-	else
-	{
-		if (nummodes == 1)
-			Sys_Error("No RGB fullscreen modes available");
 
-		windowed = false;
+	ReleaseDC(nullptr, hdc);
 
-		if (COM_CheckParm("-mode"))
-		{
-			vid_default = Q_atoi(com_argv[COM_CheckParm("-mode") + 1]);
-		}
-		else
-		{
-			if (COM_CheckParm("-current"))
-			{
-				modelist[MODE_FULLSCREEN_DEFAULT].width = GetSystemMetrics(SM_CXSCREEN);
-				modelist[MODE_FULLSCREEN_DEFAULT].height = GetSystemMetrics(SM_CYSCREEN);
-				vid_default = MODE_FULLSCREEN_DEFAULT;
-				leavecurrentmode = true;
-			}
-			else
-			{
-				if (COM_CheckParm("-width"))
-				{
-					width = Q_atoi(com_argv[COM_CheckParm("-width") + 1]);
-				}
-				else
-				{
-					width = 640;
-				}
+	windowed = true;
 
-				if (COM_CheckParm("-bpp"))
-				{
-					bpp = Q_atoi(com_argv[COM_CheckParm("-bpp") + 1]);
-					findbpp = 0;
-				}
-				else
-				{
-					bpp = 15;
-					findbpp = 1;
-				}
-
-				if (COM_CheckParm("-height"))
-					height = Q_atoi(com_argv[COM_CheckParm("-height") + 1]);
-
-				// if they want to force it, add the specified mode to the list
-				if (COM_CheckParm("-force") && nummodes < MAX_MODE_LIST)
-				{
-					modelist[nummodes].type = modestate_t::MS_FULLDIB;
-					modelist[nummodes].width = width;
-					modelist[nummodes].height = height;
-					modelist[nummodes].modenum = 0;
-					modelist[nummodes].halfscreen = 0;
-					modelist[nummodes].dib = 1;
-					modelist[nummodes].fullscreen = 1;
-					modelist[nummodes].bpp = bpp;
-					sprintf(modelist[nummodes].modedesc, "%dx%dx%d %dHz", //johnfitz -- refreshrate
-					        devmode.dmPelsWidth,
-					        devmode.dmPelsHeight,
-					        devmode.dmBitsPerPel,
-					        devmode.dmDisplayFrequency); //johnfitz -- refreshrate
-
-					for (i = nummodes , existingmode = 0; i < nummodes; i++)
-					{
-						if (modelist[nummodes].width == modelist[i].width &&
-							modelist[nummodes].height == modelist[i].height &&
-							modelist[nummodes].bpp == modelist[i].bpp &&
-							modelist[nummodes].refreshrate == modelist[i].refreshrate) //johnfitz -- refreshrate
-						{
-							existingmode = 1;
-							break;
-						}
-					}
-
-					if (!existingmode)
-					{
-						nummodes++;
-					}
-				}
-
-				int done = 0;
-
-				do
-				{
-					if (COM_CheckParm("-height"))
-					{
-						height = Q_atoi(com_argv[COM_CheckParm("-height") + 1]);
-
-						for (i = 1 , vid_default = 0; i < nummodes; i++)
-						{
-							if (modelist[i].width == width &&
-								modelist[i].height == height &&
-								modelist[i].bpp == bpp)
-							{
-								vid_default = i;
-								done = 1;
-								break;
-							}
-						}
-					}
-					else
-					{
-						for (i = 1 , vid_default = 0; i < nummodes; i++)
-						{
-							if (modelist[i].width == width && modelist[i].bpp == bpp)
-							{
-								vid_default = i;
-								done = 1;
-								break;
-							}
-						}
-					}
-
-					if (!done)
-					{
-						if (findbpp)
-						{
-							switch (bpp)
-							{
-							case 15:
-								bpp = 16;
-								break;
-							case 16:
-								bpp = 32;
-								break;
-							case 32:
-								bpp = 24;
-								break;
-							case 24:
-								done = 1;
-								break;
-							default: break;
-							}
-						}
-						else
-						{
-							done = 1;
-						}
-					}
-				}
-				while (!done);
-
-				if (!vid_default)
-				{
-					Sys_Error("Specified video mode not available");
-				}
-			}
-		}
-	}
+	vid_default = MODE_WINDOWED;
 
 	vid_initialized = true;
 

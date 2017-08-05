@@ -590,7 +590,7 @@ TexMgr_SafeTextureSize -- return a size with hardware and user prefs in mind
 int TexMgr_SafeTextureSize(int s)
 {
 	s = TexMgr_Pad(s);
-	if (static_cast<int>(gl_max_size.value) <= 0)
+	if (static_cast<int>(gl_max_size.value) > 0)
 		s = min(TexMgr_Pad((int)gl_max_size.value), s);
 	s = min(gl_hardware_maxsize, s);
 	return s;
@@ -613,11 +613,10 @@ int TexMgr_PadConditional(int s)
 TexMgr_MipMapW
 ================
 */
-unsigned* TexMgr_MipMapW(unsigned* data, int width, int height)
+byte* TexMgr_MipMapW(byte* data, int width, int height)
 {
-	byte* in;
-
-	auto out = in = reinterpret_cast<byte *>(data);
+	auto in = data;
+	auto out = data;
 	auto size = width * height >> 1;
 
 	for (auto i = 0; i < size; i++ , out += 4 , in += 8)
@@ -636,11 +635,10 @@ unsigned* TexMgr_MipMapW(unsigned* data, int width, int height)
 TexMgr_MipMapH
 ================
 */
-unsigned* TexMgr_MipMapH(unsigned* data, int width, int height)
+byte* TexMgr_MipMapH(byte* data, int width, int height)
 {
-	byte* in;
-
-	auto out = in = reinterpret_cast<byte *>(data);
+	auto in = data;
+	auto out = in;
 	height >>= 1;
 	width <<= 2;
 
@@ -661,7 +659,7 @@ unsigned* TexMgr_MipMapH(unsigned* data, int width, int height)
 TexMgr_ResampleTexture -- bilinear resample
 ================
 */
-unsigned* TexMgr_ResampleTexture(unsigned* in, int inwidth, int inheight, bool alpha)
+byte* TexMgr_ResampleTexture(byte* in, int inwidth, int inheight, bool alpha)
 {
 	unsigned outjump;
 
@@ -670,7 +668,7 @@ unsigned* TexMgr_ResampleTexture(unsigned* in, int inwidth, int inheight, bool a
 
 	auto outwidth = TexMgr_Pad(inwidth);
 	auto outheight = TexMgr_Pad(inheight);
-	auto out = static_cast<unsigned*>(Hunk_Alloc(outwidth * outheight * 4));
+	auto out = static_cast<byte*>(Hunk_Alloc(outwidth * outheight * 4));
 
 	unsigned xfrac = (inwidth - 1 << 16) / (outwidth - 1);
 	unsigned yfrac = (inheight - 1 << 16) / (outheight - 1);
@@ -688,12 +686,12 @@ unsigned* TexMgr_ResampleTexture(unsigned* in, int inwidth, int inheight, bool a
 			auto modx = x >> 8 & 0xFF;
 			auto imodx = 256 - modx;
 
-			auto nwpx = reinterpret_cast<byte *>(in + (x >> 16) + injump);
+			auto nwpx = in + (x >> 16) + injump;
 			auto nepx = nwpx + 4;
 			auto swpx = nwpx + inwidth * 4;
 			auto sepx = swpx + 4;
 
-			auto dest = reinterpret_cast<byte *>(out + outjump + j);
+			auto dest = out + outjump + j;
 
 			dest[0] = nwpx[0] * imodx * imody + nepx[0] * modx * imody + swpx[0] * imodx * mody + sepx[0] * modx * mody >> 16;
 			dest[1] = nwpx[1] * imodx * imody + nepx[1] * modx * imody + swpx[1] * imodx * mody + sepx[1] * modx * mody >> 16;
@@ -899,11 +897,11 @@ void TexMgr_PadEdgeFixH(byte* data, int width, int height)
 TexMgr_8to32
 ================
 */
-unsigned* TexMgr_8to32(byte* in, int pixels, unsigned int* usepal)
+byte* TexMgr_8to32(byte* in, int pixels, unsigned int* usepal)
 {
-	unsigned* data;
-
-	auto out = data = static_cast<unsigned *>(Hunk_Alloc(pixels * 4));
+	
+	auto out = reinterpret_cast<unsigned *>(Hunk_Alloc(pixels * 4));
+	auto data = reinterpret_cast<byte*>(out);
 
 	for (auto i = 0; i < pixels; i++)
 		*out++ = usepal[*in++];
@@ -969,7 +967,7 @@ byte* TexMgr_PadImageH(byte* in, int width, int height, byte padbyte)
 TexMgr_LoadImage32 -- handles 32bit source data
 ================
 */
-void TexMgr_LoadImage32(gltexture_t* glt, unsigned* data)
+void TexMgr_LoadImage32(gltexture_t* glt, byte* data)
 {
 	// resample up
 	data = TexMgr_ResampleTexture(data, glt->width, glt->height, glt->flags & TEXPREF_ALPHA);
@@ -1034,7 +1032,7 @@ TexMgr_LoadImage8 -- handles 8bit source data, then passes it to LoadImage32
 void TexMgr_LoadImage8(gltexture_t* glt, byte* data)
 {
 	extern cvar_t gl_fullbrights;
-	bool padw = false, padh = false;
+	auto padw = false, padh = false;
 	byte padbyte;
 	unsigned int* usepal;
 	int i;
@@ -1098,7 +1096,7 @@ void TexMgr_LoadImage8(gltexture_t* glt, byte* data)
 	}
 
 	// convert to 32bit
-	data = reinterpret_cast<byte *>(TexMgr_8to32(data, glt->width * glt->height, usepal));
+	data = TexMgr_8to32(data, glt->width * glt->height, usepal);
 
 	// fix edges
 	if (glt->flags & TEXPREF_ALPHA)
@@ -1112,7 +1110,7 @@ void TexMgr_LoadImage8(gltexture_t* glt, byte* data)
 	}
 
 	// upload it
-	TexMgr_LoadImage32(glt, reinterpret_cast<unsigned *>(data));
+	TexMgr_LoadImage32(glt, data);
 }
 
 /*
@@ -1132,6 +1130,8 @@ void TexMgr_LoadLightmap(gltexture_t* glt, byte* data)
 	TexMgr_SetFilterModes(glt);
 }
 
+extern int lightmap_bytes;
+
 /*
 ================
 TexMgr_LoadImage -- the one entry point for loading all textures
@@ -1140,7 +1140,6 @@ TexMgr_LoadImage -- the one entry point for loading all textures
 gltexture_t* TexMgr_LoadImage(model_t* owner, char* name, int width, int height, srcformat format,
                               byte* data, char* source_file, unsigned source_offset, unsigned flags)
 {
-	extern int lightmap_bytes;
 	unsigned short crc = 0;
 	gltexture_t* glt;
 
@@ -1195,7 +1194,7 @@ gltexture_t* TexMgr_LoadImage(model_t* owner, char* name, int width, int height,
 		TexMgr_LoadLightmap(glt, data);
 		break;
 	case srcformat::SRC_RGBA:
-		TexMgr_LoadImage32(glt, reinterpret_cast<unsigned *>(data));
+		TexMgr_LoadImage32(glt, data);
 		break;
 	default: break;
 	}
@@ -1312,7 +1311,7 @@ void TexMgr_ReloadImage(gltexture_t* glt, int shirt, int pants)
 		TexMgr_LoadLightmap(glt, data);
 		break;
 	case srcformat::SRC_RGBA:
-		TexMgr_LoadImage32(glt, reinterpret_cast<unsigned *>(data));
+		TexMgr_LoadImage32(glt, data);
 		break;
 	default: break;
 	}

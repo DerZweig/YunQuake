@@ -94,7 +94,7 @@ channel_t* SND_PickChannel(int entnum, int entchannel);
 void SND_Spatialize(channel_t* ch);
 
 // initializes cycling through a DMA buffer and returns information on it
-bool SNDDMA_Init();
+int SNDDMA_Init();
 
 // gets the current DMA position
 int SNDDMA_GetDMAPos();

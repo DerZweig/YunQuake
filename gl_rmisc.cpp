@@ -1,25 +1,3 @@
-/*
-Copyright (C) 1996-2001 Id Software, Inc.
-Copyright (C) 2002-2009 John Fitzgibbons and others
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-// r_misc.c
-
 #include "quakedef.h"
 
 //johnfitz -- new cvars
@@ -48,11 +26,11 @@ extern float load_subdivide_size; //johnfitz -- remember what subdivide_size val
 
 extern cvar_t gl_subdivide_size; //johnfitz -- moved here from gl_model.c
 
-extern gltexture_t *playertextures[MAX_SCOREBOARD]; //johnfitz
+extern gltexture_t* playertextures[MAX_SCOREBOARD]; //johnfitz
 
 void R_NoLerpList_f(); //johnfitz
 
-void Sbar_DrawPicAlpha(int x, int y, qpic_t *pic, float alpha)
+void Sbar_DrawPicAlpha(int x, int y, qpic_t* pic, float alpha)
 {
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
@@ -63,6 +41,8 @@ void Sbar_DrawPicAlpha(int x, int y, qpic_t *pic, float alpha)
 	glEnable(GL_ALPHA_TEST);
 }
 
+void R_RebuildAllLightmaps();
+
 /*
 ====================
 GL_Overbright_f -- johnfitz
@@ -70,7 +50,7 @@ GL_Overbright_f -- johnfitz
 */
 void GL_Overbright_f()
 {
-	R_RebuildAllLightmaps ();
+	R_RebuildAllLightmaps();
 }
 
 /*
@@ -80,7 +60,7 @@ GL_Fullbrights_f -- johnfitz
 */
 void GL_Fullbrights_f()
 {
-	TexMgr_ReloadNobrightImages ();
+	TexMgr_ReloadNobrightImages();
 }
 
 /*
@@ -90,13 +70,12 @@ R_SetClearColor_f -- johnfitz
 */
 void R_SetClearColor_f()
 {
-	byte	*rgb;
-	int		s;
-
-	s = (int)r_clearcolor.value & 0xFF;
-	rgb = (byte*)(d_8to24table + s);
-	glClearColor (rgb[0]/255.0,rgb[1]/255.0,rgb[2]/255.0,0);
+	auto s = static_cast<int>(r_clearcolor.value) & 0xFF;
+	auto rgb = reinterpret_cast<byte*>(d_8to24table + s);
+	glClearColor(rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0, 0);
 }
+
+extern int vis_changed;
 
 /*
 ====================
@@ -105,7 +84,6 @@ R_Novis_f -- johnfitz
 */
 void R_Novis_f()
 {
-	extern int vis_changed;
 	vis_changed = TRUE;
 }
 
@@ -116,7 +94,6 @@ R_OldSkyLeaf_f -- johnfitz
 */
 void R_OldSkyLeaf_f()
 {
-	extern int vis_changed;
 	vis_changed = TRUE;
 }
 
@@ -129,11 +106,10 @@ Grab six views for environment mapping tests
 */
 void R_Envmap_f()
 {
-	byte	buffer[256*256*4];
-	char	name[1024];
+	byte buffer[256 * 256 * 4];
 
-	glDrawBuffer  (GL_FRONT);
-	glReadBuffer  (GL_FRONT);
+	glDrawBuffer(GL_FRONT);
+	glReadBuffer(GL_FRONT);
 	envmap = true;
 
 	r_refdef.vrect.x = 0;
@@ -144,48 +120,52 @@ void R_Envmap_f()
 	r_refdef.viewangles[0] = 0;
 	r_refdef.viewangles[1] = 0;
 	r_refdef.viewangles[2] = 0;
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
-	R_RenderView ();
-	glReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	COM_WriteFile ("env0.rgb", buffer, sizeof(buffer));
+	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
+	R_RenderView();
+	glReadPixels(0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+	COM_WriteFile("env0.rgb", buffer, sizeof buffer);
 
 	r_refdef.viewangles[1] = 90;
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
-	R_RenderView ();
-	glReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	COM_WriteFile ("env1.rgb", buffer, sizeof(buffer));
+	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
+	R_RenderView();
+	glReadPixels(0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+	COM_WriteFile("env1.rgb", buffer, sizeof buffer);
 
 	r_refdef.viewangles[1] = 180;
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
-	R_RenderView ();
-	glReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	COM_WriteFile ("env2.rgb", buffer, sizeof(buffer));
+	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
+	R_RenderView();
+	glReadPixels(0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+	COM_WriteFile("env2.rgb", buffer, sizeof buffer);
 
 	r_refdef.viewangles[1] = 270;
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
-	R_RenderView ();
-	glReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	COM_WriteFile ("env3.rgb", buffer, sizeof(buffer));
+	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
+	R_RenderView();
+	glReadPixels(0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+	COM_WriteFile("env3.rgb", buffer, sizeof buffer);
 
 	r_refdef.viewangles[0] = -90;
 	r_refdef.viewangles[1] = 0;
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
-	R_RenderView ();
-	glReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	COM_WriteFile ("env4.rgb", buffer, sizeof(buffer));
+	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
+	R_RenderView();
+	glReadPixels(0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+	COM_WriteFile("env4.rgb", buffer, sizeof buffer);
 
 	r_refdef.viewangles[0] = 90;
 	r_refdef.viewangles[1] = 0;
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
-	R_RenderView ();
-	glReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	COM_WriteFile ("env5.rgb", buffer, sizeof(buffer));
+	GL_BeginRendering(&glx, &gly, &glwidth, &glheight);
+	R_RenderView();
+	glReadPixels(0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+	COM_WriteFile("env5.rgb", buffer, sizeof buffer);
 
 	envmap = false;
-	glDrawBuffer  (GL_BACK);
-	glReadBuffer  (GL_BACK);
-	GL_EndRendering ();
+	glDrawBuffer(GL_BACK);
+	glReadBuffer(GL_BACK);
+	GL_EndRendering();
 }
+
+void Sky_Init();
+void R_InitParticles();
+extern cvar_t gl_finish;
 
 /*
 ===============
@@ -194,68 +174,67 @@ R_Init
 */
 void R_Init()
 {
-	extern byte *hunk_base;
-	extern cvar_t gl_finish;
+	Cmd_AddCommand("timerefresh", R_TimeRefresh_f);
+	Cmd_AddCommand("envmap", R_Envmap_f);
+	Cmd_AddCommand("pointfile", R_ReadPointFile_f);
 
-	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);
-	Cmd_AddCommand ("envmap", R_Envmap_f);
-	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);
+	Cvar_RegisterVariable(&r_norefresh, nullptr);
+	Cvar_RegisterVariable(&r_lightmap, nullptr);
+	Cvar_RegisterVariable(&r_fullbright, nullptr);
+	Cvar_RegisterVariable(&r_drawentities, nullptr);
+	Cvar_RegisterVariable(&r_drawviewmodel, nullptr);
+	Cvar_RegisterVariable(&r_shadows, nullptr);
+	Cvar_RegisterVariable(&r_wateralpha, nullptr);
+	Cvar_RegisterVariable(&r_dynamic, nullptr);
+	Cvar_RegisterVariable(&r_novis, R_Novis_f);
+	Cvar_RegisterVariable(&r_speeds, nullptr);
 
-	Cvar_RegisterVariable (&r_norefresh, nullptr);
-	Cvar_RegisterVariable (&r_lightmap, nullptr);
-	Cvar_RegisterVariable (&r_fullbright, nullptr);
-	Cvar_RegisterVariable (&r_drawentities, nullptr);
-	Cvar_RegisterVariable (&r_drawviewmodel, nullptr);
-	Cvar_RegisterVariable (&r_shadows, nullptr);
-	Cvar_RegisterVariable (&r_wateralpha, nullptr);
-	Cvar_RegisterVariable (&r_dynamic, nullptr);
-	Cvar_RegisterVariable (&r_novis, R_Novis_f);
-	Cvar_RegisterVariable (&r_speeds, nullptr);
-
-	Cvar_RegisterVariable (&gl_finish, nullptr);
-	Cvar_RegisterVariable (&gl_clear, nullptr);
-	Cvar_RegisterVariable (&gl_cull, nullptr);
-	Cvar_RegisterVariable (&gl_smoothmodels, nullptr);
-	Cvar_RegisterVariable (&gl_affinemodels, nullptr);
-	Cvar_RegisterVariable (&gl_polyblend, nullptr);
-	Cvar_RegisterVariable (&gl_flashblend, nullptr);
-	Cvar_RegisterVariable (&gl_playermip, nullptr);
-	Cvar_RegisterVariable (&gl_nocolors, nullptr);
+	Cvar_RegisterVariable(&gl_finish, nullptr);
+	Cvar_RegisterVariable(&gl_clear, nullptr);
+	Cvar_RegisterVariable(&gl_cull, nullptr);
+	Cvar_RegisterVariable(&gl_smoothmodels, nullptr);
+	Cvar_RegisterVariable(&gl_affinemodels, nullptr);
+	Cvar_RegisterVariable(&gl_polyblend, nullptr);
+	Cvar_RegisterVariable(&gl_flashblend, nullptr);
+	Cvar_RegisterVariable(&gl_playermip, nullptr);
+	Cvar_RegisterVariable(&gl_nocolors, nullptr);
 
 	//johnfitz -- new cvars
-	Cvar_RegisterVariable (&r_stereo, nullptr);
-	Cvar_RegisterVariable (&r_stereodepth, nullptr);
-	Cvar_RegisterVariable (&r_clearcolor, R_SetClearColor_f);
-	Cvar_RegisterVariable (&r_waterquality, nullptr);
-	Cvar_RegisterVariable (&r_oldwater, nullptr);
-	Cvar_RegisterVariable (&r_waterwarp, nullptr);
-	Cvar_RegisterVariable (&r_drawflat, nullptr);
-	Cvar_RegisterVariable (&r_flatlightstyles, nullptr);
-	Cvar_RegisterVariable (&r_oldskyleaf, R_OldSkyLeaf_f);
-	Cvar_RegisterVariable (&r_drawworld, nullptr);
-	Cvar_RegisterVariable (&r_showtris, nullptr);
-	Cvar_RegisterVariable (&r_showbboxes, nullptr);
-	Cvar_RegisterVariable (&gl_farclip, nullptr);
-	Cvar_RegisterVariable (&gl_fullbrights, GL_Fullbrights_f);
-	Cvar_RegisterVariable (&gl_overbright, GL_Overbright_f);
-	Cvar_RegisterVariable (&gl_overbright_models, nullptr);
-	Cvar_RegisterVariable (&r_lerpmodels, nullptr);
-	Cvar_RegisterVariable (&r_lerpmove, nullptr);
-	Cvar_RegisterVariable (&r_nolerp_list, R_NoLerpList_f);
+	Cvar_RegisterVariable(&r_stereo, nullptr);
+	Cvar_RegisterVariable(&r_stereodepth, nullptr);
+	Cvar_RegisterVariable(&r_clearcolor, R_SetClearColor_f);
+	Cvar_RegisterVariable(&r_waterquality, nullptr);
+	Cvar_RegisterVariable(&r_oldwater, nullptr);
+	Cvar_RegisterVariable(&r_waterwarp, nullptr);
+	Cvar_RegisterVariable(&r_drawflat, nullptr);
+	Cvar_RegisterVariable(&r_flatlightstyles, nullptr);
+	Cvar_RegisterVariable(&r_oldskyleaf, R_OldSkyLeaf_f);
+	Cvar_RegisterVariable(&r_drawworld, nullptr);
+	Cvar_RegisterVariable(&r_showtris, nullptr);
+	Cvar_RegisterVariable(&r_showbboxes, nullptr);
+	Cvar_RegisterVariable(&gl_farclip, nullptr);
+	Cvar_RegisterVariable(&gl_fullbrights, GL_Fullbrights_f);
+	Cvar_RegisterVariable(&gl_overbright, GL_Overbright_f);
+	Cvar_RegisterVariable(&gl_overbright_models, nullptr);
+	Cvar_RegisterVariable(&r_lerpmodels, nullptr);
+	Cvar_RegisterVariable(&r_lerpmove, nullptr);
+	Cvar_RegisterVariable(&r_nolerp_list, R_NoLerpList_f);
 	//johnfitz
 
-	Cvar_RegisterVariable (&gl_subdivide_size, nullptr); //johnfitz -- moved here from gl_model.c
+	Cvar_RegisterVariable(&gl_subdivide_size, nullptr); //johnfitz -- moved here from gl_model.c
 
-	R_InitParticles ();
-	R_SetClearColor_f (); //johnfitz
+	R_InitParticles();
+	R_SetClearColor_f(); //johnfitz
 
-	Sky_Init (); //johnfitz
-	Fog_Init (); //johnfitz
+	Sky_Init(); //johnfitz
+	Fog_Init(); //johnfitz
 
 #ifdef GLTEST
 	Test_Init ();
 #endif
 }
+
+void Mod_SetExtraFlags(model_t* mod);
 
 /*
 ===============
@@ -264,10 +243,8 @@ R_NoLerpList_f -- johnfitz -- called when r_nolerp_list cvar changes
 */
 void R_NoLerpList_f()
 {
-	int i;
-
-	for (i=0; i < MAX_MODELS; i++)
-		Mod_SetExtraFlags (cl.model_precache[i]);
+	for (auto i = 0; i < MAX_MODELS; i++)
+		Mod_SetExtraFlags(cl.model_precache[i]);
 }
 
 /*
@@ -275,17 +252,15 @@ void R_NoLerpList_f()
 R_TranslatePlayerSkin -- johnfitz -- rewritten.  also, only handles new colors, not new skins
 ===============
 */
-void R_TranslatePlayerSkin (int playernum)
+void R_TranslatePlayerSkin(int playernum)
 {
-	int			top, bottom;
-
-	top = (cl.scores[playernum].colors & 0xf0)>>4;
-	bottom = cl.scores[playernum].colors &15;
+	auto top = (cl.scores[playernum].colors & 0xf0) >> 4;
+	auto bottom = cl.scores[playernum].colors & 15;
 
 	//FIXME: if gl_nocolors is on, then turned off, the textures may be out of sync with the scoreboard colors.
 	if (!gl_nocolors.value)
 		if (playertextures[playernum])
-			TexMgr_ReloadImage (playertextures[playernum], top, bottom);
+			TexMgr_ReloadImage(playertextures[playernum], top, bottom);
 }
 
 /*
@@ -295,22 +270,19 @@ the skin or model actually changes, instead of just new colors
 added bug fix from bengt jardup
 ===============
 */
-void R_TranslateNewPlayerSkin (int playernum)
+void R_TranslateNewPlayerSkin(int playernum)
 {
-	char		name[64];
-	byte		*pixels;
-	aliashdr_t	*paliashdr;
-	int		skinnum;
+	char name[64];
 
-//get correct texture pixels
-	currententity = &cl_entities[1+playernum];
+	//get correct texture pixels
+	currententity = &cl_entities[1 + playernum];
 
-	if (!currententity->model || currententity->model->type != mod_alias)
+	if (!currententity->model || currententity->model->type != modtype_t::mod_alias)
 		return;
 
-	paliashdr = (aliashdr_t *)Mod_Extradata (currententity->model);
+	auto paliashdr = static_cast<aliashdr_t *>(Mod_Extradata(currententity->model));
 
-	skinnum = currententity->skinnum;
+	auto skinnum = currententity->skinnum;
 
 	//TODO: move these tests to the place where skinnum gets received from the server
 	if (skinnum < 0 || skinnum >= paliashdr->numskins)
@@ -319,15 +291,16 @@ void R_TranslateNewPlayerSkin (int playernum)
 		skinnum = 0;
 	}
 
-	pixels = (byte *)paliashdr + paliashdr->texels[skinnum]; // This is not a persistent place!
+	auto pixels = reinterpret_cast<byte *>(paliashdr) + paliashdr->texels[skinnum]; // This is not a persistent place!
 
-//upload new image
+	//upload new image
 	sprintf(name, "player_%i", playernum);
-	playertextures[playernum] = TexMgr_LoadImage (currententity->model, name, paliashdr->skinwidth, paliashdr->skinheight,
-		SRC_INDEXED, pixels, paliashdr->gltextures[skinnum][0]->source_file, paliashdr->gltextures[skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
+	playertextures[playernum] = TexMgr_LoadImage(currententity->model, name, paliashdr->skinwidth, paliashdr->skinheight,
+	                                             srcformat::SRC_INDEXED, pixels, paliashdr->gltextures[skinnum][0]->source_file,
+	                                             paliashdr->gltextures[skinnum][0]->source_offset, TEXPREF_PAD | TEXPREF_OVERWRITE);
 
-//now recolor it
-	R_TranslatePlayerSkin (playernum);
+	//now recolor it
+	R_TranslatePlayerSkin(playernum);
 }
 
 /*
@@ -337,12 +310,14 @@ R_NewGame -- johnfitz -- handle a game switch
 */
 void R_NewGame()
 {
-	int i;
-
 	//clear playertexture pointers (the textures themselves were freed by texmgr_newgame)
-	for (i=0; i<MAX_SCOREBOARD; i++)
+	for (auto i = 0; i < MAX_SCOREBOARD; i++)
 		playertextures[i] = nullptr;
 }
+
+void R_ClearParticles();
+void GL_BuildLightmaps();
+void Sky_NewMap();
 
 /*
 ===============
@@ -351,26 +326,26 @@ R_NewMap
 */
 void R_NewMap()
 {
-	int		i;
+	int i;
 
-	for (i=0 ; i<256 ; i++)
-		d_lightstylevalue[i] = 264;		// normal light value
+	for (i = 0; i < 256; i++)
+		d_lightstylevalue[i] = 264; // normal light value
 
-// clear out efrags in case the level hasn't been reloaded
-// FIXME: is this one short?
-	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
+	// clear out efrags in case the level hasn't been reloaded
+	// FIXME: is this one short?
+	for (i = 0; i < cl.worldmodel->numleafs; i++)
 		cl.worldmodel->leafs[i].efrags = nullptr;
 
 	r_viewleaf = nullptr;
-	R_ClearParticles ();
+	R_ClearParticles();
 
-	GL_BuildLightmaps ();
+	GL_BuildLightmaps();
 
 	r_framecount = 0; //johnfitz -- paranoid?
 	r_visframecount = 0; //johnfitz -- paranoid?
 
-	Sky_NewMap (); //johnfitz -- skybox in worldspawn
-	Fog_NewMap (); //johnfitz -- global fog in worldspawn
+	Sky_NewMap(); //johnfitz -- skybox in worldspawn
+	Fog_NewMap(); //johnfitz -- global fog in worldspawn
 
 	load_subdivide_size = gl_subdivide_size.value; //johnfitz -- is this the right place to set this?
 }
@@ -384,28 +359,23 @@ For program optimization
 */
 void R_TimeRefresh_f()
 {
-	int			i;
-	float		start, stop, time;
-	int			startangle;
-	vrect_t		vr;
+	glDrawBuffer(GL_FRONT);
+	glFinish();
 
-	glDrawBuffer  (GL_FRONT);
-	glFinish ();
-
-	start = Sys_FloatTime ();
-	for (i=0 ; i<128 ; i++)
+	float start = Sys_FloatTime();
+	for (auto i = 0; i < 128; i++)
 	{
-		r_refdef.viewangles[1] = i/128.0*360.0;
-		R_RenderView ();
+		r_refdef.viewangles[1] = i / 128.0 * 360.0;
+		R_RenderView();
 	}
 
-	glFinish ();
-	stop = Sys_FloatTime ();
-	time = stop-start;
-	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
+	glFinish();
+	float stop = Sys_FloatTime();
+	auto time = stop - start;
+	Con_Printf("%f seconds (%f fps)\n", time, 128 / time);
 
-	glDrawBuffer (GL_BACK);
-	GL_EndRendering ();
+	glDrawBuffer(GL_BACK);
+	GL_EndRendering();
 }
 
 void D_FlushCaches()

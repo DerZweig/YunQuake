@@ -1,3 +1,4 @@
+#pragma once
 extern cvar_t vid_gamma;
 
 extern float v_blend[4];

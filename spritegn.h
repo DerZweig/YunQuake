@@ -1,3 +1,4 @@
+#pragma once
 #define SPRITE_VERSION	1
 
 // must match definition in modelgen.h

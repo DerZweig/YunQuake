@@ -36,7 +36,7 @@ int WIPX_Init()
 
 	if (winsock_initialized == 0)
 	{
-		auto r = pWSAStartup(MAKEWORD(1, 1), &winsockdata);
+		auto r = WSAStartup(MAKEWORD(1, 1), &winsockdata);
 
 		if (r)
 		{
@@ -50,7 +50,7 @@ int WIPX_Init()
 		ipxsocket[i] = 0;
 
 	// determine my name & address
-	if (pgethostname(buff, MAXHOSTNAMELEN) == 0)
+	if (gethostname(buff, MAXHOSTNAMELEN) == 0)
 	{
 		// if the quake hostname isn't set, set it to the machine name
 		if (Q_strcmp(hostname.string, "UNNAMED") == 0)
@@ -76,7 +76,7 @@ int WIPX_Init()
 	{
 		Con_Printf("WIPX_Init: Unable to open control socket\n");
 		if (--winsock_initialized == 0)
-			pWSACleanup();
+			WSACleanup();
 		return -1;
 	}
 
@@ -104,7 +104,7 @@ void WIPX_Shutdown()
 	WIPX_Listen(false);
 	WIPX_CloseSocket(net_controlsocket);
 	if (--winsock_initialized == 0)
-		pWSACleanup();
+		WSACleanup();
 }
 
 //=============================================================================
@@ -143,13 +143,13 @@ int WIPX_OpenSocket(int port)
 	if (handle == IPXSOCKETS)
 		return -1;
 
-	if ((newsocket = psocket(AF_IPX, SOCK_DGRAM, NSPROTO_IPX)) == INVALID_SOCKET)
+	if ((newsocket = socket(AF_IPX, SOCK_DGRAM, NSPROTO_IPX)) == INVALID_SOCKET)
 		return -1;
 
-	if (pioctlsocket(newsocket, FIONBIO, &_true) == -1)
+	if (ioctlsocket(newsocket, FIONBIO, &_true) == -1)
 		goto ErrorReturn;
 
-	if (psetsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char *>(&_true), sizeof _true) < 0)
+	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char *>(&_true), sizeof _true) < 0)
 		goto ErrorReturn;
 
 	address.sa_family = AF_IPX;
@@ -165,7 +165,7 @@ int WIPX_OpenSocket(int port)
 
 	Sys_Error("Winsock IPX bind failed\n");
 ErrorReturn:
-	pclosesocket(newsocket);
+	closesocket(newsocket);
 	return -1;
 }
 
@@ -174,7 +174,7 @@ ErrorReturn:
 int WIPX_CloseSocket(int handle)
 {
 	auto socket = ipxsocket[handle];
-	auto ret = pclosesocket(socket);
+	auto ret = closesocket(socket);
 	ipxsocket[handle] = 0;
 	return ret;
 }
@@ -196,7 +196,7 @@ int WIPX_CheckNewConnections()
 	if (net_acceptsocket == -1)
 		return -1;
 
-	if (pioctlsocket(ipxsocket[net_acceptsocket], FIONREAD, &available) == -1)
+	if (ioctlsocket(ipxsocket[net_acceptsocket], FIONREAD, &available) == -1)
 		Sys_Error("WIPX: ioctlsocket (FIONREAD) failed\n");
 	if (available)
 		return net_acceptsocket;
@@ -212,10 +212,10 @@ int WIPX_Read(int handle, byte* buf, int len, qsockaddr* addr)
 	int addrlen = sizeof (qsockaddr);
 	auto socket = ipxsocket[handle];
 
-	auto ret = precvfrom(socket, reinterpret_cast<char*>(packetBuffer), len + 4, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
+	auto ret = recvfrom(socket, reinterpret_cast<char*>(packetBuffer), len + 4, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
 	if (ret == -1)
 	{
-		auto err = pWSAGetLastError();
+		auto err = WSAGetLastError();
 
 		if (err == WSAEWOULDBLOCK || err == WSAECONNREFUSED)
 			return 0;
@@ -250,9 +250,9 @@ int WIPX_Write(int handle, byte* buf, int len, qsockaddr* addr)
 	memcpy(&packetBuffer[4], buf, len);
 	len += 4;
 
-	auto ret = psendto(socket, reinterpret_cast<const char*>(packetBuffer), len, 0, reinterpret_cast<sockaddr *>(addr), sizeof(qsockaddr));
+	auto ret = sendto(socket, reinterpret_cast<const char*>(packetBuffer), len, 0, reinterpret_cast<sockaddr *>(addr), sizeof(qsockaddr));
 	if (ret == -1)
-		if (pWSAGetLastError() == WSAEWOULDBLOCK)
+		if (WSAGetLastError() == WSAEWOULDBLOCK)
 			return 0;
 
 	return ret;
@@ -324,9 +324,9 @@ int WIPX_GetSocketAddr(int handle, qsockaddr* addr)
 	int addrlen = sizeof(qsockaddr);
 
 	Q_memset(addr, 0, sizeof(qsockaddr));
-	if (pgetsockname(socket, reinterpret_cast<sockaddr *>(addr), &addrlen) != 0)
+	if (getsockname(socket, reinterpret_cast<sockaddr *>(addr), &addrlen) != 0)
 	{
-		pWSAGetLastError();
+		WSAGetLastError();
 	}
 
 	return 0;

@@ -1,73 +1,48 @@
+/*
+Copyright (C) 1996-1997 Id Software, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
+// gl_warp.c -- sky and water polygons
+
 #include "quakedef.h"
 
-extern cvar_t r_drawflat;
+extern	model_t	*loadmodel;
 
-cvar_t r_oldwater = {"r_oldwater", "1"};
-cvar_t r_waterquality = {"r_waterquality", "8"};
-cvar_t r_waterwarp = {"r_waterwarp", "1"};
+int		skytexturenum;
 
-float load_subdivide_size; //johnfitz -- remember what subdivide_size value was when this map was loaded
+int		solidskytexture;
+int		alphaskytexture;
+float	speedscale;		// for top sky and bottom sky
 
-float turbsin[] =
+msurface_t	*warpface;
+
+extern cvar_t gl_subdivide_size;
+
+void BoundPoly (int numverts, float *verts, vec3_t mins, vec3_t maxs)
 {
-	0.0f, 0.19633f, 0.392541f, 0.588517f, 0.784137f, 0.979285f, 1.17384f, 1.3677f,
-	1.56072f, 1.75281f, 1.94384f, 2.1337f, 2.32228f, 2.50945, 2.69512f, 2.87916f,
-	3.06147f, 3.24193f, 3.42044f, 3.59689f, 3.77117f, 3.94319f, 4.11282f, 4.27998f,
-	4.44456f, 4.60647f, 4.76559f, 4.92185f, 5.07515f, 5.22538f, 5.37247f, 5.51632f,
-	5.65685f, 5.79398f, 5.92761f, 6.05767f, 6.18408f, 6.30677f, 6.42566f, 6.54068f,
-	6.65176f, 6.75883f, 6.86183f, 6.9607f, 7.05537f, 7.14579f, 7.23191f, 7.31368f,
-	7.39104f, 7.46394f, 7.53235f, 7.59623f, 7.65552f, 7.71021f, 7.76025f, 7.80562f,
-	7.84628f, 7.88222f, 7.91341f, 7.93984f, 7.96148f, 7.97832f, 7.99036f, 7.99759f,
-	8.0f, 7.99759f, 7.99036f, 7.97832f, 7.96148f, 7.93984f, 7.91341f, 7.88222f,
-	7.84628f, 7.80562f, 7.76025f, 7.71021f, 7.65552f, 7.59623f, 7.53235f, 7.46394f,
-	7.39104f, 7.31368f, 7.23191f, 7.14579f, 7.05537f, 6.9607f, 6.86183f, 6.75883f,
-	6.65176f, 6.54068f, 6.42566f, 6.30677f, 6.18408f, 6.05767f, 5.92761f, 5.79398f,
-	5.65685f, 5.51632f, 5.37247f, 5.22538f, 5.07515f, 4.92185f, 4.76559f, 4.60647f,
-	4.44456f, 4.27998f, 4.11282f, 3.94319f, 3.77117f, 3.59689f, 3.42044f, 3.24193f,
-	3.06147f, 2.87916f, 2.69512f, 2.50945f, 2.32228f, 2.1337f, 1.94384f, 1.75281f,
-	1.56072f, 1.3677f, 1.17384f, 0.979285f, 0.784137f, 0.588517f, 0.392541f, 0.19633f,
-	9.79717f, -16.0f, -0.19633f, -0.392541f, -0.588517f, -0.784137f, -0.979285f, -1.17384f, -1.3677f,
-	-1.56072f, -1.75281f, -1.94384f, -2.1337f, -2.32228f, -2.50945f, -2.69512f, -2.87916f,
-	-3.06147f, -3.24193f, -3.42044f, -3.59689f, -3.77117f, -3.94319f, -4.11282f, -4.27998f,
-	-4.44456f, -4.60647f, -4.76559f, -4.92185f, -5.07515f, -5.22538f, -5.37247f, -5.51632f,
-	-5.65685f, -5.79398f, -5.92761f, -6.05767f, -6.18408f, -6.30677f, -6.42566f, -6.54068f,
-	-6.65176f, -6.75883f, -6.86183f, -6.9607f, -7.05537f, -7.14579f, -7.23191f, -7.31368f,
-	-7.39104f, -7.46394f, -7.53235f, -7.59623f, -7.65552f, -7.71021f, -7.76025f, -7.80562f,
-	-7.84628f, -7.88222f, -7.91341f, -7.93984f, -7.96148f, -7.97832f, -7.99036f, -7.99759f,
-	-8.0f, -7.99759f, -7.99036f, -7.97832f, -7.96148f, -7.93984f, -7.91341f, -7.88222f,
-	-7.84628f, -7.80562f, -7.76025f, -7.71021f, -7.65552f, -7.59623f, -7.53235f, -7.46394f,
-	-7.39104f, -7.31368f, -7.23191f, -7.14579f, -7.05537f, -6.9607f, -6.86183f, -6.75883f,
-	-6.65176f, -6.54068f, -6.42566f, -6.30677f, -6.18408f, -6.05767f, -5.92761f, -5.79398f,
-	-5.65685f, -5.51632f, -5.37247f, -5.22538f, -5.07515f, -4.92185f, -4.76559f, -4.60647f,
-	-4.44456f, -4.27998f, -4.11282f, -3.94319f, -3.77117f, -3.59689f, -3.42044f, -3.24193f,
-	-3.06147f, -2.87916f, -2.69512f, -2.50945f, -2.32228f, -2.1337f, -1.94384f, -1.75281f,
-	-1.56072f, -1.3677f, -1.17384f, -0.979285f, -0.784137f, -0.588517f, -0.392541f, -0.19633f
-};
+	int		i, j;
+	float	*v;
 
-#define WARPCALC(s,t) ((s + turbsin[(int)((t*2)+(cl.time*(128.0/M_PI))) & 255]) * (1.0/64)) //johnfitz -- correct warp
-#define WARPCALC2(s,t) ((s + turbsin[(int)((t*0.125+cl.time)*(128.0/M_PI)) & 255]) * (1.0/64)) //johnfitz -- old warp
-
-int gl_warpimagesize;
-
-//==============================================================================
-//
-//  OLD-STYLE WATER
-//
-//==============================================================================
-
-extern model_t* loadmodel;
-
-msurface_t* warpface;
-
-cvar_t gl_subdivide_size = {"gl_subdivide_size", "128", true};
-
-void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
-{
 	mins[0] = mins[1] = mins[2] = 9999;
 	maxs[0] = maxs[1] = maxs[2] = -9999;
-	auto v = verts;
-	for (auto i = 0; i < numverts; i++)
-		for (auto j = 0; j < 3; j++ , v++)
+	v = verts;
+	for (i=0 ; i<numverts ; i++)
+		for (j=0 ; j<3 ; j++, v++)
 		{
 			if (*v < mins[j])
 				mins[j] = *v;
@@ -76,25 +51,28 @@ void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 		}
 }
 
-void SubdividePolygon(int numverts, float* verts)
+void SubdividePolygon (int numverts, float *verts)
 {
-	int i, j;
-	vec3_t mins, maxs;
-	float* v;
-	vec3_t front[64], back[64];
-	int f, b;
-	float dist[64];
-	glpoly_t* poly;
+	int		i, j, k;
+	vec3_t	mins, maxs;
+	float	m;
+	float	*v;
+	vec3_t	front[64], back[64];
+	int		f, b;
+	float	dist[64];
+	float	frac;
+	glpoly_t	*poly;
+	float	s, t;
 
 	if (numverts > 60)
-		Sys_Error("numverts = %i", numverts);
+		Sys_Error ("numverts = %i", numverts);
 
-	BoundPoly(numverts, verts, mins, maxs);
+	BoundPoly (numverts, verts, mins, maxs);
 
-	for (i = 0; i < 3; i++)
+	for (i=0 ; i<3 ; i++)
 	{
-		float m = (mins[i] + maxs[i]) * 0.5;
-		m = gl_subdivide_size.value * floor(m / gl_subdivide_size.value + 0.5);
+		m = (mins[i] + maxs[i]) * 0.5;
+		m = gl_subdivide_size.value * floor (m/gl_subdivide_size.value + 0.5);
 		if (maxs[i] - m < 8)
 			continue;
 		if (m - mins[i] < 8)
@@ -102,17 +80,17 @@ void SubdividePolygon(int numverts, float* verts)
 
 		// cut it
 		v = verts + i;
-		for (j = 0; j < numverts; j++ , v += 3)
+		for (j=0 ; j<numverts ; j++, v+= 3)
 			dist[j] = *v - m;
 
 		// wrap cases
 		dist[j] = dist[0];
-		v -= i;
+		v-=i;
 		VectorCopy (verts, v);
 
 		f = b = 0;
 		v = verts;
-		for (j = 0; j < numverts; j++ , v += 3)
+		for (j=0 ; j<numverts ; j++, v+= 3)
 		{
 			if (dist[j] >= 0)
 			{
@@ -124,33 +102,33 @@ void SubdividePolygon(int numverts, float* verts)
 				VectorCopy (v, back[b]);
 				b++;
 			}
-			if (dist[j] == 0 || dist[j + 1] == 0)
+			if (dist[j] == 0 || dist[j+1] == 0)
 				continue;
-			if (dist[j] > 0 != dist[j + 1] > 0)
+			if ( (dist[j] > 0) != (dist[j+1] > 0) )
 			{
 				// clip point
-				auto frac = dist[j] / (dist[j] - dist[j + 1]);
-				for (auto k = 0; k < 3; k++)
-					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
+				frac = dist[j] / (dist[j] - dist[j+1]);
+				for (k=0 ; k<3 ; k++)
+					front[f][k] = back[b][k] = v[k] + frac*(v[3+k] - v[k]);
 				f++;
 				b++;
 			}
 		}
 
-		SubdividePolygon(f, front[0]);
-		SubdividePolygon(b, back[0]);
+		SubdividePolygon (f, front[0]);
+		SubdividePolygon (b, back[0]);
 		return;
 	}
 
-	poly = static_cast<glpoly_t*>(Hunk_Alloc(sizeof(glpoly_t) + (numverts - 4) * VERTEXSIZE * sizeof(float)));
-	poly->next = warpface->polys->next;
-	warpface->polys->next = poly;
+	poly = Hunk_Alloc (sizeof(glpoly_t) + (numverts-4) * VERTEXSIZE*sizeof(float));
+	poly->next = warpface->polys;
+	warpface->polys = poly;
 	poly->numverts = numverts;
-	for (i = 0; i < numverts; i++ , verts += 3)
+	for (i=0 ; i<numverts ; i++, verts+= 3)
 	{
 		VectorCopy (verts, poly->verts[i]);
-		float s = DotProduct (verts, warpface->texinfo->vecs[0]);
-		float t = DotProduct (verts, warpface->texinfo->vecs[1]);
+		s = DotProduct (verts, warpface->texinfo->vecs[0]);
+		t = DotProduct (verts, warpface->texinfo->vecs[1]);
 		poly->verts[i][3] = s;
 		poly->verts[i][4] = t;
 	}
@@ -159,114 +137,290 @@ void SubdividePolygon(int numverts, float* verts)
 /*
 ================
 GL_SubdivideSurface
+
+Breaks a polygon up along axial 64 unit
+boundaries so that turbulent and sky warps
+can be done reasonably.
 ================
 */
-void GL_SubdivideSurface(msurface_t* fa)
+void GL_SubdivideSurface (msurface_t *fa)
 {
-	vec3_t verts[64];
-	int i;
+	vec3_t		verts[64];
+	int			numverts;
+	int			i;
+	int			lindex;
+	float		*vec;
+	texture_t	*t;
 
 	warpface = fa;
 
-	//the first poly in the chain is the undivided poly for newwater rendering.
-	//grab the verts from that.
-	for (i = 0; i < fa->polys->numverts; i++)
-	VectorCopy (fa->polys->verts[i], verts[i]);
+	//
+	// convert edges back to a normal polygon
+	//
+	numverts = 0;
+	for (i=0 ; i<fa->numedges ; i++)
+	{
+		lindex = loadmodel->surfedges[fa->firstedge + i];
 
-	SubdividePolygon(fa->polys->numverts, verts[0]);
+		if (lindex > 0)
+			vec = loadmodel->vertexes[loadmodel->edges[lindex].v[0]].position;
+		else
+			vec = loadmodel->vertexes[loadmodel->edges[-lindex].v[1]].position;
+		VectorCopy (vec, verts[numverts]);
+		numverts++;
+	}
+
+	SubdividePolygon (numverts, verts[0]);
 }
 
-/*
-================
-DrawWaterPoly -- johnfitz
-================
-*/
-void DrawWaterPoly(glpoly_t* p)
+//=========================================================
+
+
+
+// speed up sin calculations - Ed
+float	turbsin[] =
 {
-	float* v;
-	int i;
-
-	if (load_subdivide_size > 48)
-	{
-		glBegin(GL_POLYGON);
-		v = p->verts[0];
-		for (i = 0; i < p->numverts; i++ , v += VERTEXSIZE)
-		{
-			glTexCoord2f(WARPCALC2(v[3],v[4]), WARPCALC2(v[4],v[3]));
-			glVertex3fv(v);
-		}
-		glEnd();
-	}
-	else
-	{
-		glBegin(GL_POLYGON);
-		v = p->verts[0];
-		for (i = 0; i < p->numverts; i++ , v += VERTEXSIZE)
-		{
-			glTexCoord2f(WARPCALC(v[3],v[4]), WARPCALC(v[4],v[3]));
-			glVertex3fv(v);
-		}
-		glEnd();
-	}
-}
-
-//==============================================================================
-//
-//  RENDER-TO-FRAMEBUFFER WATER
-//
-//==============================================================================
+	0, 0.19633, 0.392541, 0.588517, 0.784137, 0.979285, 1.17384, 1.3677,
+	1.56072, 1.75281, 1.94384, 2.1337, 2.32228, 2.50945, 2.69512, 2.87916,
+	3.06147, 3.24193, 3.42044, 3.59689, 3.77117, 3.94319, 4.11282, 4.27998,
+	4.44456, 4.60647, 4.76559, 4.92185, 5.07515, 5.22538, 5.37247, 5.51632,
+	5.65685, 5.79398, 5.92761, 6.05767, 6.18408, 6.30677, 6.42566, 6.54068,
+	6.65176, 6.75883, 6.86183, 6.9607, 7.05537, 7.14579, 7.23191, 7.31368,
+	7.39104, 7.46394, 7.53235, 7.59623, 7.65552, 7.71021, 7.76025, 7.80562,
+	7.84628, 7.88222, 7.91341, 7.93984, 7.96148, 7.97832, 7.99036, 7.99759,
+	8, 7.99759, 7.99036, 7.97832, 7.96148, 7.93984, 7.91341, 7.88222,
+	7.84628, 7.80562, 7.76025, 7.71021, 7.65552, 7.59623, 7.53235, 7.46394,
+	7.39104, 7.31368, 7.23191, 7.14579, 7.05537, 6.9607, 6.86183, 6.75883,
+	6.65176, 6.54068, 6.42566, 6.30677, 6.18408, 6.05767, 5.92761, 5.79398,
+	5.65685, 5.51632, 5.37247, 5.22538, 5.07515, 4.92185, 4.76559, 4.60647,
+	4.44456, 4.27998, 4.11282, 3.94319, 3.77117, 3.59689, 3.42044, 3.24193,
+	3.06147, 2.87916, 2.69512, 2.50945, 2.32228, 2.1337, 1.94384, 1.75281,
+	1.56072, 1.3677, 1.17384, 0.979285, 0.784137, 0.588517, 0.392541, 0.19633,
+	9.79717e-16, -0.19633, -0.392541, -0.588517, -0.784137, -0.979285, -1.17384, -1.3677,
+	-1.56072, -1.75281, -1.94384, -2.1337, -2.32228, -2.50945, -2.69512, -2.87916,
+	-3.06147, -3.24193, -3.42044, -3.59689, -3.77117, -3.94319, -4.11282, -4.27998,
+	-4.44456, -4.60647, -4.76559, -4.92185, -5.07515, -5.22538, -5.37247, -5.51632,
+	-5.65685, -5.79398, -5.92761, -6.05767, -6.18408, -6.30677, -6.42566, -6.54068,
+	-6.65176, -6.75883, -6.86183, -6.9607, -7.05537, -7.14579, -7.23191, -7.31368,
+	-7.39104, -7.46394, -7.53235, -7.59623, -7.65552, -7.71021, -7.76025, -7.80562,
+	-7.84628, -7.88222, -7.91341, -7.93984, -7.96148, -7.97832, -7.99036, -7.99759,
+	-8, -7.99759, -7.99036, -7.97832, -7.96148, -7.93984, -7.91341, -7.88222,
+	-7.84628, -7.80562, -7.76025, -7.71021, -7.65552, -7.59623, -7.53235, -7.46394,
+	-7.39104, -7.31368, -7.23191, -7.14579, -7.05537, -6.9607, -6.86183, -6.75883,
+	-6.65176, -6.54068, -6.42566, -6.30677, -6.18408, -6.05767, -5.92761, -5.79398,
+	-5.65685, -5.51632, -5.37247, -5.22538, -5.07515, -4.92185, -4.76559, -4.60647,
+	-4.44456, -4.27998, -4.11282, -3.94319, -3.77117, -3.59689, -3.42044, -3.24193,
+	-3.06147, -2.87916, -2.69512, -2.50945, -2.32228, -2.1337, -1.94384, -1.75281,
+	-1.56072, -1.3677, -1.17384, -0.979285, -0.784137, -0.588517, -0.392541, -0.19633,
+};
+#define TURBSCALE (256.0 / (2 * M_PI))
 
 /*
 =============
-R_UpdateWarpTextures -- johnfitz -- each frame, update warping textures
+EmitWaterPolys
+
+Does a water warp on the pre-fragmented glpoly_t chain
 =============
 */
-void R_UpdateWarpTextures()
+void EmitWaterPolys (msurface_t *fa)
 {
-	texture_t* tx;
-	float x, y, x2;
+	glpoly_t	*p;
+	float		*v;
+	int			i;
+	float		s, t, os, ot;
 
-	if (r_oldwater.value || cl.paused || r_drawflat_cheatsafe || r_lightmap_cheatsafe)
-		return;
 
-	float warptess = 128.0 / CLAMP (3.0, floor(r_waterquality.value), 64.0);
-
-	for (auto i = 0; i < cl.worldmodel->numtextures; i++)
+	for (p=fa->polys ; p ; p=p->next)
 	{
-		if (!((tx = cl.worldmodel->textures[i])))
-			continue;
-
-		if (!tx->update_warp)
-			continue;
-
-		//render warp
-		GL_SetCanvas(canvastype::CANVAS_WARPIMAGE);
-		GL_Bind(tx->gltexture);
-		for (x = 0.0; x < 128.0; x = x2)
+		glBegin (GL_POLYGON);
+		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=VERTEXSIZE)
 		{
-			x2 = x + warptess;
-			glBegin(GL_TRIANGLE_STRIP);
-			for (y = 0.0; y < 128.01; y += warptess) // .01 for rounding errors
-			{
-				glTexCoord2f(WARPCALC(x,y), WARPCALC(y,x));
-				glVertex2f(x, y);
-				glTexCoord2f(WARPCALC(x2,y), WARPCALC(y,x2));
-				glVertex2f(x2, y);
-			}
-			glEnd();
+			os = v[3];
+			ot = v[4];
+
+			s = os + turbsin[(int)((ot*0.125+realtime) * TURBSCALE) & 255];
+			s *= (1.0/64);
+
+			t = ot + turbsin[(int)((os*0.125+realtime) * TURBSCALE) & 255];
+			t *= (1.0/64);
+
+			glTexCoord2f (s, t);
+			glVertex3fv (v);
+		}
+		glEnd ();
+	}
+}
+
+
+
+
+/*
+=============
+EmitSkyPolys
+=============
+*/
+void EmitSkyPolys (msurface_t *fa)
+{
+	glpoly_t	*p;
+	float		*v;
+	int			i;
+	float	s, t;
+	vec3_t	dir;
+	float	length;
+
+	for (p=fa->polys ; p ; p=p->next)
+	{
+		glBegin (GL_POLYGON);
+		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=VERTEXSIZE)
+		{
+			VectorSubtract (v, r_origin, dir);
+			dir[2] *= 3;	// flatten the sphere
+
+			length = dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2];
+			length = sqrt (length);
+			length = 6*63/length;
+
+			dir[0] *= length;
+			dir[1] *= length;
+
+			s = (speedscale + dir[0]) * (1.0/128);
+			t = (speedscale + dir[1]) * (1.0/128);
+
+			glTexCoord2f (s, t);
+			glVertex3fv (v);
+		}
+		glEnd ();
+	}
+}
+
+/*
+===============
+EmitBothSkyLayers
+
+Does a sky warp on the pre-fragmented glpoly_t chain
+This will be called for brushmodels, the world
+will have them chained together.
+===============
+*/
+void EmitBothSkyLayers (msurface_t *fa)
+{
+	int			i;
+	int			lindex;
+	float		*vec;
+
+	GL_DisableMultitexture();
+
+	GL_Bind (solidskytexture);
+	speedscale = realtime*8;
+	speedscale -= (int)speedscale & ~127 ;
+
+	EmitSkyPolys (fa);
+
+	glEnable (GL_BLEND);
+	GL_Bind (alphaskytexture);
+	speedscale = realtime*16;
+	speedscale -= (int)speedscale & ~127 ;
+
+	EmitSkyPolys (fa);
+
+	glDisable (GL_BLEND);
+}
+
+/*
+=================
+R_DrawSkyChain
+=================
+*/
+void R_DrawSkyChain (msurface_t *s)
+{
+	msurface_t	*fa;
+
+	GL_DisableMultitexture();
+
+	// used when gl_texsort is on
+	GL_Bind(solidskytexture);
+	speedscale = realtime*8;
+	speedscale -= (int)speedscale & ~127 ;
+
+	for (fa=s ; fa ; fa=fa->texturechain)
+		EmitSkyPolys (fa);
+
+	glEnable (GL_BLEND);
+	GL_Bind (alphaskytexture);
+	speedscale = realtime*16;
+	speedscale -= (int)speedscale & ~127 ;
+
+	for (fa=s ; fa ; fa=fa->texturechain)
+		EmitSkyPolys (fa);
+
+	glDisable (GL_BLEND);
+}
+
+//===============================================================
+
+/*
+=============
+R_InitSky
+
+A sky texture is 256*128, with the right side being a masked overlay
+==============
+*/
+void R_InitSky (texture_t *mt)
+{
+	int			i, j, p;
+	byte		*src;
+	unsigned	trans[128*128];
+	unsigned	transpix;
+	int			r, g, b;
+	unsigned	*rgba;
+	extern	int			skytexturenum;
+
+	src = (byte *)mt + mt->offsets[0];
+
+	// make an average value for the back to avoid
+	// a fringe on the top level
+
+	r = g = b = 0;
+	for (i=0 ; i<128 ; i++)
+		for (j=0 ; j<128 ; j++)
+		{
+			p = src[i*256 + j + 128];
+			rgba = &d_8to24table[p];
+			trans[(i*128) + j] = *rgba;
+			r += ((byte *)rgba)[0];
+			g += ((byte *)rgba)[1];
+			b += ((byte *)rgba)[2];
 		}
 
-		//copy to texture
-		GL_Bind(tx->warpimage);
-		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, glx, gly + glheight - gl_warpimagesize, gl_warpimagesize, gl_warpimagesize);
+	((byte *)&transpix)[0] = r/(128*128);
+	((byte *)&transpix)[1] = g/(128*128);
+	((byte *)&transpix)[2] = b/(128*128);
+	((byte *)&transpix)[3] = 0;
 
-		tx->update_warp = false;
-	}
 
-	//if warp render went down into sbar territory, we need to be sure to refresh it next frame
-	if (gl_warpimagesize + sb_lines > glheight)
-		Sbar_Changed();
+	if (!solidskytexture)
+		solidskytexture = texture_extension_number++;
+	GL_Bind (solidskytexture );
+	glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//if viewsize is less than 100, we need to redraw the frame around the viewport
-	scr_tileclear_updates = 0;
+
+	for (i=0 ; i<128 ; i++)
+		for (j=0 ; j<128 ; j++)
+		{
+			p = src[i*256 + j];
+			if (p == 0)
+				trans[(i*128) + j] = transpix;
+			else
+				trans[(i*128) + j] = d_8to24table[p];
+		}
+
+	if (!alphaskytexture)
+		alphaskytexture = texture_extension_number++;
+	GL_Bind(alphaskytexture);
+	glTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
+

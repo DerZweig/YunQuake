@@ -30,9 +30,9 @@ struct sfxcache_t
 
 struct dma_t
 {
-	bool gamealive;
-	bool soundalive;
-	bool splitbuffer;
+	qboolean gamealive;
+	qboolean soundalive;
+	qboolean splitbuffer;
 	int channels;
 	int samples; // mono samples in buffer
 	int submission_chunk; // don't mix less than this #
@@ -68,24 +68,24 @@ struct wavinfo_t
 	int dataofs; // chunk starts this many bytes from file start
 };
 
-void S_Init();
-void S_Startup();
-void S_Shutdown();
+void S_Init(void);
+void S_Startup(void);
+void S_Shutdown(void);
 void S_StartSound(int entnum, int entchannel, sfx_t* sfx, vec3_t origin, float fvol, float attenuation);
 void S_StaticSound(sfx_t* sfx, vec3_t origin, float vol, float attenuation);
 void S_StopSound(int entnum, int entchannel);
-void S_StopAllSounds(bool clear);
-void S_ClearBuffer();
+void S_StopAllSounds(qboolean clear);
+void S_ClearBuffer(void);
 void S_Update(vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
-void S_ExtraUpdate();
+void S_ExtraUpdate(void);
 
 sfx_t* S_PrecacheSound(char* sample);
 void S_TouchSound(char* sample);
-void S_ClearPrecache();
-void S_BeginPrecaching();
-void S_EndPrecaching();
+void S_ClearPrecache(void);
+void S_BeginPrecaching(void);
+void S_EndPrecaching(void);
 void S_PaintChannels(int endtime);
-void S_InitPaintChannels();
+void S_InitPaintChannels(void);
 
 // picks a channel based on priorities, empty slots, number of channels
 channel_t* SND_PickChannel(int entnum, int entchannel);
@@ -94,20 +94,20 @@ channel_t* SND_PickChannel(int entnum, int entchannel);
 void SND_Spatialize(channel_t* ch);
 
 // initializes cycling through a DMA buffer and returns information on it
-int SNDDMA_Init();
+qboolean SNDDMA_Init(void);
 
 // gets the current DMA position
-int SNDDMA_GetDMAPos();
+int SNDDMA_GetDMAPos(void);
 
 // shutdown the DMA xfer.
-void SNDDMA_Shutdown();
+void SNDDMA_Shutdown(void);
 
 // ====================================================================
 // User-setable variables
 // ====================================================================
 
-#define	MAX_CHANNELS			512 //johnfitz -- was 128
-#define	MAX_DYNAMIC_CHANNELS	128 //johnfitz -- was 8
+#define	MAX_CHANNELS			128
+#define	MAX_DYNAMIC_CHANNELS	8
 
 
 extern channel_t channels[MAX_CHANNELS];
@@ -123,7 +123,7 @@ extern int total_channels;
 // number of times S_Update() is called per second.
 //
 
-extern bool fakedma;
+extern qboolean fakedma;
 extern int fakedma_updates;
 extern int paintedtime;
 extern vec3_t listener_origin;
@@ -138,7 +138,7 @@ extern cvar_t loadas8bit;
 extern cvar_t bgmvolume;
 extern cvar_t volume;
 
-extern bool snd_initialized;
+extern qboolean snd_initialized;
 
 extern int snd_blocked;
 
@@ -147,10 +147,10 @@ sfxcache_t* S_LoadSound(sfx_t* s);
 
 wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength);
 
-void SND_InitScaletable();
-void SNDDMA_Submit();
+void SND_InitScaletable(void);
+void SNDDMA_Submit(void);
 
-void S_AmbientOff();
-void S_AmbientOn();
+void S_AmbientOff(void);
+void S_AmbientOn(void);
 
 #endif

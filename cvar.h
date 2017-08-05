@@ -3,15 +3,13 @@ struct cvar_t
 {
 	char* name;
 	char* string;
-	bool archive; // set to true to cause it to be saved to vars.rc
-	bool server; // notifies players when changed
+	qboolean archive; // set to qtrue to cause it to be saved to vars.rc
+	qboolean server; // notifies players when changed
 	float value;
 	cvar_t* next;
-	char* default_string; //johnfitz -- remember defaults for reset function
-	void (*callback)(); //johnfitz
 };
 
-void Cvar_RegisterVariable(cvar_t* variable, void (*function)()); //johnfitz -- cvar callback
+void Cvar_RegisterVariable(cvar_t* variable);
 // registers a cvar that allready has the name, string, and optionally the
 // archive elements set.
 
@@ -31,14 +29,14 @@ char* Cvar_CompleteVariable(char* partial);
 // attempts to match a partial variable name for command line completion
 // returns nullptr if nothing fits
 
-bool Cvar_Command();
+qboolean Cvar_Command(void);
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
-// command.  Returns true if the command was a variable reference that
+// command.  Returns qtrue if the command was a variable reference that
 // was handled. (print or change)
 
 void Cvar_WriteVariables(FILE* f);
 // Writes lines containing "set variable value" for all variables
-// with the archive flag set to true.
+// with the archive flag set to qtrue.
 
 cvar_t* Cvar_FindVar(char* var_name);
 

@@ -13,8 +13,6 @@ struct lightstyle_t
 {
 	int length;
 	char map[MAX_STYLESTRING];
-	char average; //johnfitz
-	char peak; //johnfitz
 };
 
 struct scoreboard_t
@@ -47,7 +45,7 @@ struct cshift_t
 
 #define	SIGNONS		4			// signon messages to receive before connected
 
-#define	MAX_DLIGHTS		64 //johnfitz -- was 32
+#define	MAX_DLIGHTS		32
 
 struct dlight_t
 {
@@ -57,13 +55,10 @@ struct dlight_t
 	float decay; // drop this each second
 	float minlight; // don't add when contributing less
 	int key;
-	vec3_t color; //johnfitz -- lit support via lordhavoc
 };
 
-
-#define	MAX_BEAMS	32 //johnfitz -- was 24
-
 struct model_t;
+#define	MAX_BEAMS	24
 
 struct beam_t
 {
@@ -73,7 +68,7 @@ struct beam_t
 	vec3_t start, end;
 };
 
-#define	MAX_EFRAGS		2048 //johnfitz -- was 640
+#define	MAX_EFRAGS		640
 
 #define	MAX_MAPSTRING	2048
 #define	MAX_DEMOS		8
@@ -94,7 +89,7 @@ struct client_static_t
 {
 	cactive_t state;
 
-	// personalization data sent to server
+	// personalization data sent to server	
 	char mapstring[MAX_QPATH];
 	char spawnparms[MAX_MAPSTRING]; // to restart a level
 
@@ -104,9 +99,9 @@ struct client_static_t
 
 	// demo recording info must be here, because record is started before
 	// entering a map (and clearing client_state_t)
-	bool demorecording;
-	bool demoplayback;
-	bool timedemo;
+	qboolean demorecording;
+	qboolean demoplayback;
+	qboolean timedemo;
 	int forcetrack; // -1 = use normal cd track
 	FILE* demofile;
 	int td_lastframe; // to meter out one message a frame
@@ -122,6 +117,8 @@ struct client_static_t
 
 extern client_static_t cls;
 
+struct model_t;
+
 //
 // the client_state_t structure is wiped completely at every
 // server signon
@@ -130,7 +127,7 @@ struct client_state_t
 {
 	int movemessages; // since connecting to this server
 	// throw out the first couple, so the player
-	// doesn't accidentally do something the
+	// doesn't accidentally do something the 
 	// first frame
 	usercmd_t cmd; // last command sent to the server
 
@@ -160,21 +157,21 @@ struct client_state_t
 	// pitch drifting vars
 	float idealpitch;
 	float pitchvel;
-	bool nodrift;
+	qboolean nodrift;
 	float driftmove;
 	double laststop;
 
 	float viewheight;
 	float crouch; // local amount for smoothing stepups
 
-	bool paused; // send over by server
-	bool onground;
-	bool inwater;
+	qboolean paused; // send over by server
+	qboolean onground;
+	qboolean inwater;
 
 	int intermission; // don't change view angle, full screen, etc
 	int completed_time; // latched at intermission start
 
-	double mtime[2]; // the timestamp of last two messages
+	double mtime[2]; // the timestamp of last two messages	
 	double time; // clients view of time, should be between
 	// servertime and oldservertime to generate
 	// a lerp point for other data
@@ -190,7 +187,7 @@ struct client_state_t
 	model_t* model_precache[MAX_MODELS];
 	sfx_t* sound_precache[MAX_SOUNDS];
 
-	char levelname[128]; // for display on solo scoreboard //johnfitz -- was 40.
+	char levelname[40]; // for display on solo scoreboard
 	int viewentity; // cl_entitites[cl.viewentity] = player
 	int maxclients;
 	int gametype;
@@ -206,8 +203,6 @@ struct client_state_t
 
 	// frag scoreboard
 	scoreboard_t* scores; // [cl.maxclients]
-
-	unsigned protocol; //johnfitz
 };
 
 
@@ -245,24 +240,19 @@ extern cvar_t m_forward;
 extern cvar_t m_side;
 
 
-#define	MAX_TEMP_ENTITIES	256		//johnfitz -- was 64
-#define	MAX_STATIC_ENTITIES	512		//johnfitz -- was 128
-#define	MAX_VISEDICTS		1024	//johnfitz -- was 256
+#define	MAX_TEMP_ENTITIES	64			// lightning bolts, etc
+#define	MAX_STATIC_ENTITIES	128			// torches, etc
 
 extern client_state_t cl;
 
 // FIXME, allocate dynamically
 extern efrag_t cl_efrags[MAX_EFRAGS];
+extern entity_t cl_entities[MAX_EDICTS];
 extern entity_t cl_static_entities[MAX_STATIC_ENTITIES];
 extern lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
 extern dlight_t cl_dlights[MAX_DLIGHTS];
 extern entity_t cl_temp_entities[MAX_TEMP_ENTITIES];
 extern beam_t cl_beams[MAX_BEAMS];
-extern entity_t* cl_visedicts[MAX_VISEDICTS];
-extern int cl_numvisedicts;
-
-extern entity_t* cl_entities; //johnfitz -- was a static array, now on hunk
-extern int cl_max_edicts; //johnfitz -- only changes when new map loads
 
 //=============================================================================
 
@@ -270,19 +260,23 @@ extern int cl_max_edicts; //johnfitz -- only changes when new map loads
 // cl_main
 //
 dlight_t* CL_AllocDlight(int key);
-void CL_DecayLights();
+void CL_DecayLights(void);
 
-void CL_Init();
+void CL_Init(void);
 
 void CL_EstablishConnection(char* host);
-void CL_Signon1();
-void CL_Signon2();
-void CL_Signon3();
-void CL_Signon4();
+void CL_Signon1(void);
+void CL_Signon2(void);
+void CL_Signon3(void);
+void CL_Signon4(void);
 
-void CL_Disconnect();
-void CL_Disconnect_f();
-void CL_NextDemo();
+void CL_Disconnect(void);
+void CL_Disconnect_f(void);
+void CL_NextDemo(void);
+
+#define			MAX_VISEDICTS	256
+extern int cl_numvisedicts;
+extern entity_t* cl_visedicts[MAX_VISEDICTS];
 
 //
 // cl_input
@@ -297,17 +291,17 @@ extern kbutton_t in_mlook, in_klook;
 extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
 
-void CL_InitInput();
-void CL_SendCmd();
+void CL_InitInput(void);
+void CL_SendCmd(void);
 void CL_SendMove(usercmd_t* cmd);
 
-void CL_ParseTEnt();
-void CL_UpdateTEnts();
+void CL_ParseTEnt(void);
+void CL_UpdateTEnts(void);
 
-void CL_ClearState();
+void CL_ClearState(void);
 
 
-int CL_ReadFromServer();
+int CL_ReadFromServer(void);
 void CL_WriteToServer(usercmd_t* cmd);
 void CL_BaseMove(usercmd_t* cmd);
 
@@ -318,35 +312,36 @@ char* Key_KeynumToString(int keynum);
 //
 // cl_demo.c
 //
-void CL_StopPlayback();
-int CL_GetMessage();
+void CL_StopPlayback(void);
+int CL_GetMessage(void);
 
-void CL_Stop_f();
-void CL_Record_f();
-void CL_PlayDemo_f();
-void CL_TimeDemo_f();
+void CL_Stop_f(void);
+void CL_Record_f(void);
+void CL_PlayDemo_f(void);
+void CL_TimeDemo_f(void);
+void CL_FinishTimeDemo(void);
 
 //
 // cl_parse.c
 //
-void CL_ParseServerMessage();
+void CL_ParseServerMessage(void);
 void CL_NewTranslation(int slot);
 
 //
 // view
 //
-void V_StartPitchDrift();
-void V_StopPitchDrift();
+void V_StartPitchDrift(void);
+void V_StopPitchDrift(void);
 
-void V_RenderView();
-//void V_UpdatePalette(); //johnfitz
-void V_Register();
-void V_ParseDamage();
+void V_RenderView(void);
+void V_UpdatePalette(void);
+void V_Register(void);
+void V_ParseDamage(void);
 void V_SetContentsColor(int contents);
 
 
 //
 // cl_tent
 //
-void CL_InitTEnts();
-void CL_SignonReply();
+void CL_InitTEnts(void);
+void CL_SignonReply(void);

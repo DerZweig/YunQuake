@@ -1,11 +1,11 @@
 #pragma once
-int WIPX_Init();
-void WIPX_Shutdown();
-void WIPX_Listen(bool state);
+int WIPX_Init(void);
+void WIPX_Shutdown(void);
+void WIPX_Listen(qboolean state);
 int WIPX_OpenSocket(int port);
 int WIPX_CloseSocket(int socket);
 int WIPX_Connect(int socket, qsockaddr* addr);
-int WIPX_CheckNewConnections();
+int WIPX_CheckNewConnections(void);
 int WIPX_Read(int socket, byte* buf, int len, qsockaddr* addr);
 int WIPX_Write(int socket, byte* buf, int len, qsockaddr* addr);
 int WIPX_Broadcast(int socket, byte* buf, int len);

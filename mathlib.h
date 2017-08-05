@@ -1,6 +1,6 @@
 using vec_t = float;
 using vec3_t = vec_t[3];
-using vec5_t = vec_t[5];
+using vec5_t = vec_t [5];
 
 using fixed4_t = int;
 using fixed8_t = int;
@@ -10,39 +10,17 @@ using fixed16_t = int;
 #define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
 #endif
 
-#define M_PI_DIV_180 (M_PI / 180.0) //johnfitz
-
-struct mplane_t;
+struct mplane_s;
 
 extern vec3_t vec3_origin;
 extern int nanmask;
 
 #define	IS_NAN(x) (((*(int *)&x)&nanmask)==nanmask)
 
-#define CLAMP(min, x, max) ((x) < (min) ? (min) : (x) > (max) ? (max) : (x)) //johnfitz
-
-#define Q_rint(x) ((x) > 0 ? (int)((x) + 0.5) : (int)((x) - 0.5)) //johnfitz -- from joequake
-
 #define DotProduct(x,y) (x[0]*y[0]+x[1]*y[1]+x[2]*y[2])
 #define VectorSubtract(a,b,c) {c[0]=a[0]-b[0];c[1]=a[1]-b[1];c[2]=a[2]-b[2];}
 #define VectorAdd(a,b,c) {c[0]=a[0]+b[0];c[1]=a[1]+b[1];c[2]=a[2]+b[2];}
 #define VectorCopy(a,b) {b[0]=a[0];b[1]=a[1];b[2]=a[2];}
-
-//johnfitz -- courtesy of lordhavoc
-#define VectorNormalizeFast(_v)\
-{\
-	float _y, _number;\
-	_number = DotProduct(_v, _v);\
-	if (_number != 0.0)\
-	{\
-		*((long *)&_y) = 0x5f3759df - ((* (long *) &_number) >> 1);\
-		_y = _y * (1.5f - (_number * 0.5f * _y * _y));\
-		VectorScale(_v, _y, _v);\
-	}\
-}
-
-void TurnVector(vec3_t out, const vec3_t forward, const vec3_t side, float angle); //johnfitz
-void VectorAngles(const vec3_t forward, vec3_t angles); //johnfitz
 
 void VectorMA(vec3_t veca, float scale, vec3_t vecb, vec3_t vecc);
 

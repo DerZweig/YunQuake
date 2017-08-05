@@ -16,13 +16,14 @@ union eval_t
 
 struct edict_t
 {
-	bool free;
+	qboolean free;
 	link_t area; // linked to a division node or leaf
+
 	int num_leafs;
 	short leafnums[MAX_ENT_LEAFS];
+
 	entity_state_t baseline;
-	unsigned char alpha; // johnfitz -- hack to support alpha since it's not part of entvars_t
-	bool sendinterval; // johnfitz -- send time until nextthink to client for better lerp timing
+
 	float freetime; // sv.time when the object was freed
 	entvars_t v; // C exported fields from progs
 	// other fields from progs come immediately after
@@ -45,14 +46,14 @@ extern int pr_edict_size; // in bytes
 
 //============================================================================
 
-void PR_Init();
+void PR_Init(void);
 
 void PR_ExecuteProgram(func_t fnum);
-void PR_LoadProgs();
+void PR_LoadProgs(void);
 
-void PR_Profile_f();
+void PR_Profile_f(void);
 
-edict_t* ED_Alloc();
+edict_t* ED_Alloc(void);
 void ED_Free(edict_t* ed);
 
 char* ED_NewString(char* string);
@@ -95,13 +96,13 @@ int NUM_FOR_EDICT(edict_t* e);
 
 extern int type_size[8];
 
-using builtin_t = void (*)();
+using builtin_t = void (*)(void);
 extern builtin_t* pr_builtins;
 extern int pr_numbuiltins;
 
 extern int pr_argc;
 
-extern bool pr_trace;
+extern qboolean pr_trace;
 extern dfunction_t* pr_xfunction;
 extern int pr_xstatement;
 
@@ -109,7 +110,7 @@ extern unsigned short pr_crc;
 
 void PR_RunError(char* error, ...);
 
-void ED_PrintEdicts();
+void ED_PrintEdicts(void);
 void ED_PrintNum(int ent);
 
 eval_t* GetEdictFieldValue(edict_t* ed, char* field);

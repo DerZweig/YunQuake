@@ -8,7 +8,7 @@ struct qsockaddr
 
 #define	NET_NAMELEN			64
 
-#define NET_MAXMESSAGE		32000 //johnfitz -- was 8192
+#define NET_MAXMESSAGE		8192
 #define NET_HEADERSIZE		(2 * sizeof(unsigned int))
 #define NET_DATAGRAMSIZE	(MAX_DATAGRAM + NET_HEADERSIZE)
 
@@ -103,9 +103,9 @@ struct qsocket_t
 	double lastMessageTime;
 	double lastSendTime;
 
-	bool disconnected;
-	bool canSend;
-	bool sendNext;
+	qboolean disconnected;
+	qboolean canSend;
+	qboolean sendNext;
 
 	int driver;
 	int landriver;
@@ -123,7 +123,7 @@ struct qsocket_t
 	int receiveMessageLength;
 	byte receiveMessage [NET_MAXMESSAGE];
 
-	qsockaddr addr;
+	struct qsockaddr addr;
 	char address[NET_NAMELEN];
 };
 
@@ -134,15 +134,15 @@ extern int net_numsockets;
 struct net_landriver_t
 {
 	char* name;
-	bool initialized;
+	qboolean initialized;
 	int controlSock;
-	int (*Init)();
-	void (*Shutdown)();
-	void (*Listen)(bool state);
+	int (*Init)(void);
+	void (*Shutdown)(void);
+	void (*Listen)(qboolean state);
 	int (*OpenSocket)(int port);
 	int (*CloseSocket)(int socket);
 	int (*Connect)(int socket, qsockaddr* addr);
-	int (*CheckNewConnections)();
+	int (*CheckNewConnections)(void);
 	int (*Read)(int socket, byte* buf, int len, qsockaddr* addr);
 	int (*Write)(int socket, byte* buf, int len, qsockaddr* addr);
 	int (*Broadcast)(int socket, byte* buf, int len);
@@ -163,19 +163,19 @@ extern net_landriver_t net_landrivers[MAX_NET_DRIVERS];
 struct net_driver_t
 {
 	char* name;
-	bool initialized;
-	int (*Init)();
-	void (*Listen)(bool state);
-	void (*SearchForHosts)(bool xmit);
+	qboolean initialized;
+	int (*Init)(void);
+	void (*Listen)(qboolean state);
+	void (*SearchForHosts)(qboolean xmit);
 	qsocket_t*(*Connect)(char* host);
-	qsocket_t*(*CheckNewConnections)();
+	qsocket_t*(*CheckNewConnections)(void);
 	int (*QGetMessage)(qsocket_t* sock);
 	int (*QSendMessage)(qsocket_t* sock, sizebuf_t* data);
 	int (*SendUnreliableMessage)(qsocket_t* sock, sizebuf_t* data);
-	bool (*CanSendMessage)(qsocket_t* sock);
-	bool (*CanSendUnreliableMessage)(qsocket_t* sock);
+	qboolean (*CanSendMessage)(qsocket_t* sock);
+	qboolean (*CanSendUnreliableMessage)(qsocket_t* sock);
 	void (*Close)(qsocket_t* sock);
-	void (*Shutdown)();
+	void (*Shutdown)(void);
 	int controlSock;
 };
 
@@ -195,9 +195,9 @@ extern int messagesReceived;
 extern int unreliableMessagesSent;
 extern int unreliableMessagesReceived;
 
-qsocket_t* NET_NewQSocket();
+qsocket_t* NET_NewQSocket(void);
 void NET_FreeQSocket(qsocket_t*);
-double SetNetTime();
+double SetNetTime(void);
 
 
 #define HOSTCACHESIZE	8
@@ -211,12 +211,30 @@ struct hostcache_t
 	int maxusers;
 	int driver;
 	int ldriver;
-	qsockaddr addr;
+	struct qsockaddr addr;
 };
 
 extern int hostCacheCount;
 extern hostcache_t hostcache[HOSTCACHESIZE];
 
+#if !defined(_WIN32 ) && !defined (__linux__) && !defined (__sun__)
+#ifndef htonl
+extern unsigned long htonl (unsigned long hostlong);
+#endif
+#ifndef htons
+extern unsigned short htons (unsigned short hostshort);
+#endif
+#ifndef ntohl
+extern unsigned long ntohl (unsigned long netlong);
+#endif
+#ifndef ntohs
+extern unsigned short ntohs (unsigned short netshort);
+#endif
+#endif
+
+#ifdef IDGODS
+qboolean IsID(qsockaddr *addr);
+#endif
 
 //============================================================================
 //
@@ -228,17 +246,17 @@ extern double net_time;
 extern sizebuf_t net_message;
 extern int net_activeconnections;
 
-void NET_Init();
-void NET_Shutdown();
+void NET_Init(void);
+void NET_Shutdown(void);
 
-qsocket_t* NET_CheckNewConnections();
+qsocket_t* NET_CheckNewConnections(void);
 // returns a new connection number if there is one pending, else -1
 
 qsocket_t* NET_Connect(char* host);
 // called by client to connect to a host.  Returns -1 if not able to
 
-bool NET_CanSendMessage(qsocket_t* sock);
-// Returns true or false if the given qsocket can currently accept a
+qboolean NET_CanSendMessage(qsocket_t* sock);
+// Returns qtrue or qfalse if the given qsocket can currently accept a
 // message to be transmitted.
 
 int NET_GetMessage(qsocket_t* sock);
@@ -268,31 +286,31 @@ void NET_Close(qsocket_t* sock);
 // from a server.
 // A netcon_t number will not be reused until this function is called for it
 
-void NET_Poll();
+void NET_Poll(void);
 
 
 struct PollProcedure
 {
 	PollProcedure* next;
 	double nextTime;
-	void (*procedure)(void*);
+	void (*procedure)();
 	void* arg;
 };
 
 void SchedulePollProcedure(PollProcedure* pp, double timeOffset);
 
-extern bool serialAvailable;
-extern bool ipxAvailable;
-extern bool tcpipAvailable;
+extern qboolean serialAvailable;
+extern qboolean ipxAvailable;
+extern qboolean tcpipAvailable;
 extern char my_ipx_address[NET_NAMELEN];
 extern char my_tcpip_address[NET_NAMELEN];
-extern void (*GetComPortConfig)(int portNumber, int* port, int* irq, int* baud, bool* useModem);
-extern void (*SetComPortConfig)(int portNumber, int port, int irq, int baud, bool useModem);
+extern void (*GetComPortConfig)(int portNumber, int* port, int* irq, int* baud, qboolean* useModem);
+extern void (*SetComPortConfig)(int portNumber, int port, int irq, int baud, qboolean useModem);
 extern void (*GetModemConfig)(int portNumber, char* dialType, char* clear, char* init, char* hangup);
 extern void (*SetModemConfig)(int portNumber, char* dialType, char* clear, char* init, char* hangup);
 
-extern bool slistInProgress;
-extern bool slistSilent;
-extern bool slistLocal;
+extern qboolean slistInProgress;
+extern qboolean slistSilent;
+extern qboolean slistLocal;
 
-void NET_Slist_f();
+void NET_Slist_f(void);

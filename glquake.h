@@ -11,9 +11,35 @@
 #include <GL/glu.h>
 
 void GL_BeginRendering(int* x, int* y, int* width, int* height);
-void GL_EndRendering();
+void GL_EndRendering(void);
 
-//johnfitz -- removed texture object stuff since they are standard in gl 1.1
+
+#ifdef _WIN32
+// Function prototypes for the Texture Object Extension routines
+using ARETEXRESFUNCPTR= GLboolean (APIENTRY *)(GLsizei, const GLuint*,
+                                               const GLboolean*);
+using BINDTEXFUNCPTR= void (APIENTRY *)(GLenum, GLuint);
+using DELTEXFUNCPTR= void (APIENTRY *)(GLsizei, const GLuint*);
+using GENTEXFUNCPTR= void (APIENTRY *)(GLsizei, GLuint*);
+using ISTEXFUNCPTR= GLboolean (APIENTRY *)(GLuint);
+using PRIORTEXFUNCPTR= void (APIENTRY *)(GLsizei, const GLuint*,
+                                         const GLclampf*);
+using TEXSUBIMAGEPTR= void (APIENTRY *)(int, int, int, int, int, int, int, int, void*);
+
+extern BINDTEXFUNCPTR bindTexFunc;
+extern DELTEXFUNCPTR delTexFunc;
+extern TEXSUBIMAGEPTR TexSubImage2DFunc;
+#endif
+
+extern int texture_extension_number;
+extern int texture_mode;
+
+extern float gldepthmin, gldepthmax;
+
+void GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, qboolean alpha);
+void GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean alpha);
+int GL_LoadTexture(char* identifier, int width, int height, byte* data, qboolean mipmap, qboolean alpha);
+int GL_FindTexture(char* identifier);
 
 struct glvert_t
 {
@@ -49,9 +75,9 @@ extern PROC glVertexPointerEXT;
 #define BACKFACE_EPSILON	0.01
 
 
-void R_TimeRefresh_f();
-void R_ReadPointFile_f();
-texture_t* R_TextureAnimation(texture_t* base, int frame);
+void R_TimeRefresh_f(void);
+void R_ReadPointFile_f(void);
+texture_t* R_TextureAnimation(texture_t* base);
 
 struct surfcache_t
 {
@@ -111,12 +137,16 @@ struct particle_t
 
 //====================================================
 
-extern bool r_cache_thrash; // compatability
+
+extern entity_t r_worldentity;
+extern qboolean r_cache_thrash; // compatability
 extern vec3_t modelorg, r_entorigin;
 extern entity_t* currententity;
 extern int r_visframecount; // ??? what difs?
 extern int r_framecount;
 extern mplane_t frustum[4];
+extern int c_brush_polys, c_alias_polys;
+
 
 //
 // view origin
@@ -131,9 +161,16 @@ extern vec3_t r_origin;
 //
 extern refdef_t r_refdef;
 extern mleaf_t *r_viewleaf, *r_oldviewleaf;
+extern texture_t* r_notexture_mip;
 extern int d_lightstylevalue[256]; // 8.8 fraction of base light value
 
-extern bool envmap;
+extern qboolean envmap;
+extern int currenttexture;
+extern int cnttextures[2];
+extern int particletexture;
+extern int playertextures;
+
+extern int skytexturenum; // index in cl.loadmodel, not gl texture object
 
 extern cvar_t r_norefresh;
 extern cvar_t r_drawentities;
@@ -144,20 +181,34 @@ extern cvar_t r_waterwarp;
 extern cvar_t r_fullbright;
 extern cvar_t r_lightmap;
 extern cvar_t r_shadows;
+extern cvar_t r_mirroralpha;
 extern cvar_t r_wateralpha;
 extern cvar_t r_dynamic;
 extern cvar_t r_novis;
 
 extern cvar_t gl_clear;
 extern cvar_t gl_cull;
+extern cvar_t gl_poly;
+extern cvar_t gl_texsort;
 extern cvar_t gl_smoothmodels;
 extern cvar_t gl_affinemodels;
 extern cvar_t gl_polyblend;
+extern cvar_t gl_keeptjunctions;
+extern cvar_t gl_reporttjunctions;
 extern cvar_t gl_flashblend;
 extern cvar_t gl_nocolors;
+extern cvar_t gl_doubleeyes;
+
+extern int gl_lightmap_format;
+extern int gl_solid_format;
+extern int gl_alpha_format;
 
 extern cvar_t gl_max_size;
 extern cvar_t gl_playermip;
+
+extern int mirrortexturenum; // quake texturenum, not gltexturenum
+extern qboolean mirror;
+extern mplane_t* mirror_plane;
 
 extern float r_world_matrix[16];
 
@@ -167,7 +218,7 @@ extern const char* gl_version;
 extern const char* gl_extensions;
 
 void R_TranslatePlayerSkin(int playernum);
-void R_TranslateNewPlayerSkin(int playernum); //johnfitz -- this handles cases when the actual texture changes
+void GL_Bind(int texnum);
 
 // Multitexture
 #define    TEXTURE0_SGIS				0x835E
@@ -177,104 +228,12 @@ void R_TranslateNewPlayerSkin(int playernum); //johnfitz -- this handles cases w
 #define APIENTRY /* */
 #endif
 
-//johnfitz -- modified multitexture support
-using SELECTTEXFUNC = void (APIENTRY *)(GLenum);
-using MTEXCOORDFUNC = void (APIENTRY *)(GLenum, GLfloat, GLfloat);
-extern MTEXCOORDFUNC GL_MTexCoord2fFunc;
-extern SELECTTEXFUNC GL_SelectTextureFunc;
-#define	GL_TEXTURE0_ARB	0x84C0
-#define	GL_TEXTURE1_ARB	0x84C1
-extern GLenum TEXTURE0, TEXTURE1;
-//johnfitz
+using lpMTexFUNC= void (APIENTRY *)(GLenum, GLfloat, GLfloat);
+using lpSelTexFUNC= void (APIENTRY *)(GLenum);
+extern lpMTexFUNC qglMTexCoord2fSGIS;
+extern lpSelTexFUNC qglSelectTextureSGIS;
 
-//johnfitz -- anisotropic filtering
-#define	GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
-#define	GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
-//johnfitz
+extern qboolean gl_mtexable;
 
-//johnfitz -- polygon offset
-#define OFFSET_BMODEL 1
-#define OFFSET_NONE 0
-#define OFFSET_DECAL -1
-#define OFFSET_FOG -2
-#define OFFSET_SHOWTRIS -3
-void GL_PolygonOffset(int);
-//johnfitz
-
-//johnfitz -- GL_EXT_texture_env_combine
-//the values for GL_ARB_ are identical
-#define GL_COMBINE_EXT			0x8570
-#define GL_COMBINE_RGB_EXT		0x8571
-#define GL_COMBINE_ALPHA_EXT	0x8572
-#define GL_RGB_SCALE_EXT		0x8573
-#define GL_CONSTANT_EXT			0x8576
-#define GL_PRIMARY_COLOR_EXT	0x8577
-#define GL_PREVIOUS_EXT			0x8578
-#define GL_SOURCE0_RGB_EXT		0x8580
-#define GL_SOURCE1_RGB_EXT		0x8581
-#define GL_SOURCE0_ALPHA_EXT	0x8588
-#define GL_SOURCE1_ALPHA_EXT	0x8589
-extern bool gl_texture_env_combine;
-//johnfitz
-
-extern bool gl_texture_env_add; //johnfitz -- for GL_EXT_texture_env_add
-
-extern bool isIntelVideo; //johnfitz -- intel video workarounds from Baker
-
-//johnfitz -- rendering statistics
-extern int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;
-extern int rs_dynamiclightmaps, rs_brushpasses, rs_aliaspasses, rs_skypasses;
-extern float rs_megatexels;
-//johnfitz
-
-//johnfitz -- track developer statistics that vary every frame
-extern cvar_t devstats;
-
-struct devstats_t
-{
-	int packetsize;
-	int edicts;
-	int visedicts;
-	int efrags;
-	int tempents;
-	int beams;
-	int dlights;
-};
-
-extern devstats_t dev_stats, dev_peakstats;
-
-//johnfitz
-
-//ohnfitz -- reduce overflow warning spam
-struct overflowtimes_t
-{
-	double packetsize;
-	double efrags;
-	double beams;
-};
-
-extern overflowtimes_t dev_overflows; //this stores the last time overflow messages were displayed, not the last time overflows occured
-#define CONSOLE_RESPAM_TIME 3 // seconds between repeated warning messages
-//johnfitz
-
-//johnfitz -- moved here from r_brush.c
-#define MAX_LIGHTMAPS 256 //johnfitz -- was 64
-extern gltexture_t* lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
-//johnfitz
-
-extern int gl_warpimagesize; //johnfitz -- for water warp
-
-extern bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
-
-//johnfitz -- fog functions called from outside gl_fog.c
-void Fog_ParseServerMessage();
-float* Fog_GetColor();
-float Fog_GetDensity();
-void Fog_EnableGFog();
-void Fog_DisableGFog();
-void Fog_StartAdditive();
-void Fog_StopAdditive();
-void Fog_SetupFrame();
-void Fog_NewMap();
-void Fog_Init();
-//johnfitz
+void GL_DisableMultitexture(void);
+void GL_EnableMultitexture(void);

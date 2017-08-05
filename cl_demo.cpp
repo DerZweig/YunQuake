@@ -1,7 +1,5 @@
 #include "quakedef.h"
 
-void CL_FinishTimeDemo();
-
 /*
 ==============================================================================
 
@@ -22,13 +20,13 @@ CL_StopPlayback
 Called when a demo file runs out, or the user starts a game
 ==============
 */
-void CL_StopPlayback()
+void CL_StopPlayback(void)
 {
 	if (!cls.demoplayback)
 		return;
 
 	fclose(cls.demofile);
-	cls.demoplayback = false;
+	cls.demoplayback = qfalse;
 	cls.demofile = nullptr;
 	cls.state = cactive_t::ca_disconnected;
 
@@ -43,7 +41,7 @@ CL_WriteDemoMessage
 Dumps the current net message, prefixed by the length and view angles
 ====================
 */
-void CL_WriteDemoMessage()
+void CL_WriteDemoMessage(void)
 {
 	auto len = LittleLong(net_message.cursize);
 	fwrite(&len, 4, 1, cls.demofile);
@@ -63,14 +61,14 @@ CL_GetMessage
 Handles recording and playback of demos, on top of NET_ code
 ====================
 */
-int CL_GetMessage()
+int CL_GetMessage(void)
 {
 	int r;
 	float f;
 
 	if (cls.demoplayback)
 	{
-		// decide if it is time to grab the next message
+		// decide if it is time to grab the next message		
 		if (cls.signon == SIGNONS) // allways grab until fully connected
 		{
 			if (cls.timedemo)
@@ -139,7 +137,7 @@ CL_Stop_f
 stop recording a demo
 ====================
 */
-void CL_Stop_f()
+void CL_Stop_f(void)
 {
 	if (cmd_source != cmd_source_t::src_command)
 		return;
@@ -158,7 +156,7 @@ void CL_Stop_f()
 	// finish up
 	fclose(cls.demofile);
 	cls.demofile = nullptr;
-	cls.demorecording = false;
+	cls.demorecording = qfalse;
 	Con_Printf("Completed demo\n");
 }
 
@@ -169,7 +167,7 @@ CL_Record_f
 record <demoname> <map> [cd track]
 ====================
 */
-void CL_Record_f()
+void CL_Record_f(void)
 {
 	char name[MAX_OSPATH];
 	int track;
@@ -229,7 +227,7 @@ void CL_Record_f()
 	cls.forcetrack = track;
 	fprintf(cls.demofile, "%i\n", cls.forcetrack);
 
-	cls.demorecording = true;
+	cls.demorecording = qtrue;
 }
 
 
@@ -240,11 +238,11 @@ CL_PlayDemo_f
 play [demoname]
 ====================
 */
-void CL_PlayDemo_f()
+void CL_PlayDemo_f(void)
 {
 	char name[256];
 	int c;
-	auto neg = false;
+	auto neg = qfalse;
 
 	if (cmd_source != cmd_source_t::src_command)
 		return;
@@ -275,13 +273,13 @@ void CL_PlayDemo_f()
 		return;
 	}
 
-	cls.demoplayback = true;
+	cls.demoplayback = qtrue;
 	cls.state = cactive_t::ca_connected;
 	cls.forcetrack = 0;
 
 	while ((c = getc(cls.demofile)) != '\n')
 		if (c == '-')
-			neg = true;
+			neg = qtrue;
 		else
 			cls.forcetrack = cls.forcetrack * 10 + (c - '0');
 
@@ -297,9 +295,9 @@ CL_FinishTimeDemo
 
 ====================
 */
-void CL_FinishTimeDemo()
+void CL_FinishTimeDemo(void)
 {
-	cls.timedemo = false;
+	cls.timedemo = qfalse;
 
 	// the first frame didn't count
 	auto frames = host_framecount - cls.td_startframe - 1;
@@ -316,7 +314,7 @@ CL_TimeDemo_f
 timedemo [demoname]
 ====================
 */
-void CL_TimeDemo_f()
+void CL_TimeDemo_f(void)
 {
 	if (cmd_source != cmd_source_t::src_command)
 		return;
@@ -332,7 +330,7 @@ void CL_TimeDemo_f()
 	// cls.td_starttime will be grabbed at the second frame of the demo, so
 	// all the loading time doesn't get counted
 
-	cls.timedemo = true;
+	cls.timedemo = qtrue;
 	cls.td_startframe = host_framecount;
 	cls.td_lastframe = -1; // get a new message this frame
 }

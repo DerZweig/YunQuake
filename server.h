@@ -1,4 +1,6 @@
 #pragma once
+struct hull_t;
+struct trace_t;
 struct client_t;
 
 struct server_static_t
@@ -7,7 +9,7 @@ struct server_static_t
 	int maxclientslimit;
 	client_t* clients; // [maxclients]
 	int serverflags; // episode completion information
-	bool changelevel_issued; // cleared when at SV_SpawnServer
+	qboolean changelevel_issued; // cleared when at SV_SpawnServer
 };
 
 //=============================================================================
@@ -20,10 +22,10 @@ enum class server_state_t
 
 struct server_t
 {
-	bool active; // false if only a net client
+	qboolean active; // qfalse if only a net client
 
-	bool paused;
-	bool loadgame; // handle connections specially
+	qboolean paused;
+	qboolean loadgame; // handle connections specially
 
 	double time;
 
@@ -31,8 +33,9 @@ struct server_t
 	double lastchecktime;
 
 	char name[64]; // map name
+
 	char modelname[64]; // maps/<name>.bsp, for model_precache[0]
-	model_t* worldmodel;
+	struct model_s* worldmodel;
 	char* model_precache[MAX_MODELS]; // nullptr terminated
 	model_t* models[MAX_MODELS];
 	char* sound_precache[MAX_SOUNDS]; // nullptr terminated
@@ -51,9 +54,7 @@ struct server_t
 	byte reliable_datagram_buf[MAX_DATAGRAM];
 
 	sizebuf_t signon;
-	byte signon_buf[MAX_MSGLEN - 2]; //johnfitz -- was 8192, now uses MAX_MSGLEN
-
-	unsigned protocol; //johnfitz
+	byte signon_buf[8192];
 };
 
 
@@ -62,11 +63,11 @@ struct server_t
 
 struct client_t
 {
-	bool active; // false = client is free
-	bool spawned; // false = don't send datagrams
-	bool dropasap; // has been told to go to another level
-	bool privileged; // can execute any host command
-	bool sendsignon; // only valid before spawned
+	qboolean active; // qfalse = client is free
+	qboolean spawned; // qfalse = don't send datagrams
+	qboolean dropasap; // has been told to go to another level
+	qboolean privileged; // can execute any host command
+	qboolean sendsignon; // only valid before spawned
 
 	double last_message; // reliable messages must be sent
 	// periodically
@@ -89,7 +90,7 @@ struct client_t
 	// spawn parms are carried from level to level
 	float spawn_parms[NUM_SPAWN_PARMS];
 
-	// client known data for deltas
+	// client known data for deltas	
 	int old_frags;
 };
 
@@ -108,7 +109,6 @@ struct client_t
 #define	MOVETYPE_NOCLIP			8
 #define	MOVETYPE_FLYMISSILE		9		// extra size to monsters
 #define	MOVETYPE_BOUNCE			10
-
 // edict->solid values
 #define	SOLID_NOT				0		// no interaction with other objects
 #define	SOLID_TRIGGER			1		// touch on edge, but not blocking
@@ -153,6 +153,7 @@ struct client_t
 #define	SPAWNFLAG_NOT_HARD			1024
 #define	SPAWNFLAG_NOT_DEATHMATCH	2048
 
+
 //============================================================================
 
 extern cvar_t teamplay;
@@ -175,38 +176,40 @@ extern edict_t* sv_player;
 
 //===========================================================
 
-void SV_Init();
+void SV_Init(void);
 
 void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
-void SV_StartSound(edict_t* entity, int channel, char* sample, int volume, float attenuation);
+void SV_StartSound(edict_t* entity, int channel, char* sample, int volume,
+                   float attenuation);
 
-void SV_DropClient(bool crash);
+void SV_DropClient(qboolean crash);
 
-void SV_SendClientMessages();
-void SV_ClearDatagram();
+void SV_SendClientMessages(void);
+void SV_ClearDatagram(void);
 
 int SV_ModelIndex(char* name);
 
-void SV_SetIdealPitch();
+void SV_SetIdealPitch(void);
 
-void SV_AddUpdates();
+void SV_AddUpdates(void);
 
-void SV_ClientThink();
+void SV_ClientThink(void);
 void SV_AddClientToServer(qsocket_t* ret);
 
 void SV_ClientPrintf(char* fmt, ...);
 void SV_BroadcastPrintf(char* fmt, ...);
 
-void SV_Physics();
+void SV_Physics(void);
 
-bool SV_CheckBottom(edict_t* ent);
-bool SV_movestep(edict_t* ent, vec3_t move, bool relink);
+qboolean SV_CheckBottom(edict_t* ent);
+qboolean SV_movestep(edict_t* ent, vec3_t move, qboolean relink);
 
 void SV_WriteClientdataToMessage(edict_t* ent, sizebuf_t* msg);
 
-void SV_MoveToGoal();
+void SV_MoveToGoal(void);
 
-void SV_CheckForNewClients();
-void SV_RunClients();
+void SV_CheckForNewClients(void);
+void SV_RunClients(void);
 void SV_SaveSpawnparms();
 void SV_SpawnServer(char* server);
+qboolean SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace);

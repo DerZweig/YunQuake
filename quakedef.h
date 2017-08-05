@@ -1,6 +1,4 @@
 #pragma once
-#define	QUAKE_GAME			// as opposed to utilities
-
 #define	VERSION				1.09
 #define	GLQUAKE_VERSION		1.00
 #define	D3DQUAKE_VERSION	0.01
@@ -8,20 +6,17 @@
 #define	LINUX_VERSION		1.30
 #define	X11_VERSION			1.10
 
-#define	FITZQUAKE_VERSION	0.85 //johnfitz
-
 //define	PARANOID			// speed sapping error checking
 
-#define	GAMENAME	"id1"		// directory to look in by default
+#define	GAMENAME	"id1"
 
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <assert.h> //johnfitz
-
+#include <cmath>
+#include <cstring>
+#include <cstdarg>
+#include <cstdio>
+#include <cstdlib>
+#include <csetjmp>
+#include <mutex>
 #include <memory>
 #include <limits>
 #include <chrono>
@@ -47,8 +42,8 @@
 #define __i386__	1
 #endif
 
-void VID_LockBuffer();
-void VID_UnlockBuffer();
+void VID_LockBuffer(void);
+void VID_UnlockBuffer(void);
 
 #else
 
@@ -57,11 +52,7 @@ void VID_UnlockBuffer();
 
 #endif
 
-#if defined __i386__ // && !defined __sun__
-#define id386	1
-#else
 #define id386	0
-#endif
 
 #if id386
 #define UNALIGNED_OK	1	// set to 0 if unaligned accesses are not supported
@@ -94,21 +85,16 @@ void VID_UnlockBuffer();
 
 #define	ON_EPSILON		0.1			// point on plane side epsilon
 
-#define	MAX_MSGLEN			32000	// max length of a reliable message //johnfitz -- was 8000
-#define	MAX_DATAGRAM		32000	// max length of unreliable message //johnfitz -- was 1024
-
-#define DATAGRAM_MTU		1400	// johnfitz -- actual limit for unreliable messages to nonlocal clients
+#define	MAX_MSGLEN		8000		// max length of a reliable message
+#define	MAX_DATAGRAM	1024		// max length of unreliable message
 
 //
 // per-level limits
 //
-
-#define MIN_EDICTS		256			// johnfitz -- lowest allowed value for max_edicts cvar
-#define MAX_EDICTS		32000		// johnfitz -- highest allowed value for max_edicts cvar
-// ents past 8192 can't play sounds in the standard protocol
+#define	MAX_EDICTS		600			// FIXME: ouch! ouch! ouch!
 #define	MAX_LIGHTSTYLES	64
-#define	MAX_MODELS		2048		// johnfitz -- was 256
-#define	MAX_SOUNDS		2048		// johnfitz -- was 256
+#define	MAX_MODELS		256			// these are sent over the net as bytes
+#define	MAX_SOUNDS		256			// so they cannot be blindly increased
 
 #define	SAVEGAME_COMMENT_LENGTH	39
 
@@ -206,6 +192,10 @@ void VID_UnlockBuffer();
 
 #define	SOUND_CHANNELS		8
 
+// This makes anyone on id's net privileged
+// Use for multiplayer testing only - VERY dangerous!!!
+// #define IDGODS
+
 #include "common.h"
 #include "bspfile.h"
 #include "vid.h"
@@ -217,11 +207,10 @@ struct entity_state_t
 {
 	vec3_t origin;
 	vec3_t angles;
-	unsigned short modelindex; //johnfitz -- was int
-	unsigned short frame; //johnfitz -- was int
-	unsigned char colormap; //johnfitz -- was int
-	unsigned char skin; //johnfitz -- was int
-	unsigned char alpha; //johnfitz -- added
+	int modelindex;
+	int frame;
+	int colormap;
+	int skin;
 	int effects;
 };
 
@@ -239,10 +228,8 @@ struct entity_state_t
 #include "client.h"
 #include "progs.h"
 #include "server.h"
-#include "gl_model.h"
 
-#include "image.h" //johnfitz
-#include "gl_texmgr.h" //johnfitz
+#include "gl_model.h"
 
 #include "input.h"
 #include "world.h"
@@ -251,9 +238,7 @@ struct entity_state_t
 #include "view.h"
 #include "menu.h"
 #include "crc.h"
-#include "cdaudio.h"
 #include "glquake.h"
-
 
 //=============================================================================
 
@@ -275,7 +260,7 @@ struct quakeparms_t
 //=============================================================================
 
 
-extern bool noclip_anglehack;
+extern qboolean noclip_anglehack;
 
 
 //
@@ -286,34 +271,34 @@ extern quakeparms_t host_parms;
 extern cvar_t sys_ticrate;
 extern cvar_t sys_nostdout;
 extern cvar_t developer;
-extern cvar_t max_edicts; //johnfitz
 
-extern bool host_initialized; // true if into command execution
+extern qboolean host_initialized; // qtrue if into command execution
 extern double host_frametime;
+extern byte* host_basepal;
 extern byte* host_colormap;
 extern int host_framecount; // incremented every frame, never reset
 extern double realtime; // not bounded in any way, changed at
 // start of every frame, never reset
 
-void Host_ClearMemory();
-void Host_ServerFrame();
-void Host_InitCommands();
+void Host_ClearMemory(void);
+void Host_ServerFrame(void);
+void Host_InitCommands(void);
 void Host_Init(quakeparms_t* parms);
-void Host_Shutdown();
+void Host_Shutdown(void);
 void Host_Error(char* error, ...);
 void Host_EndGame(char* message, ...);
 void Host_Frame(float time);
-void Host_Quit_f();
+void Host_Quit_f(void);
 void Host_ClientCommands(char* fmt, ...);
-void Host_ShutdownServer(bool crash);
+void Host_ShutdownServer(qboolean crash);
 
-extern bool msg_suppress_1; // suppresses resolution and cache size console output
+extern qboolean msg_suppress_1; // suppresses resolution and cache size console output
 //  an fullscreen DIB focus gain/loss
 extern int current_skill; // skill level for currently loaded level (in case
 //  the user changes the cvar while the level is
 //  running, this reflects the level actually in use)
 
-extern bool isDedicated;
+extern qboolean isDedicated;
 
 extern int minimum_memory;
 
@@ -322,32 +307,6 @@ extern int minimum_memory;
 //
 extern cvar_t chase_active;
 
-void Chase_Init();
-void Chase_UpdateForClient(); //johnfitz
-void Chase_UpdateForDrawing(); //johnfitz
-
-enum class m_state_t
-{
-	m_none,
-	m_main,
-	m_singleplayer,
-	m_load,
-	m_save,
-	m_multiplayer,
-	m_setup,
-	m_net,
-	m_options,
-	m_video,
-	m_keys,
-	m_help,
-	m_quit,
-	m_serialconfig,
-	m_modemconfig,
-	m_lanconfig,
-	m_gameoptions,
-	m_search,
-	m_slist
-};
-
-extern m_state_t m_return_state;
-extern m_state_t m_state;
+void Chase_Init(void);
+void Chase_Reset(void);
+void Chase_Update(void);

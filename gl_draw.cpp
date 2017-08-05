@@ -1,148 +1,135 @@
+/*
+Copyright (C) 1996-1997 Id Software, Inc.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+*/
+
+// draw.c -- this is the only file outside the refresh that touches the
+// vid buffer
+
 #include "quakedef.h"
 
-//extern unsigned char d_15to8table[65536]; //johnfitz -- never used
+#define GL_COLOR_INDEX8_EXT     0x80E5
 
-cvar_t scr_conalpha = {"scr_conalpha", "1"}; //johnfitz
+extern unsigned char d_15to8table[65536];
 
-qpic_t* draw_disc;
-qpic_t* draw_backtile;
+cvar_t		gl_nobind = {"gl_nobind", "0"};
+cvar_t		gl_max_size = {"gl_max_size", "1024"};
+cvar_t		gl_picmip = {"gl_picmip", "0"};
 
-gltexture_t* char_texture; //johnfitz
-qpic_t *pic_ovr, *pic_ins; //johnfitz -- new cursor handling
-qpic_t* pic_nul; //johnfitz -- for missing gfx, don't crash
+byte		*draw_chars;				// 8*8 graphic characters
+qpic_t		*draw_disc;
+qpic_t		*draw_backtile;
 
-//johnfitz -- new pics
-byte pic_ovr_data[8][8] =
-{
-	{255,255,255,255,255,255,255,255},
-	{255, 15, 15, 15, 15, 15, 15,255},
-	{255, 15, 15, 15, 15, 15, 15, 2},
-	{255, 15, 15, 15, 15, 15, 15, 2},
-	{255, 15, 15, 15, 15, 15, 15, 2},
-	{255, 15, 15, 15, 15, 15, 15, 2},
-	{255, 15, 15, 15, 15, 15, 15, 2},
-	{255,255, 2, 2, 2, 2, 2, 2},
-};
-
-byte pic_ins_data[9][8] =
-{
-	{15, 15,255,255,255,255,255,255},
-	{15, 15, 2,255,255,255,255,255},
-	{15, 15, 2,255,255,255,255,255},
-	{15, 15, 2,255,255,255,255,255},
-	{15, 15, 2,255,255,255,255,255},
-	{15, 15, 2,255,255,255,255,255},
-	{15, 15, 2,255,255,255,255,255},
-	{15, 15, 2,255,255,255,255,255},
-	{255, 2, 2,255,255,255,255,255},
-};
-
-byte pic_nul_data[8][8] =
-{
-	{252,252,252,252, 0, 0, 0, 0},
-	{252,252,252,252, 0, 0, 0, 0},
-	{252,252,252,252, 0, 0, 0, 0},
-	{252,252,252,252, 0, 0, 0, 0},
-	{0, 0, 0, 0,252,252,252,252},
-	{0, 0, 0, 0,252,252,252,252},
-	{0, 0, 0, 0,252,252,252,252},
-	{0, 0, 0, 0,252,252,252,252},
-};
-
-byte pic_stipple_data[8][8] =
-{
-	{255, 0, 0, 0,255, 0, 0, 0},
-	{0, 0,255, 0, 0, 0,255, 0},
-	{255, 0, 0, 0,255, 0, 0, 0},
-	{0, 0,255, 0, 0, 0,255, 0},
-	{255, 0, 0, 0,255, 0, 0, 0},
-	{0, 0,255, 0, 0, 0,255, 0},
-	{255, 0, 0, 0,255, 0, 0, 0},
-	{0, 0,255, 0, 0, 0,255, 0},
-};
-
-byte pic_crosshair_data[8][8] =
-{
-	{255,255,255,255,255,255,255,255},
-	{255,255,255, 8, 9,255,255,255},
-	{255,255,255, 6, 8, 2,255,255},
-	{255, 6, 8, 8, 6, 8, 8,255},
-	{255,255, 2, 8, 8, 2, 2, 2},
-	{255,255,255, 7, 8, 2,255,255},
-	{255,255,255,255, 2, 2,255,255},
-	{255,255,255,255,255,255,255,255},
-};
-
-//johnfitz
+int			translate_texture;
+int			char_texture;
 
 struct glpic_t
 {
-	gltexture_t* gltexture;
-	float sl, tl, sh, th;
-};
+	int		texnum;
+	float	sl, tl, sh, th;
+} ;
 
-canvastype currentcanvas = canvastype::CANVAS_NONE; //johnfitz -- for GL_SetCanvas
+byte		conback_buffer[sizeof(qpic_t) + sizeof(glpic_t)];
+qpic_t		*conback = (qpic_t *)&conback_buffer;
 
-//==============================================================================
-//
-//  PIC CACHING
-//
-//==============================================================================
+int		gl_lightmap_format = 4;
+int		gl_solid_format = 3;
+int		gl_alpha_format = 4;
 
-struct cachepic_t
+int		gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
+int		gl_filter_max = GL_LINEAR;
+
+
+int		texels;
+
+struct gltexture_t
 {
-	char name[MAX_QPATH];
-	qpic_t pic;
-	byte padding[32]; // for appended glpic
-};
+	int		texnum;
+	char	identifier[64];
+	int		width, height;
+	qboolean	mipmap;
+} ;
 
-#define	MAX_CACHED_PICS		128
-cachepic_t menu_cachepics[MAX_CACHED_PICS];
-int menu_numcachepics;
+#define	MAX_GLTEXTURES	1024
+gltexture_t	gltextures[MAX_GLTEXTURES];
+int			numgltextures;
 
-byte menuplyr_pixels[4096];
 
-//  scrap allocation
-//  Allocate all the little status bar obejcts into a single texture
-//  to crutch up stupid hardware / drivers
+void GL_Bind (int texnum)
+{
+	if (gl_nobind.value)
+		texnum = char_texture;
+	if (currenttexture == texnum)
+		return;
+	currenttexture = texnum;
+#ifdef _WIN32
+	bindTexFunc (GL_TEXTURE_2D, texnum);
+#else
+	glBindTexture(GL_TEXTURE_2D, texnum);
+#endif
+}
+
+
+/*
+=============================================================================
+
+  scrap allocation
+
+  Allocate all the little status bar obejcts into a single texture
+  to crutch up stupid hardware / drivers
+
+=============================================================================
+*/
 
 #define	MAX_SCRAPS		2
 #define	BLOCK_WIDTH		256
 #define	BLOCK_HEIGHT	256
 
-int scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte scrap_texels[MAX_SCRAPS][BLOCK_WIDTH * BLOCK_HEIGHT]; //johnfitz -- removed *4 after BLOCK_HEIGHT
-bool scrap_dirty;
-gltexture_t* scrap_textures[MAX_SCRAPS]; //johnfitz
+int			scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
+byte		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT*4];
+qboolean	scrap_dirty;
+int			scrap_texnum;
 
-/*
-================
-Scrap_AllocBlock
-
-returns an index into scrap_texnums[] and the position inside it
-================
-*/
-int Scrap_AllocBlock(int w, int h, int* x, int* y)
+// returns a texture number and the position inside it
+int Scrap_AllocBlock (int w, int h, int *x, int *y)
 {
-	int i, j;
+	int		i, j;
+	int		best, best2;
+	int		bestx;
+	int		texnum;
 
-	for (auto texnum = 0; texnum < MAX_SCRAPS; texnum++)
+	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++)
 	{
-		auto best = BLOCK_HEIGHT;
+		best = BLOCK_HEIGHT;
 
-		for (i = 0; i < BLOCK_WIDTH - w; i++)
+		for (i=0 ; i<BLOCK_WIDTH-w ; i++)
 		{
-			auto best2 = 0;
+			best2 = 0;
 
-			for (j = 0; j < w; j++)
+			for (j=0 ; j<w ; j++)
 			{
-				if (scrap_allocated[texnum][i + j] >= best)
+				if (scrap_allocated[texnum][i+j] >= best)
 					break;
-				if (scrap_allocated[texnum][i + j] > best2)
-					best2 = scrap_allocated[texnum][i + j];
+				if (scrap_allocated[texnum][i+j] > best2)
+					best2 = scrap_allocated[texnum][i+j];
 			}
 			if (j == w)
-			{ // this is a valid spot
+			{	// this is a valid spot
 				*x = i;
 				*y = best = best2;
 			}
@@ -151,386 +138,582 @@ int Scrap_AllocBlock(int w, int h, int* x, int* y)
 		if (best + h > BLOCK_HEIGHT)
 			continue;
 
-		for (i = 0; i < w; i++)
+		for (i=0 ; i<w ; i++)
 			scrap_allocated[texnum][*x + i] = best + h;
 
 		return texnum;
 	}
 
-	Sys_Error("Scrap_AllocBlock: full"); //johnfitz -- correct function name
-	return 0; //johnfitz -- shut up compiler
+	Sys_Error ("Scrap_AllocBlock: full");
+	return 0;
 }
 
-/*
-================
-Scrap_Upload -- johnfitz -- now uses TexMgr
-================
-*/
-void Scrap_Upload()
-{
-	char name[8];
+int	scrap_uploads;
 
-	for (auto i = 0; i < MAX_SCRAPS; i++)
-	{
-		sprintf(name, "scrap%i", i);
-		scrap_textures[i] = TexMgr_LoadImage(nullptr, name, BLOCK_WIDTH, BLOCK_HEIGHT, srcformat::SRC_INDEXED, scrap_texels[i],
-		                                     "", reinterpret_cast<unsigned>(scrap_texels[i]), TEXPREF_ALPHA | TEXPREF_OVERWRITE | TEXPREF_NOPICMIP);
+void Scrap_Upload (void)
+{
+	int		texnum;
+
+	scrap_uploads++;
+
+	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++) {
+		GL_Bind(scrap_texnum + texnum);
+		GL_Upload8 (scrap_texels[texnum], BLOCK_WIDTH, BLOCK_HEIGHT, qfalse, qtrue);
 	}
-
-	scrap_dirty = false;
+	scrap_dirty = qfalse;
 }
 
-/*
-================
-Draw_PicFromWad
-================
-*/
-qpic_t* Draw_PicFromWad(char* name)
+//=============================================================================
+/* Support Routines */
+
+struct cachepic_t
 {
-	auto p = reinterpret_cast<qpic_t*>(W_GetLumpName(name));
-	if (!p) return pic_nul; //johnfitz
-	auto gl = reinterpret_cast<glpic_t *>(p->data);
+	char		name[MAX_QPATH];
+	qpic_t		pic;
+	byte		padding[32];	// for appended glpic
+} ;
+
+#define	MAX_CACHED_PICS		128
+cachepic_t	menu_cachepics[MAX_CACHED_PICS];
+int			menu_numcachepics;
+
+byte		menuplyr_pixels[4096];
+
+int		pic_texels;
+int		pic_count;
+
+qpic_t *Draw_PicFromWad (char *name)
+{
+	qpic_t	*p;
+	glpic_t	*gl;
+
+	p = W_GetLumpName (name);
+	gl = (glpic_t *)p->data;
 
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
 	{
-		int x, y;
+		int		x, y;
+		int		i, j, k;
+		int		texnum;
 
-		auto texnum = Scrap_AllocBlock(p->width, p->height, &x, &y);
-		scrap_dirty = true;
-		auto k = 0;
-		for (auto i = 0; i < p->height; i++)
-			for (auto j = 0; j < p->width; j++ , k++)
-				scrap_texels[texnum][(y + i) * BLOCK_WIDTH + x + j] = p->data[k];
-		gl->gltexture = scrap_textures[texnum]; //johnfitz -- changed to an array
-		//johnfitz -- no longer go from 0.01 to 0.99
-		gl->sl = x / static_cast<float>(BLOCK_WIDTH);
-		gl->sh = (x + p->width) / static_cast<float>(BLOCK_WIDTH);
-		gl->tl = y / static_cast<float>(BLOCK_WIDTH);
-		gl->th = (y + p->height) / static_cast<float>(BLOCK_WIDTH);
+		texnum = Scrap_AllocBlock (p->width, p->height, &x, &y);
+		scrap_dirty = qtrue;
+		k = 0;
+		for (i=0 ; i<p->height ; i++)
+			for (j=0 ; j<p->width ; j++, k++)
+				scrap_texels[texnum][(y+i)*BLOCK_WIDTH + x + j] = p->data[k];
+		texnum += scrap_texnum;
+		gl->texnum = texnum;
+		gl->sl = (x+0.01)/(float)BLOCK_WIDTH;
+		gl->sh = (x+p->width-0.01)/(float)BLOCK_WIDTH;
+		gl->tl = (y+0.01)/(float)BLOCK_WIDTH;
+		gl->th = (y+p->height-0.01)/(float)BLOCK_WIDTH;
+
+		pic_count++;
+		pic_texels += p->width*p->height;
 	}
 	else
 	{
-		char texturename[64]; //johnfitz
-		sprintf(texturename, "%s:%s", WADFILENAME, name); //johnfitz
-
-		auto offset = reinterpret_cast<unsigned>(p) - reinterpret_cast<unsigned>(wad_base) + sizeof(int) * 2; //johnfitz
-
-		gl->gltexture = TexMgr_LoadImage(nullptr, texturename, p->width, p->height, srcformat::SRC_INDEXED, p->data, WADFILENAME,
-		                                 offset, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP); //johnfitz -- TexMgr
+		gl->texnum = GL_LoadPicTexture (p);
 		gl->sl = 0;
-		gl->sh = static_cast<float>(p->width) / static_cast<float>(TexMgr_PadConditional(p->width)); //johnfitz
+		gl->sh = 1;
 		gl->tl = 0;
-		gl->th = static_cast<float>(p->height) / static_cast<float>(TexMgr_PadConditional(p->height)); //johnfitz
+		gl->th = 1;
 	}
-
 	return p;
 }
+
 
 /*
 ================
 Draw_CachePic
 ================
 */
-qpic_t* Draw_CachePic(char* path)
+qpic_t	*Draw_CachePic (char *path)
 {
-	cachepic_t* pic;
-	int i;
+	cachepic_t	*pic;
+	int			i;
+	qpic_t		*dat;
+	glpic_t		*gl;
 
-	for (pic = menu_cachepics , i = 0; i < menu_numcachepics; pic++ , i++)
-		if (!strcmp(path, pic->name))
+	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
+		if (!strcmp (path, pic->name))
 			return &pic->pic;
 
 	if (menu_numcachepics == MAX_CACHED_PICS)
-		Sys_Error("menu_numcachepics == MAX_CACHED_PICS");
+		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
 	menu_numcachepics++;
-	strcpy(pic->name, path);
+	strcpy (pic->name, path);
 
-	//
-	// load the pic from disk
-	//
-	auto dat = reinterpret_cast<qpic_t *>(COM_LoadTempFile(path));
+//
+// load the pic from disk
+//
+	dat = (qpic_t *)COM_LoadTempFile (path);	
 	if (!dat)
-		Sys_Error("Draw_CachePic: failed to load %s", path);
-	SwapPic(dat);
+		Sys_Error ("Draw_CachePic: failed to load %s", path);
+	SwapPic (dat);
 
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
 	// configuration dialog
-	if (!strcmp(path, "gfx/menuplyr.lmp"))
-		memcpy(menuplyr_pixels, dat->data, dat->width * dat->height);
+	if (!strcmp (path, "gfx/menuplyr.lmp"))
+		memcpy (menuplyr_pixels, dat->data, dat->width*dat->height);
 
 	pic->pic.width = dat->width;
 	pic->pic.height = dat->height;
 
-	auto gl = reinterpret_cast<glpic_t *>(pic->pic.data);
-	gl->gltexture = TexMgr_LoadImage(nullptr, path, dat->width, dat->height, srcformat::SRC_INDEXED, dat->data, path,
-	                                 sizeof(int) * 2, TEXPREF_ALPHA | TEXPREF_PAD | TEXPREF_NOPICMIP); //johnfitz -- TexMgr
+	gl = (glpic_t *)pic->pic.data;
+	gl->texnum = GL_LoadPicTexture (dat);
 	gl->sl = 0;
-	gl->sh = static_cast<float>(dat->width) / static_cast<float>(TexMgr_PadConditional(dat->width)); //johnfitz
+	gl->sh = 1;
 	gl->tl = 0;
-	gl->th = static_cast<float>(dat->height) / static_cast<float>(TexMgr_PadConditional(dat->height)); //johnfitz
+	gl->th = 1;
 
 	return &pic->pic;
 }
 
-/*
-================
-Draw_MakePic -- johnfitz -- generate pics from internal data
-================
-*/
-qpic_t* Draw_MakePic(char* name, int width, int height, byte* data)
+
+void Draw_CharToConback (int num, byte *dest)
 {
-	auto flags = TEXPREF_NEAREST | TEXPREF_ALPHA | TEXPREF_PERSIST | TEXPREF_NOPICMIP | TEXPREF_PAD;
+	int		row, col;
+	byte	*source;
+	int		drawline;
+	int		x;
 
-	auto pic = static_cast<qpic_t *>(Hunk_Alloc(sizeof(qpic_t) - 4 + sizeof (glpic_t)));
-	pic->width = width;
-	pic->height = height;
+	row = num>>4;
+	col = num&15;
+	source = draw_chars + (row<<10) + (col<<3);
 
-	auto gl = reinterpret_cast<glpic_t *>(pic->data);
-	gl->gltexture = TexMgr_LoadImage(nullptr, name, width, height, srcformat::SRC_INDEXED, data, "", reinterpret_cast<unsigned>(data), flags);
+	drawline = 8;
+
+	while (drawline--)
+	{
+		for (x=0 ; x<8 ; x++)
+			if (source[x] != 255)
+				dest[x] = 0x60 + source[x];
+		source += 128;
+		dest += 320;
+	}
+
+}
+
+struct glmode_t
+{
+	char *name;
+	int	minimize, maximize;
+} ;
+
+glmode_t modes[] = {
+	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
+	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
+	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
+	{"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
+	{"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
+	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
+};
+
+/*
+===============
+Draw_TextureMode_f
+===============
+*/
+void Draw_TextureMode_f (void)
+{
+	int		i;
+	gltexture_t	*glt;
+
+	if (Cmd_Argc() == 1)
+	{
+		for (i=0 ; i< 6 ; i++)
+			if (gl_filter_min == modes[i].minimize)
+			{
+				Con_Printf ("%s\n", modes[i].name);
+				return;
+			}
+		Con_Printf ("current filter is unknown???\n");
+		return;
+	}
+
+	for (i=0 ; i< 6 ; i++)
+	{
+		if (!Q_strcasecmp (modes[i].name, Cmd_Argv(1) ) )
+			break;
+	}
+	if (i == 6)
+	{
+		Con_Printf ("bad filter name\n");
+		return;
+	}
+
+	gl_filter_min = modes[i].minimize;
+	gl_filter_max = modes[i].maximize;
+
+	// change all the existing mipmap texture objects
+	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+	{
+		if (glt->mipmap)
+		{
+			GL_Bind (glt->texnum);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		}
+	}
+}
+
+/*
+===============
+Draw_Init
+===============
+*/
+void Draw_Init (void)
+{
+	int		i;
+	qpic_t	*cb;
+	byte	*dest, *src;
+	int		x, y;
+	char	ver[40];
+	glpic_t	*gl;
+	int		start;
+	byte	*ncdata;
+	int		f, fstep;
+
+
+	Cvar_RegisterVariable (&gl_nobind);
+	Cvar_RegisterVariable (&gl_max_size);
+	Cvar_RegisterVariable (&gl_picmip);
+
+	// 3dfx can only handle 256 wide textures
+	if (!Q_strncasecmp ((char *)gl_renderer, "3dfx",4) ||
+		strstr((char *)gl_renderer, "Glide"))
+		Cvar_Set ("gl_max_size", "256");
+
+	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
+
+	// load the console background and the charset
+	// by hand, because we need to write the version
+	// string into the background before turning
+	// it into a texture
+	draw_chars = W_GetLumpName ("conchars");
+	for (i=0 ; i<256*64 ; i++)
+		if (draw_chars[i] == 0)
+			draw_chars[i] = 255;	// proper transparent color
+
+	// now turn them into textures
+	char_texture = GL_LoadTexture ("charset", 128, 128, draw_chars, qfalse, qtrue);
+
+	start = Hunk_LowMark();
+
+	cb = (qpic_t *)COM_LoadTempFile ("gfx/conback.lmp");	
+	if (!cb)
+		Sys_Error ("Couldn't load gfx/conback.lmp");
+	SwapPic (cb);
+
+	// hack the version number directly into the pic
+#if defined(__linux__)
+	sprintf (ver, "(Linux %2.2f, gl %4.2f) %4.2f", (float)LINUX_VERSION, (float)GLQUAKE_VERSION, (float)VERSION);
+#else
+	sprintf (ver, "(gl %4.2f) %4.2f", (float)GLQUAKE_VERSION, (float)VERSION);
+#endif
+	dest = cb->data + 320*186 + 320 - 11 - 8*strlen(ver);
+	y = strlen(ver);
+	for (x=0 ; x<y ; x++)
+		Draw_CharToConback (ver[x], dest+(x<<3));
+
+#if 0
+	conback->width = vid.conwidth;
+	conback->height = vid.conheight;
+
+ 	// scale console to vid size
+ 	dest = ncdata = Hunk_AllocName(vid.conwidth * vid.conheight, "conback");
+ 
+ 	for (y=0 ; y<vid.conheight ; y++, dest += vid.conwidth)
+ 	{
+ 		src = cb->data + cb->width * (y*cb->height/vid.conheight);
+ 		if (vid.conwidth == cb->width)
+ 			memcpy (dest, src, vid.conwidth);
+ 		else
+ 		{
+ 			f = 0;
+ 			fstep = cb->width*0x10000/vid.conwidth;
+ 			for (x=0 ; x<vid.conwidth ; x+=4)
+ 			{
+ 				dest[x] = src[f>>16];
+ 				f += fstep;
+ 				dest[x+1] = src[f>>16];
+ 				f += fstep;
+ 				dest[x+2] = src[f>>16];
+ 				f += fstep;
+ 				dest[x+3] = src[f>>16];
+ 				f += fstep;
+ 			}
+ 		}
+ 	}
+#else
+	conback->width = cb->width;
+	conback->height = cb->height;
+	ncdata = cb->data;
+#endif
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	gl = (glpic_t *)conback->data;
+	gl->texnum = GL_LoadTexture ("conback", conback->width, conback->height, ncdata, qfalse, qfalse);
 	gl->sl = 0;
-	gl->sh = static_cast<float>(width) / static_cast<float>(TexMgr_PadConditional(width));
+	gl->sh = 1;
 	gl->tl = 0;
-	gl->th = static_cast<float>(height) / static_cast<float>(TexMgr_PadConditional(height));
+	gl->th = 1;
+	conback->width = vid.width;
+	conback->height = vid.height;
 
-	return pic;
+	// free loaded console
+	Hunk_FreeToLowMark(start);
+
+	// save a texture slot for translated picture
+	translate_texture = texture_extension_number++;
+
+	// save slots for scraps
+	scrap_texnum = texture_extension_number;
+	texture_extension_number += MAX_SCRAPS;
+
+	//
+	// get the other pics we need
+	//
+	draw_disc = Draw_PicFromWad ("disc");
+	draw_backtile = Draw_PicFromWad ("backtile");
 }
 
-//==============================================================================
-//
-//  INIT
-//
-//==============================================================================
 
-/*
-===============
-Draw_LoadPics -- johnfitz
-===============
-*/
-void Draw_LoadPics()
-{
-	auto data = static_cast<byte*>(W_GetLumpName("conchars"));
-	if (!data) Sys_Error("Draw_LoadPics: couldn't load conchars");
-	auto offset = reinterpret_cast<unsigned>(data) - reinterpret_cast<unsigned>(wad_base);
-	char_texture = TexMgr_LoadImage(nullptr, WADFILENAME":conchars", 128, 128, srcformat::SRC_INDEXED, data,
-	                                WADFILENAME, offset, TEXPREF_ALPHA | TEXPREF_NEAREST | TEXPREF_NOPICMIP | TEXPREF_CONCHARS);
-
-	draw_disc = Draw_PicFromWad("disc");
-	draw_backtile = Draw_PicFromWad("backtile");
-}
-
-/*
-===============
-Draw_NewGame -- johnfitz
-===============
-*/
-
-void SCR_LoadPics();
-void Sbar_LoadPics();
-
-void Draw_NewGame()
-{
-	cachepic_t* pic;
-	int i;
-
-	// empty scrap and reallocate gltextures
-	memset(&scrap_allocated, 0, sizeof scrap_allocated);
-	memset(&scrap_texels, 255, sizeof scrap_texels);
-	Scrap_Upload(); //creates 2 empty gltextures
-
-	// reload wad pics
-	W_LoadWadFile(); //johnfitz -- filename is now hard-coded for honesty
-	Draw_LoadPics();
-	SCR_LoadPics();
-	Sbar_LoadPics();
-
-	// empty lmp cache
-	for (pic = menu_cachepics , i = 0; i < menu_numcachepics; pic++ , i++)
-		pic->name[0] = 0;
-	menu_numcachepics = 0;
-}
-
-/*
-===============
-Draw_Init -- johnfitz -- rewritten
-===============
-*/
-void Draw_Init()
-{
-	Cvar_RegisterVariable(&scr_conalpha, nullptr);
-
-	// clear scrap and allocate gltextures
-	memset(&scrap_allocated, 0, sizeof scrap_allocated);
-	memset(&scrap_texels, 255, sizeof scrap_texels);
-	Scrap_Upload(); //creates 2 empty textures
-
-	// create internal pics
-	pic_ins = Draw_MakePic("ins", 8, 9, &pic_ins_data[0][0]);
-	pic_ovr = Draw_MakePic("ovr", 8, 8, &pic_ovr_data[0][0]);
-	pic_nul = Draw_MakePic("nul", 8, 8, &pic_nul_data[0][0]);
-
-	// load game pics
-	Draw_LoadPics();
-}
-
-//==============================================================================
-//
-//  2D DRAWING
-//
-//==============================================================================
 
 /*
 ================
-Draw_CharacterQuad -- johnfitz -- seperate function to spit out verts
+Draw_Character
+
+Draws one 8*8 graphics character with 0 being transparent.
+It can be clipped to the top of the screen to allow the console to be
+smoothly scrolled off.
 ================
 */
-void Draw_CharacterQuad(int x, int y, char num)
+void Draw_Character (int x, int y, int num)
 {
-	auto row = num >> 4;
-	auto col = num & 15;
-
-	float frow = row * 0.0625;
-	float fcol = col * 0.0625;
-	float size = 0.0625;
-
-	glTexCoord2f(fcol, frow);
-	glVertex2f(x, y);
-	glTexCoord2f(fcol + size, frow);
-	glVertex2f(x + 8, y);
-	glTexCoord2f(fcol + size, frow + size);
-	glVertex2f(x + 8, y + 8);
-	glTexCoord2f(fcol, frow + size);
-	glVertex2f(x, y + 8);
-}
-
-/*
-================
-Draw_Character -- johnfitz -- modified to call Draw_CharacterQuad
-================
-*/
-void Draw_Character(int x, int y, int num)
-{
-	if (y <= -8)
-		return; // totally off screen
-
-	num &= 255;
+	byte			*dest;
+	byte			*source;
+	unsigned short	*pusdest;
+	int				drawline;	
+	int				row, col;
+	float			frow, fcol, size;
 
 	if (num == 32)
-		return; //don't waste verts on spaces
+		return;		// space
 
-	GL_Bind(char_texture);
-	glBegin(GL_QUADS);
+	num &= 255;
+	
+	if (y <= -8)
+		return;			// totally off screen
 
-	Draw_CharacterQuad(x, y, static_cast<char>(num));
+	row = num>>4;
+	col = num&15;
 
-	glEnd();
+	frow = row*0.0625;
+	fcol = col*0.0625;
+	size = 0.0625;
+
+	GL_Bind (char_texture);
+
+	glBegin (GL_QUADS);
+	glTexCoord2f (fcol, frow);
+	glVertex2f (x, y);
+	glTexCoord2f (fcol + size, frow);
+	glVertex2f (x+8, y);
+	glTexCoord2f (fcol + size, frow + size);
+	glVertex2f (x+8, y+8);
+	glTexCoord2f (fcol, frow + size);
+	glVertex2f (x, y+8);
+	glEnd ();
 }
 
 /*
 ================
-Draw_String -- johnfitz -- modified to call Draw_CharacterQuad
+Draw_String
 ================
 */
-void Draw_String(int x, int y, char* str)
+void Draw_String (int x, int y, char *str)
 {
-	if (y <= -8)
-		return; // totally off screen
-
-	GL_Bind(char_texture);
-	glBegin(GL_QUADS);
-
 	while (*str)
 	{
-		if (*str != 32) //don't waste verts on spaces
-			Draw_CharacterQuad(x, y, *str);
+		Draw_Character (x, y, *str);
 		str++;
 		x += 8;
 	}
+}
 
-	glEnd();
+/*
+================
+Draw_DebugChar
+
+Draws a single character directly to the upper right corner of the screen.
+This is for debugging lockups by drawing different chars in different parts
+of the code.
+================
+*/
+void Draw_DebugChar (char num)
+{
 }
 
 /*
 =============
-Draw_Pic -- johnfitz -- modified
+Draw_AlphaPic
 =============
 */
-void Draw_Pic(int x, int y, qpic_t* pic)
+void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 {
+	byte			*dest, *source;
+	unsigned short	*pusdest;
+	int				v, u;
+	glpic_t			*gl;
+
 	if (scrap_dirty)
-		Scrap_Upload();
-	glpic_t* gl = reinterpret_cast<glpic_t *>(pic->data);
-	GL_Bind(gl->gltexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(gl->sl, gl->tl);
-	glVertex2f(x, y);
-	glTexCoord2f(gl->sh, gl->tl);
-	glVertex2f(x + pic->width, y);
-	glTexCoord2f(gl->sh, gl->th);
-	glVertex2f(x + pic->width, y + pic->height);
-	glTexCoord2f(gl->sl, gl->th);
-	glVertex2f(x, y + pic->height);
-	glEnd();
+		Scrap_Upload ();
+	gl = (glpic_t *)pic->data;
+	glDisable(GL_ALPHA_TEST);
+	glEnable (GL_BLEND);
+//	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//	glCullFace(GL_FRONT);
+	glColor4f (1,1,1,alpha);
+	GL_Bind (gl->texnum);
+	glBegin (GL_QUADS);
+	glTexCoord2f (gl->sl, gl->tl);
+	glVertex2f (x, y);
+	glTexCoord2f (gl->sh, gl->tl);
+	glVertex2f (x+pic->width, y);
+	glTexCoord2f (gl->sh, gl->th);
+	glVertex2f (x+pic->width, y+pic->height);
+	glTexCoord2f (gl->sl, gl->th);
+	glVertex2f (x, y+pic->height);
+	glEnd ();
+	glColor4f (1,1,1,1);
+	glEnable(GL_ALPHA_TEST);
+	glDisable (GL_BLEND);
 }
+
 
 /*
 =============
-Draw_TransPicTranslate -- johnfitz -- rewritten to use texmgr to do translation
+Draw_Pic
+=============
+*/
+void Draw_Pic (int x, int y, qpic_t *pic)
+{
+	byte			*dest, *source;
+	unsigned short	*pusdest;
+	int				v, u;
+	glpic_t			*gl;
+
+	if (scrap_dirty)
+		Scrap_Upload ();
+	gl = (glpic_t *)pic->data;
+	glColor4f (1,1,1,1);
+	GL_Bind (gl->texnum);
+	glBegin (GL_QUADS);
+	glTexCoord2f (gl->sl, gl->tl);
+	glVertex2f (x, y);
+	glTexCoord2f (gl->sh, gl->tl);
+	glVertex2f (x+pic->width, y);
+	glTexCoord2f (gl->sh, gl->th);
+	glVertex2f (x+pic->width, y+pic->height);
+	glTexCoord2f (gl->sl, gl->th);
+	glVertex2f (x, y+pic->height);
+	glEnd ();
+}
+
+
+/*
+=============
+Draw_TransPic
+=============
+*/
+void Draw_TransPic (int x, int y, qpic_t *pic)
+{
+	byte	*dest, *source, tbyte;
+	unsigned short	*pusdest;
+	int				v, u;
+
+	if (x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
+		 (unsigned)(y + pic->height) > vid.height)
+	{
+		Sys_Error ("Draw_TransPic: bad coordinates");
+	}
+		
+	Draw_Pic (x, y, pic);
+}
+
+
+/*
+=============
+Draw_TransPicTranslate
 
 Only used for the player color selection menu
 =============
 */
-void Draw_TransPicTranslate(int x, int y, qpic_t* pic, int top, int bottom)
+void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 {
-	static auto oldtop = -2;
-	static auto oldbottom = -2;
+	int				v, u, c;
+	unsigned		trans[64*64], *dest;
+	byte			*src;
+	int				p;
 
-	if (top != oldtop || bottom != oldbottom)
+	GL_Bind (translate_texture);
+
+	c = pic->width * pic->height;
+
+	dest = trans;
+	for (v=0 ; v<64 ; v++, dest += 64)
 	{
-		oldtop = top;
-		oldbottom = bottom;
-		gltexture_t* glt = reinterpret_cast<glpic_t *>(pic->data)->gltexture;
-		TexMgr_ReloadImage(glt, top, bottom);
+		src = &menuplyr_pixels[ ((v*pic->height)>>6) *pic->width];
+		for (u=0 ; u<64 ; u++)
+		{
+			p = src[(u*pic->width)>>6];
+			if (p == 255)
+				dest[u] = p;
+			else
+				dest[u] =  d_8to24table[translation[p]];
+		}
 	}
-	Draw_Pic(x, y, pic);
+
+	glTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glColor3f (1,1,1);
+	glBegin (GL_QUADS);
+	glTexCoord2f (0, 0);
+	glVertex2f (x, y);
+	glTexCoord2f (1, 0);
+	glVertex2f (x+pic->width, y);
+	glTexCoord2f (1, 1);
+	glVertex2f (x+pic->width, y+pic->height);
+	glTexCoord2f (0, 1);
+	glVertex2f (x, y+pic->height);
+	glEnd ();
 }
+
 
 /*
 ================
-Draw_ConsoleBackground -- johnfitz -- rewritten
+Draw_ConsoleBackground
+
 ================
 */
-void Draw_ConsoleBackground()
+void Draw_ConsoleBackground (int lines)
 {
-	auto pic = Draw_CachePic("gfx/conback.lmp");
-	pic->width = vid.conwidth;
-	pic->height = vid.conheight;
+	int y = (vid.height * 3) >> 2;
 
-	float alpha = con_forcedup ? 1.0 : scr_conalpha.value;
-
-	//	GL_SetCanvas (CANVAS_CONSOLE); //in case this is called from weird places
-
-	if (alpha > 0.0)
-	{
-		if (alpha < 1.0)
-		{
-			glEnable(GL_BLEND);
-			glColor4f(1, 1, 1, alpha);
-			glDisable(GL_ALPHA_TEST);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		}
-
-		Draw_Pic(0, 0, pic);
-
-		if (alpha < 1.0)
-		{
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-			glEnable(GL_ALPHA_TEST);
-			glDisable(GL_BLEND);
-			glColor4f(1, 1, 1, 1);
-		}
-	}
+	if (lines > y)
+		Draw_Pic(0, lines - vid.height, conback);
+	else
+		Draw_AlphaPic (0, lines - vid.height, conback, (float)(1.2 * lines)/y);
 }
 
 
@@ -542,23 +725,22 @@ This repeats a 64*64 tile graphic to fill the screen around a sized down
 refresh window.
 =============
 */
-void Draw_TileClear(int x, int y, int w, int h)
+void Draw_TileClear (int x, int y, int w, int h)
 {
-	auto gl = reinterpret_cast<glpic_t *>(draw_backtile->data);
-
-	glColor3f(1, 1, 1);
-	GL_Bind(gl->gltexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(x / 64.0, y / 64.0);
-	glVertex2f(x, y);
-	glTexCoord2f((x + w) / 64.0, y / 64.0);
-	glVertex2f(x + w, y);
-	glTexCoord2f((x + w) / 64.0, (y + h) / 64.0);
-	glVertex2f(x + w, y + h);
-	glTexCoord2f(x / 64.0, (y + h) / 64.0);
-	glVertex2f(x, y + h);
-	glEnd();
+	glColor3f (1,1,1);
+	GL_Bind (*(int *)draw_backtile->data);
+	glBegin (GL_QUADS);
+	glTexCoord2f (x/64.0, y/64.0);
+	glVertex2f (x, y);
+	glTexCoord2f ( (x+w)/64.0, y/64.0);
+	glVertex2f (x+w, y);
+	glTexCoord2f ( (x+w)/64.0, (y+h)/64.0);
+	glVertex2f (x+w, y+h);
+	glTexCoord2f ( x/64.0, (y+h)/64.0 );
+	glVertex2f (x, y+h);
+	glEnd ();
 }
+
 
 /*
 =============
@@ -567,56 +749,53 @@ Draw_Fill
 Fills a box of pixels with a single color
 =============
 */
-void Draw_Fill(int x, int y, int w, int h, int c, float alpha) //johnfitz -- added alpha
+void Draw_Fill (int x, int y, int w, int h, int c)
 {
-	auto pal = reinterpret_cast<byte *>(d_8to24table); //johnfitz -- use d_8to24table instead of host_basepal
+	glDisable (GL_TEXTURE_2D);
+	glColor3f (host_basepal[c*3]/255.0,
+		host_basepal[c*3+1]/255.0,
+		host_basepal[c*3+2]/255.0);
 
-	glDisable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND); //johnfitz -- for alpha
-	glDisable(GL_ALPHA_TEST); //johnfitz -- for alpha
-	glColor4f(pal[c * 4] / 255.0, pal[c * 4 + 1] / 255.0, pal[c * 4 + 2] / 255.0, alpha); //johnfitz -- added alpha
+	glBegin (GL_QUADS);
 
-	glBegin(GL_QUADS);
-	glVertex2f(x, y);
-	glVertex2f(x + w, y);
-	glVertex2f(x + w, y + h);
-	glVertex2f(x, y + h);
-	glEnd();
+	glVertex2f (x,y);
+	glVertex2f (x+w, y);
+	glVertex2f (x+w, y+h);
+	glVertex2f (x, y+h);
 
-	glColor3f(1, 1, 1);
-	glDisable(GL_BLEND); //johnfitz -- for alpha
-	glEnable(GL_ALPHA_TEST); //johnfitz -- for alpha
-	glEnable(GL_TEXTURE_2D);
+	glEnd ();
+	glColor3f (1,1,1);
+	glEnable (GL_TEXTURE_2D);
 }
+//=============================================================================
 
 /*
 ================
-Draw_FadeScreen -- johnfitz -- revised
+Draw_FadeScreen
+
 ================
 */
-void Draw_FadeScreen()
+void Draw_FadeScreen (void)
 {
-	GL_SetCanvas(canvastype::CANVAS_DEFAULT);
+	glEnable (GL_BLEND);
+	glDisable (GL_TEXTURE_2D);
+	glColor4f (0, 0, 0, 0.8);
+	glBegin (GL_QUADS);
 
-	glEnable(GL_BLEND);
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_TEXTURE_2D);
-	glColor4f(0, 0, 0, 0.5);
-	glBegin(GL_QUADS);
+	glVertex2f (0,0);
+	glVertex2f (vid.width, 0);
+	glVertex2f (vid.width, vid.height);
+	glVertex2f (0, vid.height);
 
-	glVertex2f(0, 0);
-	glVertex2f(glwidth, 0);
-	glVertex2f(glwidth, glheight);
-	glVertex2f(0, glheight);
-
-	glEnd();
-	glColor4f(1, 1, 1, 1);
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_ALPHA_TEST);
-	glDisable(GL_BLEND);
+	glEnd ();
+	glColor4f (1,1,1,1);
+	glEnable (GL_TEXTURE_2D);
+	glDisable (GL_BLEND);
 
 	Sbar_Changed();
 }
+
+//=============================================================================
 
 /*
 ================
@@ -626,137 +805,494 @@ Draws the little blue disc in the corner of the screen.
 Call before beginning any disc IO.
 ================
 */
-void Draw_BeginDisc()
+void Draw_BeginDisc (void)
 {
-	int viewport[4]; //johnfitz
-
 	if (!draw_disc)
 		return;
+	glDrawBuffer  (GL_FRONT);
+	Draw_Pic (vid.width - 24, 0, draw_disc);
+	glDrawBuffer  (GL_BACK);
+}
 
-	//johnfitz -- intel video workarounds from Baker
-	if (isIntelVideo)
-		return;
-	//johnfitz
 
-	//johnfitz -- canvas and matrix stuff
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	auto oldcanvas = currentcanvas;
-	GL_SetCanvas(canvastype::CANVAS_TOPRIGHT);
-	currentcanvas = oldcanvas; // a bit of a hack, since GL_SetCanvas doesn't know we are going to pop the stack
-	//johnfitz
+/*
+================
+Draw_EndDisc
 
-	glDrawBuffer(GL_FRONT);
-	Draw_Pic(320 - 24, 0, draw_disc);
-	glDrawBuffer(GL_BACK);
-
-	//johnfitz -- restore everything so that 3d rendering isn't fucked up
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
-	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-	//johnfitz
+Erases the disc icon.
+Call after completing any disc IO
+================
+*/
+void Draw_EndDisc (void)
+{
 }
 
 /*
 ================
-GL_SetCanvas -- johnfitz -- support various canvas types
+GL_Set2D
+
+Setup as if the screen was 320*200
 ================
 */
-void GL_SetCanvas(canvastype newcanvas)
+void GL_Set2D (void)
 {
-	extern vrect_t scr_vrect;
-	float s;
-
-	if (newcanvas == currentcanvas)
-		return;
-
-	currentcanvas = newcanvas;
+	glViewport (glx, gly, glwidth, glheight);
 
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+    glLoadIdentity ();
+	glOrtho  (0, vid.width, vid.height, 0, -99999, 99999);
 
-	switch (newcanvas)
+	glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity ();
+
+	glDisable (GL_DEPTH_TEST);
+	glDisable (GL_CULL_FACE);
+	glDisable (GL_BLEND);
+	glEnable (GL_ALPHA_TEST);
+//	glDisable (GL_ALPHA_TEST);
+
+	glColor4f (1,1,1,1);
+}
+
+//====================================================================
+
+/*
+================
+GL_FindTexture
+================
+*/
+int GL_FindTexture (char *identifier)
+{
+	int		i;
+	gltexture_t	*glt;
+
+	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
 	{
-	case canvastype::CANVAS_DEFAULT:
-		glOrtho(0, glwidth, glheight, 0, -99999, 99999);
-		glViewport(glx, gly, glwidth, glheight);
-		break;
-	case canvastype::CANVAS_CONSOLE:
-		{
-			int lines = vid.conheight - scr_con_current * vid.conheight / glheight;
-			glOrtho(0, vid.conwidth, vid.conheight + lines, lines, -99999, 99999);
-			glViewport(glx, gly, glwidth, glheight);
-		}
-		break;
-	case canvastype::CANVAS_MENU:
-		s = min ((float)glwidth / 320.0, (float)glheight / 200.0);
-		s = CLAMP (1.0, scr_menuscale.value, s);
-		glOrtho(0, 320, 200, 0, -99999, 99999);
-		glViewport(glx + (glwidth - 320 * s) / 2, gly + (glheight - 200 * s) / 2, 320 * s, 200 * s);
-		break;
-	case canvastype::CANVAS_SBAR:
-		s = CLAMP (1.0, scr_sbarscale.value, (float)glwidth / 320.0);
-		if (cl.gametype == GAME_DEATHMATCH)
-		{
-			glOrtho(0, glwidth / s, 48, 0, -99999, 99999);
-			glViewport(glx, gly, glwidth, 48 * s);
-		}
-		else
-		{
-			glOrtho(0, 320, 48, 0, -99999, 99999);
-			glViewport(glx + (glwidth - 320 * s) / 2, gly, 320 * s, 48 * s);
-		}
-		break;
-	case canvastype::CANVAS_WARPIMAGE:
-		glOrtho(0, 128, 0, 128, -99999, 99999);
-		glViewport(glx, gly + glheight - gl_warpimagesize, gl_warpimagesize, gl_warpimagesize);
-		break;
-	case canvastype::CANVAS_CROSSHAIR: //0,0 is center of viewport
-		s = CLAMP (1.0, scr_crosshaircale.value, 10.0);
-		glOrtho(scr_vrect.width / -2 / s, scr_vrect.width / 2 / s, scr_vrect.height / 2 / s, scr_vrect.height / -2 / s, -99999, 99999);
-		glViewport(scr_vrect.x, glheight - scr_vrect.y - scr_vrect.height, scr_vrect.width & ~1, scr_vrect.height & ~1);
-		break;
-	case canvastype::CANVAS_BOTTOMLEFT: //used by devstats
-		s = static_cast<float>(glwidth) / vid.conwidth; //use console scale
-		glOrtho(0, 320, 200, 0, -99999, 99999);
-		glViewport(glx, gly, 320 * s, 200 * s);
-		break;
-	case canvastype::CANVAS_BOTTOMRIGHT: //used by fps/clock
-		s = static_cast<float>(glwidth) / vid.conwidth; //use console scale
-		glOrtho(0, 320, 200, 0, -99999, 99999);
-		glViewport(glx + glwidth - 320 * s, gly, 320 * s, 200 * s);
-		break;
-	case canvastype::CANVAS_TOPRIGHT: //used by disc
-		s = 1;
-		glOrtho(0, 320, 200, 0, -99999, 99999);
-		glViewport(glx + glwidth - 320 * s, gly + glheight - 200 * s, 320 * s, 200 * s);
-		break;
-	default:
-		Sys_Error("GL_SetCanvas: bad canvas type");
+		if (!strcmp (identifier, glt->identifier))
+			return gltextures[i].texnum;
 	}
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	return -1;
 }
 
 /*
 ================
-GL_Set2D -- johnfitz -- rewritten
+GL_ResampleTexture
 ================
 */
-void GL_Set2D()
+void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight)
 {
-	currentcanvas = canvastype::CANVAS_NONE;
-	GL_SetCanvas(canvastype::CANVAS_DEFAULT);
+	int		i, j;
+	unsigned	*inrow;
+	unsigned	frac, fracstep;
 
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND);
-	glEnable(GL_ALPHA_TEST);
-	glColor4f(1, 1, 1, 1);
+	fracstep = inwidth*0x10000/outwidth;
+	for (i=0 ; i<outheight ; i++, out += outwidth)
+	{
+		inrow = in + inwidth*(i*inheight/outheight);
+		frac = fracstep >> 1;
+		for (j=0 ; j<outwidth ; j+=4)
+		{
+			out[j] = inrow[frac>>16];
+			frac += fracstep;
+			out[j+1] = inrow[frac>>16];
+			frac += fracstep;
+			out[j+2] = inrow[frac>>16];
+			frac += fracstep;
+			out[j+3] = inrow[frac>>16];
+			frac += fracstep;
+		}
+	}
+}
+
+/*
+================
+GL_Resample8BitTexture -- JACK
+================
+*/
+void GL_Resample8BitTexture (unsigned char *in, int inwidth, int inheight, unsigned char *out,  int outwidth, int outheight)
+{
+	int		i, j;
+	unsigned	char *inrow;
+	unsigned	frac, fracstep;
+
+	fracstep = inwidth*0x10000/outwidth;
+	for (i=0 ; i<outheight ; i++, out += outwidth)
+	{
+		inrow = in + inwidth*(i*inheight/outheight);
+		frac = fracstep >> 1;
+		for (j=0 ; j<outwidth ; j+=4)
+		{
+			out[j] = inrow[frac>>16];
+			frac += fracstep;
+			out[j+1] = inrow[frac>>16];
+			frac += fracstep;
+			out[j+2] = inrow[frac>>16];
+			frac += fracstep;
+			out[j+3] = inrow[frac>>16];
+			frac += fracstep;
+		}
+	}
+}
+
+
+/*
+================
+GL_MipMap
+
+Operates in place, quartering the size of the texture
+================
+*/
+void GL_MipMap (byte *in, int width, int height)
+{
+	int		i, j;
+	byte	*out;
+
+	width <<=2;
+	height >>= 1;
+	out = in;
+	for (i=0 ; i<height ; i++, in+=width)
+	{
+		for (j=0 ; j<width ; j+=8, out+=4, in+=8)
+		{
+			out[0] = (in[0] + in[4] + in[width+0] + in[width+4])>>2;
+			out[1] = (in[1] + in[5] + in[width+1] + in[width+5])>>2;
+			out[2] = (in[2] + in[6] + in[width+2] + in[width+6])>>2;
+			out[3] = (in[3] + in[7] + in[width+3] + in[width+7])>>2;
+		}
+	}
+}
+
+/*
+================
+GL_MipMap8Bit
+
+Mipping for 8 bit textures
+================
+*/
+void GL_MipMap8Bit (byte *in, int width, int height)
+{
+	int		i, j;
+	unsigned short     r,g,b;
+	byte	*out, *at1, *at2, *at3, *at4;
+
+//	width <<=2;
+	height >>= 1;
+	out = in;
+	for (i=0 ; i<height ; i++, in+=width)
+	{
+		for (j=0 ; j<width ; j+=2, out+=1, in+=2)
+		{
+			at1 = (byte *) (d_8to24table + in[0]);
+			at2 = (byte *) (d_8to24table + in[1]);
+			at3 = (byte *) (d_8to24table + in[width+0]);
+			at4 = (byte *) (d_8to24table + in[width+1]);
+
+ 			r = (at1[0]+at2[0]+at3[0]+at4[0]); r>>=5;
+ 			g = (at1[1]+at2[1]+at3[1]+at4[1]); g>>=5;
+ 			b = (at1[2]+at2[2]+at3[2]+at4[2]); b>>=5;
+
+			out[0] = d_15to8table[(r<<0) + (g<<5) + (b<<10)];
+		}
+	}
+}
+
+/*
+===============
+GL_Upload32
+===============
+*/
+void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qboolean alpha)
+{
+	int			samples;
+static	unsigned	scaled[1024*512];	// [512*256];
+	int			scaled_width, scaled_height;
+
+	for (scaled_width = 1 ; scaled_width < width ; scaled_width<<=1)
+		;
+	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
+		;
+
+	scaled_width >>= (int)gl_picmip.value;
+	scaled_height >>= (int)gl_picmip.value;
+
+	if (scaled_width > gl_max_size.value)
+		scaled_width = gl_max_size.value;
+	if (scaled_height > gl_max_size.value)
+		scaled_height = gl_max_size.value;
+
+	if (scaled_width * scaled_height > sizeof(scaled)/4)
+		Sys_Error ("GL_LoadTexture: too big");
+
+	samples = alpha ? gl_alpha_format : gl_solid_format;
+
+#if 0
+	if (mipmap)
+		gluBuild2DMipmaps (GL_TEXTURE_2D, samples, width, height, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	else if (scaled_width == width && scaled_height == height)
+		glTexImage2D (GL_TEXTURE_2D, 0, samples, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	else
+	{
+		gluScaleImage (GL_RGBA, width, height, GL_UNSIGNED_BYTE, trans,
+			scaled_width, scaled_height, GL_UNSIGNED_BYTE, scaled);
+		glTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+	}
+#else
+texels += scaled_width * scaled_height;
+
+	if (scaled_width == width && scaled_height == height)
+	{
+		if (!mipmap)
+		{
+			glTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			goto done;
+		}
+		memcpy (scaled, data, width*height*4);
+	}
+	else
+		GL_ResampleTexture (data, width, height, scaled, scaled_width, scaled_height);
+
+	glTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+	if (mipmap)
+	{
+		int		miplevel;
+
+		miplevel = 0;
+		while (scaled_width > 1 || scaled_height > 1)
+		{
+			GL_MipMap ((byte *)scaled, scaled_width, scaled_height);
+			scaled_width >>= 1;
+			scaled_height >>= 1;
+			if (scaled_width < 1)
+				scaled_width = 1;
+			if (scaled_height < 1)
+				scaled_height = 1;
+			miplevel++;
+			glTexImage2D (GL_TEXTURE_2D, miplevel, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
+		}
+	}
+done: ;
+#endif
+
+
+	if (mipmap)
+	{
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+	}
+	else
+	{
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+	}
+}
+
+void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboolean alpha) 
+{
+	int			i, s;
+	qboolean	noalpha;
+	int			p;
+	static unsigned j;
+	int			samples;
+    static	unsigned char scaled[1024*512];	// [512*256];
+	int			scaled_width, scaled_height;
+
+	s = width*height;
+	// if there are no transparent pixels, make it a 3 component
+	// texture even if it was specified as otherwise
+	if (alpha)
+	{
+		noalpha = qtrue;
+		for (i=0 ; i<s ; i++)
+		{
+			if (data[i] == 255)
+				noalpha = qfalse;
+		}
+
+		if (alpha && noalpha)
+			alpha = qfalse;
+	}
+	for (scaled_width = 1 ; scaled_width < width ; scaled_width<<=1)
+		;
+	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
+		;
+
+	scaled_width >>= (int)gl_picmip.value;
+	scaled_height >>= (int)gl_picmip.value;
+
+	if (scaled_width > gl_max_size.value)
+		scaled_width = gl_max_size.value;
+	if (scaled_height > gl_max_size.value)
+		scaled_height = gl_max_size.value;
+
+	if (scaled_width * scaled_height > sizeof(scaled))
+		Sys_Error ("GL_LoadTexture: too big");
+
+	samples = 1; // alpha ? gl_alpha_format : gl_solid_format;
+
+	texels += scaled_width * scaled_height;
+
+	if (scaled_width == width && scaled_height == height)
+	{
+		if (!mipmap)
+		{
+			glTexImage2D (GL_TEXTURE_2D, 0, GL_COLOR_INDEX8_EXT, scaled_width, scaled_height, 0, GL_COLOR_INDEX , GL_UNSIGNED_BYTE, data);
+			goto done;
+		}
+		memcpy (scaled, data, width*height);
+	}
+	else
+		GL_Resample8BitTexture (data, width, height, scaled, scaled_width, scaled_height);
+
+	glTexImage2D (GL_TEXTURE_2D, 0, GL_COLOR_INDEX8_EXT, scaled_width, scaled_height, 0, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, scaled);
+	if (mipmap)
+	{
+		int		miplevel;
+
+		miplevel = 0;
+		while (scaled_width > 1 || scaled_height > 1)
+		{
+			GL_MipMap8Bit ((byte *)scaled, scaled_width, scaled_height);
+			scaled_width >>= 1;
+			scaled_height >>= 1;
+			if (scaled_width < 1)
+				scaled_width = 1;
+			if (scaled_height < 1)
+				scaled_height = 1;
+			miplevel++;
+			glTexImage2D (GL_TEXTURE_2D, miplevel, GL_COLOR_INDEX8_EXT, scaled_width, scaled_height, 0, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, scaled);
+		}
+	}
+done: ;
+
+
+	if (mipmap)
+	{
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+	}
+	else
+	{
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+	}
+}
+
+/*
+===============
+GL_Upload8
+===============
+*/
+void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean alpha)
+{
+static	unsigned	trans[640*480];		// FIXME, temporary
+	int			i, s;
+	qboolean	noalpha;
+	int			p;
+
+	s = width*height;
+	// if there are no transparent pixels, make it a 3 component
+	// texture even if it was specified as otherwise
+	if (alpha)
+	{
+		noalpha = qtrue;
+		for (i=0 ; i<s ; i++)
+		{
+			p = data[i];
+			if (p == 255)
+				noalpha = qfalse;
+			trans[i] = d_8to24table[p];
+		}
+
+		if (alpha && noalpha)
+			alpha = qfalse;
+	}
+	else
+	{
+		if (s&3)
+			Sys_Error ("GL_Upload8: s&3");
+		for (i=0 ; i<s ; i+=4)
+		{
+			trans[i] = d_8to24table[data[i]];
+			trans[i+1] = d_8to24table[data[i+1]];
+			trans[i+2] = d_8to24table[data[i+2]];
+			trans[i+3] = d_8to24table[data[i+3]];
+		}
+	}
+
+ 	if (VID_Is8bit() && !alpha && (data!=scrap_texels[0])) {
+ 		GL_Upload8_EXT (data, width, height, mipmap, alpha);
+ 		return;
+	}
+	GL_Upload32 (trans, width, height, mipmap, alpha);
+}
+
+/*
+================
+GL_LoadTexture
+================
+*/
+int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
+{
+	qboolean	noalpha;
+	int			i, p, s;
+	gltexture_t	*glt;
+
+	// see if the texture is allready present
+	if (identifier[0])
+	{
+		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+		{
+			if (!strcmp (identifier, glt->identifier))
+			{
+				if (width != glt->width || height != glt->height)
+					Sys_Error ("GL_LoadTexture: cache mismatch");
+				return gltextures[i].texnum;
+			}
+		}
+	}
+	else {
+		glt = &gltextures[numgltextures];
+		numgltextures++;
+	}
+
+	strcpy (glt->identifier, identifier);
+	glt->texnum = texture_extension_number;
+	glt->width = width;
+	glt->height = height;
+	glt->mipmap = mipmap;
+
+	GL_Bind(texture_extension_number );
+
+	GL_Upload8 (data, width, height, mipmap, alpha);
+
+	texture_extension_number++;
+
+	return texture_extension_number-1;
+}
+
+/*
+================
+GL_LoadPicTexture
+================
+*/
+int GL_LoadPicTexture (qpic_t *pic)
+{
+	return GL_LoadTexture ("", pic->width, pic->height, pic->data, qfalse, qtrue);
+}
+
+/****************************************/
+
+static GLenum oldtarget = TEXTURE0_SGIS;
+
+void GL_SelectTexture (GLenum target) 
+{
+	if (!gl_mtexable)
+		return;
+	qglSelectTextureSGIS(target);
+	if (target == oldtarget) 
+		return;
+	cnttextures[oldtarget-TEXTURE0_SGIS] = currenttexture;
+	currenttexture = cnttextures[target-TEXTURE0_SGIS];
+	oldtarget = target;
 }

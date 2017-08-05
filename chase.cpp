@@ -5,30 +5,27 @@ cvar_t chase_up = {"chase_up", "16"};
 cvar_t chase_right = {"chase_right", "0"};
 cvar_t chase_active = {"chase_active", "0"};
 
-overflowtimes_t dev_overflows;
+vec3_t chase_pos;
+vec3_t chase_angles;
 
-/*
-==============
-Chase_Init
-==============
-*/
-void Chase_Init()
+vec3_t chase_dest;
+vec3_t chase_dest_angles;
+
+
+void Chase_Init(void)
 {
-	Cvar_RegisterVariable(&chase_back, nullptr);
-	Cvar_RegisterVariable(&chase_up, nullptr);
-	Cvar_RegisterVariable(&chase_right, nullptr);
-	Cvar_RegisterVariable(&chase_active, nullptr);
+	Cvar_RegisterVariable(&chase_back);
+	Cvar_RegisterVariable(&chase_up);
+	Cvar_RegisterVariable(&chase_right);
+	Cvar_RegisterVariable(&chase_active);
 }
 
-bool SV_RecursiveHullCheck(hull_t* hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t* trace);
+void Chase_Reset(void)
+{
+	// for respawning and teleporting
+	//	start position 12 units behind head
+}
 
-/*
-==============
-TraceLine
-
-TODO: impact on bmodels, monsters
-==============
-*/
 void TraceLine(vec3_t start, vec3_t end, vec3_t impact)
 {
 	trace_t trace;
@@ -39,59 +36,31 @@ void TraceLine(vec3_t start, vec3_t end, vec3_t impact)
 	VectorCopy (trace.endpos, impact);
 }
 
-/*
-==============
-Chase_UpdateForClient -- johnfitz -- orient client based on camera. called after input
-==============
-*/
-void Chase_UpdateForClient()
-{
-	//place camera
-
-	//assign client angles to camera
-
-	//see where camera points
-
-	//adjust client angles to point at the same place
-}
-
-/*
-==============
-Chase_UpdateForDrawing -- johnfitz -- orient camera based on client. called before drawing
-
-TODO: stay at least 8 units away from all walls in this leaf
-==============
-*/
-void Chase_UpdateForDrawing()
+void Chase_Update(void)
 {
 	vec3_t forward, up, right;
-	vec3_t ideal, crosshair, temp;
+	vec3_t dest, stop;
 
+
+	// if can't see player, reset
 	AngleVectors(cl.viewangles, forward, right, up);
 
-	// calc ideal camera location before checking for walls
-	for (int i = 0; i < 3; i++)
-		ideal[i] = cl.viewent.origin[i]
-			- forward[i] * chase_back.value
-			+ right[i] * chase_right.value;
-	//+ up[i]*chase_up.value;
-	ideal[2] = cl.viewent.origin[2] + chase_up.value;
-
-	// make sure camera is not in or behind a wall
-	TraceLine(r_refdef.vieworg, ideal, temp);
-	if (Length(temp) != 0)
-	VectorCopy(temp, ideal);
-
-	// place camera
-	VectorCopy (ideal, r_refdef.vieworg);
+	// calc exact destination
+	for (auto i = 0; i < 3; i++)
+		chase_dest[i] = r_refdef.vieworg[i] - forward[i] * chase_back.value - right[i] * chase_right.value;
+	chase_dest[2] = r_refdef.vieworg[2] + chase_up.value;
 
 	// find the spot the player is looking at
-	VectorMA(cl.viewent.origin, 4096, forward, temp);
-	TraceLine(cl.viewent.origin, temp, crosshair);
+	VectorMA(r_refdef.vieworg, 4096, forward, dest);
+	TraceLine(r_refdef.vieworg, dest, stop);
 
-	// calculate camera angles to look at the same spot
-	VectorSubtract (crosshair, r_refdef.vieworg, temp);
-	VectorAngles(temp, r_refdef.viewangles);
-	if (r_refdef.viewangles[PITCH] == 90 || r_refdef.viewangles[PITCH] == -90)
-		r_refdef.viewangles[YAW] = cl.viewangles[YAW];
+	// calculate pitch to look at the same spot from camera
+	VectorSubtract (stop, r_refdef.vieworg, stop);
+	auto dist = DotProduct (stop, forward);
+	if (dist < 1)
+		dist = 1;
+	r_refdef.viewangles[PITCH] = -atan(stop[2] / dist) / M_PI * 180;
+
+	// move towards destination
+	VectorCopy (chase_dest, r_refdef.vieworg);
 }

@@ -1,8 +1,5 @@
 #include "quakedef.h"
 
-extern cvar_t cl_maxpitch; //johnfitz -- variable pitch clamping
-extern cvar_t cl_minpitch; //johnfitz -- variable pitch clamping
-
 /*
 ===============================================================================
 
@@ -91,52 +88,52 @@ void KeyUp(kbutton_t* b)
 	b->state |= 4; // impulse up
 }
 
-void IN_KLookDown() { KeyDown(&in_klook); }
-void IN_KLookUp() { KeyUp(&in_klook); }
-void IN_MLookDown() { KeyDown(&in_mlook); }
+void IN_KLookDown(void) { KeyDown(&in_klook); }
+void IN_KLookUp(void) { KeyUp(&in_klook); }
+void IN_MLookDown(void) { KeyDown(&in_mlook); }
 
-void IN_MLookUp()
+void IN_MLookUp(void)
 {
 	KeyUp(&in_mlook);
 	if (!(in_mlook.state & 1) && lookspring.value)
 		V_StartPitchDrift();
 }
 
-void IN_UpDown() { KeyDown(&in_up); }
-void IN_UpUp() { KeyUp(&in_up); }
-void IN_DownDown() { KeyDown(&in_down); }
-void IN_DownUp() { KeyUp(&in_down); }
-void IN_LeftDown() { KeyDown(&in_left); }
-void IN_LeftUp() { KeyUp(&in_left); }
-void IN_RightDown() { KeyDown(&in_right); }
-void IN_RightUp() { KeyUp(&in_right); }
-void IN_ForwardDown() { KeyDown(&in_forward); }
-void IN_ForwardUp() { KeyUp(&in_forward); }
-void IN_BackDown() { KeyDown(&in_back); }
-void IN_BackUp() { KeyUp(&in_back); }
-void IN_LookupDown() { KeyDown(&in_lookup); }
-void IN_LookupUp() { KeyUp(&in_lookup); }
-void IN_LookdownDown() { KeyDown(&in_lookdown); }
-void IN_LookdownUp() { KeyUp(&in_lookdown); }
-void IN_MoveleftDown() { KeyDown(&in_moveleft); }
-void IN_MoveleftUp() { KeyUp(&in_moveleft); }
-void IN_MoverightDown() { KeyDown(&in_moveright); }
-void IN_MoverightUp() { KeyUp(&in_moveright); }
+void IN_UpDown(void) { KeyDown(&in_up); }
+void IN_UpUp(void) { KeyUp(&in_up); }
+void IN_DownDown(void) { KeyDown(&in_down); }
+void IN_DownUp(void) { KeyUp(&in_down); }
+void IN_LeftDown(void) { KeyDown(&in_left); }
+void IN_LeftUp(void) { KeyUp(&in_left); }
+void IN_RightDown(void) { KeyDown(&in_right); }
+void IN_RightUp(void) { KeyUp(&in_right); }
+void IN_ForwardDown(void) { KeyDown(&in_forward); }
+void IN_ForwardUp(void) { KeyUp(&in_forward); }
+void IN_BackDown(void) { KeyDown(&in_back); }
+void IN_BackUp(void) { KeyUp(&in_back); }
+void IN_LookupDown(void) { KeyDown(&in_lookup); }
+void IN_LookupUp(void) { KeyUp(&in_lookup); }
+void IN_LookdownDown(void) { KeyDown(&in_lookdown); }
+void IN_LookdownUp(void) { KeyUp(&in_lookdown); }
+void IN_MoveleftDown(void) { KeyDown(&in_moveleft); }
+void IN_MoveleftUp(void) { KeyUp(&in_moveleft); }
+void IN_MoverightDown(void) { KeyDown(&in_moveright); }
+void IN_MoverightUp(void) { KeyUp(&in_moveright); }
 
-void IN_SpeedDown() { KeyDown(&in_speed); }
-void IN_SpeedUp() { KeyUp(&in_speed); }
-void IN_StrafeDown() { KeyDown(&in_strafe); }
-void IN_StrafeUp() { KeyUp(&in_strafe); }
+void IN_SpeedDown(void) { KeyDown(&in_speed); }
+void IN_SpeedUp(void) { KeyUp(&in_speed); }
+void IN_StrafeDown(void) { KeyDown(&in_strafe); }
+void IN_StrafeUp(void) { KeyUp(&in_strafe); }
 
-void IN_AttackDown() { KeyDown(&in_attack); }
-void IN_AttackUp() { KeyUp(&in_attack); }
+void IN_AttackDown(void) { KeyDown(&in_attack); }
+void IN_AttackUp(void) { KeyUp(&in_attack); }
 
-void IN_UseDown() { KeyDown(&in_use); }
-void IN_UseUp() { KeyUp(&in_use); }
-void IN_JumpDown() { KeyDown(&in_jump); }
-void IN_JumpUp() { KeyUp(&in_jump); }
+void IN_UseDown(void) { KeyDown(&in_use); }
+void IN_UseUp(void) { KeyUp(&in_use); }
+void IN_JumpDown(void) { KeyDown(&in_jump); }
+void IN_JumpUp(void) { KeyUp(&in_jump); }
 
-void IN_Impulse() { in_impulse = Q_atoi(Cmd_Argv(1)); }
+void IN_Impulse(void) { in_impulse = Q_atoi(Cmd_Argv(1)); }
 
 /*
 ===============
@@ -185,8 +182,8 @@ float CL_KeyState(kbutton_t* key)
 //==========================================================================
 
 cvar_t cl_upspeed = {"cl_upspeed","200"};
-cvar_t cl_forwardspeed = {"cl_forwardspeed","200",true};
-cvar_t cl_backspeed = {"cl_backspeed","200", true};
+cvar_t cl_forwardspeed = {"cl_forwardspeed","200", qtrue};
+cvar_t cl_backspeed = {"cl_backspeed","200", qtrue};
 cvar_t cl_sidespeed = {"cl_sidespeed","350"};
 
 cvar_t cl_movespeedkey = {"cl_movespeedkey","2.0"};
@@ -204,7 +201,7 @@ CL_AdjustAngles
 Moves the local angle positions
 ================
 */
-void CL_AdjustAngles()
+void CL_AdjustAngles(void)
 {
 	float speed;
 
@@ -235,12 +232,10 @@ void CL_AdjustAngles()
 	if (up || down)
 		V_StopPitchDrift();
 
-	//johnfitz -- variable pitch clamping
-	if (cl.viewangles[PITCH] > cl_maxpitch.value)
-		cl.viewangles[PITCH] = cl_maxpitch.value;
-	if (cl.viewangles[PITCH] < cl_minpitch.value)
-		cl.viewangles[PITCH] = cl_minpitch.value;
-	//johnfitz
+	if (cl.viewangles[PITCH] > 80)
+		cl.viewangles[PITCH] = 80;
+	if (cl.viewangles[PITCH] < -70)
+		cl.viewangles[PITCH] = -70;
 
 	if (cl.viewangles[ROLL] > 50)
 		cl.viewangles[ROLL] = 50;
@@ -318,12 +313,7 @@ void CL_SendMove(usercmd_t* cmd)
 	MSG_WriteFloat(&buf, cl.mtime[0]); // so server can get ping times
 
 	for (auto i = 0; i < 3; i++)
-	//johnfitz -- 16-bit angles for PROTOCOL_FITZQUAKE
-		if (cl.protocol == PROTOCOL_NETQUAKE)
-			MSG_WriteAngle(&buf, cl.viewangles[i]);
-		else
-			MSG_WriteAngle16(&buf, cl.viewangles[i]);
-	//johnfitz
+		MSG_WriteAngle(&buf, cl.viewangles[i]);
 
 	MSG_WriteShort(&buf, cmd->forwardmove);
 	MSG_WriteShort(&buf, cmd->sidemove);
@@ -372,7 +362,7 @@ void CL_SendMove(usercmd_t* cmd)
 CL_InitInput
 ============
 */
-void CL_InitInput()
+void CL_InitInput(void)
 {
 	Cmd_AddCommand("+moveup", IN_UpDown);
 	Cmd_AddCommand("-moveup", IN_UpUp);

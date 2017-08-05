@@ -53,22 +53,18 @@ struct mplane_t
 	byte pad[2];
 };
 
-struct gltexture_t;
 struct msurface_t;
 
 struct texture_t
 {
 	char name[16];
 	unsigned width, height;
-	gltexture_t* gltexture; //johnfitz -- pointer to gltexture
-	gltexture_t* fullbright; //johnfitz -- fullbright mask texture
-	gltexture_t* warpimage; //johnfitz -- for water animation
-	bool update_warp; //johnfitz -- update warp this frame
-	msurface_t* texturechain; // for texture chains
+	int gl_texturenum;
+	msurface_t* texturechain; // for gl_texsort drawing
 	int anim_total; // total tenths in sequence ( 0 = no)
 	int anim_min, anim_max; // time for this frame min <=time< max
-	texture_t* anim_next; // in the animation sequence
-	texture_t* alternate_anims; // bmodels in frmae 1 use these
+	msurface_t* anim_next; // in the animation sequence
+	msurface_t* alternate_anims; // bmodels in frmae 1 use these
 	unsigned offsets[MIPLEVELS]; // four mip maps stored
 };
 
@@ -80,7 +76,6 @@ struct texture_t
 #define SURF_DRAWTILED		0x20
 #define SURF_DRAWBACKGROUND	0x40
 #define SURF_UNDERWATER		0x80
-#define SURF_NOTEXTURE		0x100 //johnfitz
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 struct medge_t
@@ -104,15 +99,13 @@ struct glpoly_t
 	glpoly_t* next;
 	glpoly_t* chain;
 	int numverts;
+	int flags; // for SURF_UNDERWATER
 	float verts[4][VERTEXSIZE]; // variable sized (xyz s1t1 s2t2)
 };
 
 struct msurface_t
 {
 	int visframe; // should be drawn when node is crossed
-	bool culled; // johnfitz -- for frustum culling
-	float mins[3]; // johnfitz -- for frustum culling
-	float maxs[3]; // johnfitz -- for frustum culling
 
 	mplane_t* plane;
 	int flags;
@@ -137,7 +130,7 @@ struct msurface_t
 	int lightmaptexturenum;
 	byte styles[MAXLIGHTMAPS];
 	int cached_light[MAXLIGHTMAPS]; // values currently used in lightmap
-	bool cached_dlight; // true if dynamic light in cache
+	qboolean cached_dlight; // qtrue if dynamic light in cache
 	byte* samples; // [numstyles*surfsize]
 };
 
@@ -180,19 +173,10 @@ struct mleaf_t
 	byte ambient_sound_level[NUM_AMBIENTS];
 };
 
-//johnfitz -- for clipnodes>32k
-struct mclipnode_t
-{
-	int planenum;
-	int children[2]; // negative numbers are contents
-};
-
-//johnfitz
-
 // !!! if this is changed, it must be changed in asm_i386.h too !!!
 struct hull_t
 {
-	mclipnode_t* clipnodes; //johnfitz -- was dclipnode_t
+	dclipnode_t* clipnodes;
 	mplane_t* planes;
 	int firstclipnode;
 	int lastclipnode;
@@ -212,10 +196,10 @@ SPRITE MODELS
 // FIXME: shorten these?
 struct mspriteframe_t
 {
-	int width, height;
+	int width;
+	int height;
 	float up, down, left, right;
-	float smax, tmax; //johnfitz -- image might be padded
-	gltexture_t* gltexture;
+	int gl_texturenum;
 };
 
 struct mspritegroup_t
@@ -309,13 +293,12 @@ struct aliashdr_t
 	int poseverts;
 	int posedata; // numposes*poseverts trivert_t
 	int commands; // gl command list with embedded s/t
-	gltexture_t* gltextures[MAX_SKINS][4]; //johnfitz
-	gltexture_t* fbtextures[MAX_SKINS][4]; //johnfitz
+	int gl_texturenum[MAX_SKINS][4];
 	int texels[MAX_SKINS]; // only for player skins
 	maliasframedesc_t frames[1]; // variable sized
 };
 
-#define	MAXALIASVERTS	2000 //johnfitz -- was 1024
+#define	MAXALIASVERTS	1024
 #define	MAXALIASFRAMES	256
 #define	MAXALIASTRIS	2048
 extern aliashdr_t* pheader;
@@ -345,17 +328,10 @@ enum class modtype_t
 #define	EF_TRACER2	64			// orange split trail + rotate
 #define	EF_TRACER3	128			// purple trail
 
-//johnfitz -- extra flags for rendering
-#define	MOD_NOLERP		256		//don't lerp when animating
-#define	MOD_NOSHADOW	512		//don't cast a shadow
-#define	MOD_FBRIGHTHACK	1024	//when fullbrights are disabled, use a hack to render this model brighter
-
-//johnfitz
-
 struct model_t
 {
 	char name[MAX_QPATH];
-	bool needload; // bmodels and sprites don't cache normally
+	qboolean needload; // bmodels and sprites don't cache normally
 
 	modtype_t type;
 	int numframes;
@@ -365,16 +341,14 @@ struct model_t
 
 	//
 	// volume occupied by the model graphics
-	//
+	//		
 	vec3_t mins, maxs;
-	vec3_t ymins, ymaxs; //johnfitz -- bounds for entities with nonzero yaw
-	vec3_t rmins, rmaxs; //johnfitz -- bounds for entities with nonzero pitch or roll
-	//johnfitz -- removed float radius;
+	float radius;
 
 	//
-	// solid volume for clipping
+	// solid volume for clipping 
 	//
-	bool clipbox;
+	qboolean clipbox;
 	vec3_t clipmins, clipmaxs;
 
 	//
@@ -410,7 +384,7 @@ struct model_t
 	int* surfedges;
 
 	int numclipnodes;
-	mclipnode_t* clipnodes; //johnfitz -- was dclipnode_t
+	dclipnode_t* clipnodes;
 
 	int nummarksurfaces;
 	msurface_t** marksurfaces;
@@ -432,9 +406,9 @@ struct model_t
 
 //============================================================================
 
-void Mod_Init();
-void Mod_ClearAll();
-model_t* Mod_ForName(char* name, bool crash);
+void Mod_Init(void);
+void Mod_ClearAll(void);
+model_t* Mod_ForName(char* name, qboolean crash);
 void* Mod_Extradata(model_t* mod); // handles caching
 void Mod_TouchModel(char* name);
 

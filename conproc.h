@@ -13,4 +13,4 @@
 // Param1 : Number of lines
 
 void InitConProc(HANDLE hFile, HANDLE heventParent, HANDLE heventChild);
-void DeinitConProc();
+void DeinitConProc(void);

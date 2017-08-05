@@ -17,6 +17,8 @@
 #define TRANSPARENT_COLOR	255
 
 #ifndef NeXT
+
+
 .
 extern C (snd_scaletable)
 .
@@ -37,4 +39,5 @@ extern C (vup)
 extern C (vpn)
 .
 extern C (BOPS_Error)
+
 #endif

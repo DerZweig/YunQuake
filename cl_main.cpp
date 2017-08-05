@@ -4,40 +4,33 @@
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-cvar_t cl_name = {"_cl_name", "player", true};
-cvar_t cl_color = {"_cl_color", "0", true};
+cvar_t cl_name = {"_cl_name", "player", qtrue};
+cvar_t cl_color = {"_cl_color", "0", qtrue};
 
 cvar_t cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
 cvar_t cl_nolerp = {"cl_nolerp","0"};
 
-cvar_t lookspring = {"lookspring","0", true};
-cvar_t lookstrafe = {"lookstrafe","0", true};
-cvar_t sensitivity = {"sensitivity","3", true};
+cvar_t lookspring = {"lookspring","0", qtrue};
+cvar_t lookstrafe = {"lookstrafe","0", qtrue};
+cvar_t sensitivity = {"sensitivity","3", qtrue};
 
-cvar_t m_pitch = {"m_pitch","0.022", true};
-cvar_t m_yaw = {"m_yaw","0.022", true};
-cvar_t m_forward = {"m_forward","1", true};
-cvar_t m_side = {"m_side","0.8", true};
+cvar_t m_pitch = {"m_pitch","0.022", qtrue};
+cvar_t m_yaw = {"m_yaw","0.022", qtrue};
+cvar_t m_forward = {"m_forward","1", qtrue};
+cvar_t m_side = {"m_side","0.8", qtrue};
 
-cvar_t cl_maxpitch = {"cl_maxpitch", "90", true}; //johnfitz -- variable pitch clamping
-cvar_t cl_minpitch = {"cl_minpitch", "-90", true}; //johnfitz -- variable pitch clamping
 
 client_static_t cls;
 client_state_t cl;
 // FIXME: put these on hunk?
 efrag_t cl_efrags[MAX_EFRAGS];
+entity_t cl_entities[MAX_EDICTS];
 entity_t cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t cl_dlights[MAX_DLIGHTS];
 
-entity_t* cl_entities; //johnfitz -- was a static array, now on hunk
-int cl_max_edicts; //johnfitz -- only changes when new map loads
-
 int cl_numvisedicts;
 entity_t* cl_visedicts[MAX_VISEDICTS];
-
-extern cvar_t r_lerpmodels, r_lerpmove; //johnfitz
-devstats_t dev_stats, dev_peakstats;
 
 /*
 =====================
@@ -45,7 +38,7 @@ CL_ClearState
 
 =====================
 */
-void CL_ClearState()
+void CL_ClearState(void)
 {
 	int i;
 
@@ -57,17 +50,13 @@ void CL_ClearState()
 
 	SZ_Clear(&cls.message);
 
-	// clear other arrays
+	// clear other arrays	
 	memset(cl_efrags, 0, sizeof cl_efrags);
+	memset(cl_entities, 0, sizeof cl_entities);
 	memset(cl_dlights, 0, sizeof cl_dlights);
 	memset(cl_lightstyle, 0, sizeof cl_lightstyle);
 	memset(cl_temp_entities, 0, sizeof cl_temp_entities);
 	memset(cl_beams, 0, sizeof cl_beams);
-
-	//johnfitz -- cl_entities is now dynamically allocated
-	cl_max_edicts = CLAMP (MIN_EDICTS,(int)max_edicts.value,MAX_EDICTS);
-	cl_entities = reinterpret_cast<entity_t*>(Hunk_AllocName(cl_max_edicts * sizeof(entity_t), "cl_entities"));
-	//johnfitz
 
 	//
 	// allocate the efrags and chain together into a free list
@@ -86,10 +75,13 @@ Sends a disconnect message to the server
 This is also called on Host_Error, so it shouldn't cause any errors
 =====================
 */
-void CL_Disconnect()
+void CL_Disconnect(void)
 {
 	// stop sounds (especially looping!)
-	S_StopAllSounds(true);
+	S_StopAllSounds(qtrue);
+
+	// bring the console down and fade the colors back to normal
+	//	SCR_BringDownConsole ();
 
 	// if running a local server, shut it down
 	if (cls.demoplayback)
@@ -108,18 +100,18 @@ void CL_Disconnect()
 
 		cls.state = cactive_t::ca_disconnected;
 		if (sv.active)
-			Host_ShutdownServer(false);
+			Host_ShutdownServer(qfalse);
 	}
 
-	cls.demoplayback = cls.timedemo = false;
+	cls.demoplayback = cls.timedemo = qfalse;
 	cls.signon = 0;
 }
 
-void CL_Disconnect_f()
+void CL_Disconnect_f(void)
 {
 	CL_Disconnect();
 	if (sv.active)
-		Host_ShutdownServer(false);
+		Host_ShutdownServer(qfalse);
 }
 
 
@@ -157,7 +149,7 @@ CL_SignonReply
 An svc_signonnum has been received, perform a client side setup
 =====================
 */
-void CL_SignonReply()
+void CL_SignonReply(void)
 {
 	char str[8192];
 
@@ -202,7 +194,7 @@ CL_NextDemo
 Called to play the next demo in the demo loop
 =====================
 */
-void CL_NextDemo()
+void CL_NextDemo(void)
 {
 	char str[1024];
 
@@ -232,7 +224,7 @@ void CL_NextDemo()
 CL_PrintEntities_f
 ==============
 */
-void CL_PrintEntities_f()
+void CL_PrintEntities_f(void)
 {
 	entity_t* ent;
 	int i;
@@ -245,12 +237,53 @@ void CL_PrintEntities_f()
 			Con_Printf("EMPTY\n");
 			continue;
 		}
-		Con_Printf("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n"
-		           , ent->model->name, ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
+		Con_Printf("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n", ent->model->name, ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
 	}
 }
 
-//johnfitz -- deleted SetPal()
+
+/*
+===============
+SetPal
+
+Debugging tool, just flashes the screen
+===============
+*/
+void SetPal(int i)
+{
+#if 0
+	static int old;
+	byte	pal[768];
+	int		c;
+	
+	if (i == old)
+		return;
+	old = i;
+
+	if (i==0)
+		VID_SetPalette (host_basepal);
+	else if (i==1)
+	{
+		for (c=0 ; c<768 ; c+=3)
+		{
+			pal[c] = 0;
+			pal[c+1] = 255;
+			pal[c+2] = 0;
+		}
+		VID_SetPalette (pal);
+	}
+	else
+	{
+		for (c=0 ; c<768 ; c+=3)
+		{
+			pal[c] = 0;
+			pal[c+1] = 0;
+			pal[c+2] = 255;
+		}
+		VID_SetPalette (pal);
+	}
+#endif
+}
 
 /*
 ===============
@@ -273,7 +306,6 @@ dlight_t* CL_AllocDlight(int key)
 			{
 				memset(dl, 0, sizeof*dl);
 				dl->key = key;
-				dl->color[0] = dl->color[1] = dl->color[2] = 1; //johnfitz -- lit support via lordhavoc
 				return dl;
 			}
 		}
@@ -287,7 +319,6 @@ dlight_t* CL_AllocDlight(int key)
 		{
 			memset(dl, 0, sizeof*dl);
 			dl->key = key;
-			dl->color[0] = dl->color[1] = dl->color[2] = 1; //johnfitz -- lit support via lordhavoc
 			return dl;
 		}
 	}
@@ -295,7 +326,6 @@ dlight_t* CL_AllocDlight(int key)
 	dl = &cl_dlights[0];
 	memset(dl, 0, sizeof*dl);
 	dl->key = key;
-	dl->color[0] = dl->color[1] = dl->color[2] = 1; //johnfitz -- lit support via lordhavoc
 	return dl;
 }
 
@@ -306,7 +336,7 @@ CL_DecayLights
 
 ===============
 */
-void CL_DecayLights()
+void CL_DecayLights(void)
 {
 	float time = cl.time - cl.oldtime;
 
@@ -331,51 +361,56 @@ Determines the fraction between the last two messages that the objects
 should be put at.
 ===============
 */
-float CL_LerpPoint()
+float CL_LerpPoint(void)
 {
 	float f = cl.mtime[0] - cl.mtime[1];
 
-	if (!f || cls.timedemo || sv.active)
+	if (!f || cl_nolerp.value || cls.timedemo || sv.active)
 	{
 		cl.time = cl.mtime[0];
 		return 1;
 	}
 
-	if (f > 0.1) // dropped packet, or start of demo
-	{
+	if (f > 0.1)
+	{ // dropped packet, or start of demo
 		cl.mtime[1] = cl.mtime[0] - 0.1;
 		f = 0.1;
 	}
-
 	float frac = (cl.time - cl.mtime[1]) / f;
-
+	//Con_Printf ("frac: %f\n",frac);
 	if (frac < 0)
 	{
 		if (frac < -0.01)
+		{
+			SetPal(1);
 			cl.time = cl.mtime[1];
+			//				Con_Printf ("low frac\n");
+		}
 		frac = 0;
 	}
 	else if (frac > 1)
 	{
 		if (frac > 1.01)
+		{
+			SetPal(2);
 			cl.time = cl.mtime[0];
+			//				Con_Printf ("high frac\n");
+		}
 		frac = 1;
 	}
-
-	//johnfitz -- better nolerp behavior
-	if (cl_nolerp.value)
-		return 1;
-	//johnfitz
+	else
+		SetPal(0);
 
 	return frac;
 }
+
 
 /*
 ===============
 CL_RelinkEntities
 ===============
 */
-void CL_RelinkEntities()
+void CL_RelinkEntities(void)
 {
 	entity_t* ent;
 	int i, j;
@@ -384,7 +419,7 @@ void CL_RelinkEntities()
 	vec3_t oldorg;
 	dlight_t* dl;
 
-	// determine partial update time
+	// determine partial update time	
 	auto frac = CL_LerpPoint();
 
 	cl_numvisedicts = 0;
@@ -398,7 +433,7 @@ void CL_RelinkEntities()
 
 	if (cls.demoplayback)
 	{
-		// interpolate the angles
+		// interpolate the angles	
 		for (j = 0; j < 3; j++)
 		{
 			d = cl.mviewangles[0][j] - cl.mviewangles[1][j];
@@ -426,7 +461,6 @@ void CL_RelinkEntities()
 		if (ent->msgtime != cl.mtime[0])
 		{
 			ent->model = nullptr;
-			ent->lerpflags |= LERP_RESETMOVE | LERP_RESETANIM; //johnfitz -- next time this entity slot is reused, the lerp will need to be reset
 			continue;
 		}
 
@@ -440,21 +474,13 @@ void CL_RelinkEntities()
 		}
 		else
 		{ // if the delta is large, assume a teleport and don't lerp
-			float f = frac;
+			auto f = frac;
 			for (j = 0; j < 3; j++)
 			{
 				delta[j] = ent->msg_origins[0][j] - ent->msg_origins[1][j];
 				if (delta[j] > 100 || delta[j] < -100)
-				{
 					f = 1; // assume a teleportation, not a motion
-					ent->lerpflags |= LERP_RESETMOVE; //johnfitz -- don't lerp teleports
-				}
 			}
-
-			//johnfitz -- don't cl_lerp entities that will be r_lerped
-			if (r_lerpmove.value && ent->lerpflags & LERP_MOVESTEP)
-				f = 1;
-			//johnfitz
 
 			// interpolate the origin and angles
 			for (j = 0; j < 3; j++)
@@ -476,7 +502,6 @@ void CL_RelinkEntities()
 
 		if (ent->effects & EF_BRIGHTFIELD)
 			R_EntityParticles(ent);
-
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
 			vec3_t fv, rv, uv;
@@ -490,16 +515,6 @@ void CL_RelinkEntities()
 			dl->radius = 200 + (rand() & 31);
 			dl->minlight = 32;
 			dl->die = cl.time + 0.1;
-
-			//johnfitz -- assume muzzle flash accompanied by muzzle flare, which looks bad when lerped
-			if (r_lerpmodels.value != 2)
-			{
-				if (ent == &cl_entities[cl.viewentity])
-					cl.viewent.lerpflags |= LERP_RESETANIM | LERP_RESETANIM2; //no lerping for two frames
-				else
-					ent->lerpflags |= LERP_RESETANIM | LERP_RESETANIM2; //no lerping for two frames
-			}
-			//johnfitz
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
 		{
@@ -538,7 +553,7 @@ void CL_RelinkEntities()
 		else if (ent->model->flags & EF_TRACER3)
 			R_RocketTrail(oldorg, ent->origin, 6);
 
-		ent->forcelink = false;
+		ent->forcelink = qfalse;
 
 		if (i == cl.viewentity && !chase_active.value)
 			continue;
@@ -559,16 +574,9 @@ CL_ReadFromServer
 Read all incoming data from the server
 ===============
 */
-int CL_ReadFromServer()
+int CL_ReadFromServer(void)
 {
 	int ret;
-	extern int num_temp_entities; //johnfitz
-	auto num_beams = 0; //johnfitz
-	auto num_dlights = 0; //johnfitz
-	beam_t* b; //johnfitz
-	dlight_t* l; //johnfitz
-	int i; //johnfitz
-
 
 	cl.oldtime = cl.time;
 	cl.time += host_frametime;
@@ -592,40 +600,6 @@ int CL_ReadFromServer()
 	CL_RelinkEntities();
 	CL_UpdateTEnts();
 
-	//johnfitz -- devstats
-
-	//visedicts
-	if (cl_numvisedicts > 256 && dev_peakstats.visedicts <= 256)
-		Con_Warning("%i visedicts exceeds standard limit of 256.\n", cl_numvisedicts);
-	dev_stats.visedicts = cl_numvisedicts;
-	dev_peakstats.visedicts = max(cl_numvisedicts, dev_peakstats.visedicts);
-
-	//temp entities
-	if (num_temp_entities > 64 && dev_peakstats.tempents <= 64)
-		Con_Warning("%i tempentities exceeds standard limit of 64.\n", num_temp_entities);
-	dev_stats.tempents = num_temp_entities;
-	dev_peakstats.tempents = max(num_temp_entities, dev_peakstats.tempents);
-
-	//beams
-	for (i = 0 , b = cl_beams; i < MAX_BEAMS; i++ , b++)
-		if (b->model && b->endtime >= cl.time)
-			num_beams++;
-	if (num_beams > 24 && dev_peakstats.beams <= 24)
-		Con_Warning("%i beams exceeded standard limit of 24.\n", num_beams);
-	dev_stats.beams = num_beams;
-	dev_peakstats.beams = max(num_beams, dev_peakstats.beams);
-
-	//dlights
-	for (i = 0 , l = cl_dlights; i < MAX_DLIGHTS; i++ , l++)
-		if (l->die >= cl.time && l->radius)
-			num_dlights++;
-	if (num_dlights > 32 && dev_peakstats.dlights <= 32)
-		Con_Warning("%i dlights exceeded standard limit of 32.\n", num_dlights);
-	dev_stats.dlights = num_dlights;
-	dev_peakstats.dlights = max(num_dlights, dev_peakstats.dlights);
-
-	//johnfitz
-
 	//
 	// bring the links up to date
 	//
@@ -637,7 +611,7 @@ int CL_ReadFromServer()
 CL_SendCmd
 =================
 */
-void CL_SendCmd()
+void CL_SendCmd(void)
 {
 	usercmd_t cmd;
 
@@ -679,81 +653,42 @@ void CL_SendCmd()
 }
 
 /*
-=============
-CL_Tracepos_f -- johnfitz
-
-display impact point of trace along VPN
-=============
-*/
-
-void TraceLine(vec3_t start, vec3_t end, vec3_t impact);
-
-void CL_Tracepos_f()
-{
-	vec3_t v, w;
-
-	VectorScale(vpn, 8192.0, v);
-	TraceLine(r_refdef.vieworg, v, w);
-
-	if (Length(w) == 0)
-		Con_Printf("Tracepos: trace didn't hit anything\n");
-	else
-		Con_Printf("Tracepos: (%i %i %i)\n", static_cast<int>(w[0]), static_cast<int>(w[1]), static_cast<int>(w[2]));
-}
-
-/*
-=============
-CL_Viewpos_f -- johnfitz
-
-display client's position and angles
-=============
-*/
-void CL_Viewpos_f()
-{
-	Con_Printf("Viewpos: (%i %i %i) %i %i %i\n",
-	           static_cast<int>(cl_entities[cl.viewentity].origin[0]),
-	           static_cast<int>(cl_entities[cl.viewentity].origin[1]),
-	           static_cast<int>(cl_entities[cl.viewentity].origin[2]),
-	           static_cast<int>(cl.viewangles[PITCH]),
-	           static_cast<int>(cl.viewangles[YAW]),
-	           static_cast<int>(cl.viewangles[ROLL]));
-}
-
-/*
 =================
 CL_Init
 =================
 */
-void CL_Init()
+void CL_Init(void)
 {
 	SZ_Alloc(&cls.message, 1024);
 
 	CL_InitInput();
 	CL_InitTEnts();
 
-	Cvar_RegisterVariable(&cl_name, nullptr);
-	Cvar_RegisterVariable(&cl_color, nullptr);
-	Cvar_RegisterVariable(&cl_upspeed, nullptr);
-	Cvar_RegisterVariable(&cl_forwardspeed, nullptr);
-	Cvar_RegisterVariable(&cl_backspeed, nullptr);
-	Cvar_RegisterVariable(&cl_sidespeed, nullptr);
-	Cvar_RegisterVariable(&cl_movespeedkey, nullptr);
-	Cvar_RegisterVariable(&cl_yawspeed, nullptr);
-	Cvar_RegisterVariable(&cl_pitchspeed, nullptr);
-	Cvar_RegisterVariable(&cl_anglespeedkey, nullptr);
-	Cvar_RegisterVariable(&cl_shownet, nullptr);
-	Cvar_RegisterVariable(&cl_nolerp, nullptr);
-	Cvar_RegisterVariable(&lookspring, nullptr);
-	Cvar_RegisterVariable(&lookstrafe, nullptr);
-	Cvar_RegisterVariable(&sensitivity, nullptr);
+	//
+	// register our commands
+	//
+	Cvar_RegisterVariable(&cl_name);
+	Cvar_RegisterVariable(&cl_color);
+	Cvar_RegisterVariable(&cl_upspeed);
+	Cvar_RegisterVariable(&cl_forwardspeed);
+	Cvar_RegisterVariable(&cl_backspeed);
+	Cvar_RegisterVariable(&cl_sidespeed);
+	Cvar_RegisterVariable(&cl_movespeedkey);
+	Cvar_RegisterVariable(&cl_yawspeed);
+	Cvar_RegisterVariable(&cl_pitchspeed);
+	Cvar_RegisterVariable(&cl_anglespeedkey);
+	Cvar_RegisterVariable(&cl_shownet);
+	Cvar_RegisterVariable(&cl_nolerp);
+	Cvar_RegisterVariable(&lookspring);
+	Cvar_RegisterVariable(&lookstrafe);
+	Cvar_RegisterVariable(&sensitivity);
 
-	Cvar_RegisterVariable(&m_pitch, nullptr);
-	Cvar_RegisterVariable(&m_yaw, nullptr);
-	Cvar_RegisterVariable(&m_forward, nullptr);
-	Cvar_RegisterVariable(&m_side, nullptr);
+	Cvar_RegisterVariable(&m_pitch);
+	Cvar_RegisterVariable(&m_yaw);
+	Cvar_RegisterVariable(&m_forward);
+	Cvar_RegisterVariable(&m_side);
 
-	Cvar_RegisterVariable(&cl_maxpitch, nullptr); //johnfitz -- variable pitch clamping
-	Cvar_RegisterVariable(&cl_minpitch, nullptr); //johnfitz -- variable pitch clamping
+	//	Cvar_RegisterVariable (&cl_autofire);
 
 	Cmd_AddCommand("entities", CL_PrintEntities_f);
 	Cmd_AddCommand("disconnect", CL_Disconnect_f);
@@ -761,7 +696,4 @@ void CL_Init()
 	Cmd_AddCommand("stop", CL_Stop_f);
 	Cmd_AddCommand("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand("timedemo", CL_TimeDemo_f);
-
-	Cmd_AddCommand("tracepos", CL_Tracepos_f); //johnfitz
-	Cmd_AddCommand("viewpos", CL_Viewpos_f); //johnfitz
 }

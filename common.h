@@ -1,14 +1,23 @@
 #pragma once
-#include "cvar.h"
+#if !defined BYTE_DEFINED
+struct cache_user_t;
 using byte = uint8_t;
+#define BYTE_DEFINED 1
+#endif
 
+#undef true
+#undef false
+
+using qboolean = uint32_t;
+static constexpr qboolean qfalse = 0u;
+static constexpr qboolean qtrue = 1u;
 
 //============================================================================
 
 struct sizebuf_t
 {
-	bool allowoverflow; // if false, do a Sys_Error
-	bool overflowed; // set to true if the buffer size failed
+	qboolean allowoverflow; // if qfalse, do a Sys_Error
+	qboolean overflowed; // set to qtrue if the buffer size failed
 	byte* data;
 	int maxsize;
 	int cursize;
@@ -56,7 +65,7 @@ void InsertLinkAfter(link_t* l, link_t* after);
 
 //============================================================================
 
-extern bool bigendien;
+extern qboolean bigendien;
 
 extern short (*BigShort)(short l);
 extern short (*LittleShort)(short l);
@@ -75,22 +84,20 @@ void MSG_WriteFloat(sizebuf_t* sb, float f);
 void MSG_WriteString(sizebuf_t* sb, char* s);
 void MSG_WriteCoord(sizebuf_t* sb, float f);
 void MSG_WriteAngle(sizebuf_t* sb, float f);
-void MSG_WriteAngle16(sizebuf_t* sb, float f); //johnfitz
 
 extern int msg_readcount;
-extern bool msg_badread; // set if a read goes beyond end of message
+extern qboolean msg_badread; // set if a read goes beyond end of message
 
-void MSG_BeginReading();
-int MSG_ReadChar();
-int MSG_ReadByte();
-int MSG_ReadShort();
-int MSG_ReadLong();
-float MSG_ReadFloat();
-char* MSG_ReadString();
+void MSG_BeginReading(void);
+int MSG_ReadChar(void);
+int MSG_ReadByte(void);
+int MSG_ReadShort(void);
+int MSG_ReadLong(void);
+float MSG_ReadFloat(void);
+char* MSG_ReadString(void);
 
-float MSG_ReadCoord();
-float MSG_ReadAngle();
-float MSG_ReadAngle16(); //johnfitz
+float MSG_ReadCoord(void);
+float MSG_ReadAngle(void);
 
 //============================================================================
 
@@ -112,7 +119,7 @@ float Q_atof(char* str);
 //============================================================================
 
 extern char com_token[1024];
-extern bool com_eof;
+extern qboolean com_eof;
 
 char* COM_Parse(char* data);
 
@@ -121,7 +128,7 @@ extern int com_argc;
 extern char** com_argv;
 
 int COM_CheckParm(char* parm);
-void COM_Init();
+void COM_Init(char* path);
 void COM_InitArgv(int argc, char** argv);
 
 char* COM_SkipPath(char* pathname);
@@ -136,8 +143,7 @@ char* va(char* format, ...);
 //============================================================================
 
 extern int com_filesize;
-
-struct cache_user_t;
+struct cache_user_s;
 
 extern char com_gamedir[MAX_OSPATH];
 
@@ -152,6 +158,6 @@ byte* COM_LoadHunkFile(char* path);
 void COM_LoadCacheFile(char* path, cache_user_t* cu);
 
 
-extern cvar_t registered;
+extern struct cvar_s registered;
 
-extern bool standard_quake, rogue, hipnotic;
+extern qboolean standard_quake, rogue, hipnotic;

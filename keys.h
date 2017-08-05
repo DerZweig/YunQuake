@@ -34,26 +34,6 @@
 #define	K_HOME			151
 #define	K_END			152
 
-//johnfitz -- keypad
-#define	KP_NUMLOCK		153
-#define	KP_SLASH		154
-#define	KP_STAR			155
-#define	KP_MINUS		156
-#define	KP_HOME			157
-#define	KP_UPARROW		158
-#define	KP_PGUP			159
-#define	KP_PLUS			160
-#define	KP_LEFTARROW	161
-#define	KP_5			162
-#define	KP_RIGHTARROW	163
-#define	KP_END			164
-#define	KP_DOWNARROW	165
-#define	KP_PGDN			166
-#define	KP_ENTER		167
-#define	KP_INS			168
-#define	KP_DEL			169
-//johnfitz
-
 #define K_PAUSE			255
 
 //
@@ -128,8 +108,8 @@ extern int key_repeats[256];
 extern int key_count; // incremented every key event
 extern int key_lastpress;
 
-void Key_Event(int key, bool down);
-void Key_Init();
+void Key_Event(int key, qboolean down);
+void Key_Init(void);
 void Key_WriteBindings(FILE* f);
 void Key_SetBinding(int keynum, char* binding);
-void Key_ClearStates();
+void Key_ClearStates(void);

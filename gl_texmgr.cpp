@@ -100,40 +100,41 @@ void TexMgr_TextureMode_f()
 		Con_Printf("\"gl_texturemode\" is \"%s\"\n", modes[gl_texturemode].name);
 		break;
 	case 2:
-		auto arg = Cmd_Argv(1);
-		if (arg[0] == 'G' || arg[0] == 'g')
 		{
-			for (i = 0; i < NUM_GLMODES; i++)
-				if (!stricmp(modes[i].name, arg))
-				{
-					gl_texturemode = i;
-					goto stuff;
-				}
-			Con_Printf("\"%s\" is not a valid texturemode\n", arg);
-			return;
-		}
-
-		if (arg[0] >= '0' && arg[0] <= '9')
-		{
-			i = atoi(arg);
-			if (i > NUM_GLMODES || i < 1)
+			auto arg = Cmd_Argv(1);
+			if (arg[0] == 'G' || arg[0] == 'g')
 			{
+				for (i = 0; i < NUM_GLMODES; i++)
+					if (!stricmp(modes[i].name, arg))
+					{
+						gl_texturemode = i;
+						goto stuff;
+					}
 				Con_Printf("\"%s\" is not a valid texturemode\n", arg);
 				return;
 			}
-			gl_texturemode = i - 1;
+
+			if (arg[0] >= '0' && arg[0] <= '9')
+			{
+				i = atoi(arg);
+				if (i > NUM_GLMODES || i < 1)
+				{
+					Con_Printf("\"%s\" is not a valid texturemode\n", arg);
+					return;
+				}
+				gl_texturemode = i - 1;
+			}
+			else
+				Con_Printf("\"%s\" is not a valid texturemode\n", arg);
+
+		stuff:
+			for (gltexture_t* glt = active_gltextures; glt; glt = glt->next)
+				TexMgr_SetFilterModes(glt);
+
+			Sbar_Changed(); //sbar graphics need to be redrawn with new filter mode
+
+			//FIXME: warpimages need to be redrawn, too.
 		}
-		else
-			Con_Printf("\"%s\" is not a valid texturemode\n", arg);
-
-	stuff:
-		for (gltexture_t* glt = active_gltextures; glt; glt = glt->next)
-			TexMgr_SetFilterModes(glt);
-
-		Sbar_Changed(); //sbar graphics need to be redrawn with new filter mode
-
-		//FIXME: warpimages need to be redrawn, too.
-
 		break;
 	default:
 		Con_SafePrintf("usage: gl_texturemode <mode>\n");

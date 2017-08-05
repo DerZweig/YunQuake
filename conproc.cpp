@@ -101,12 +101,7 @@ DWORD RequestProc(DWORD dwNichts)
 			break;
 
 		case CCOM_GET_TEXT:
-			// Param1 : Begin line
-			// Param2 : End line
-			int iBeginLine = pBuffer[1];
-			int iEndLine = pBuffer[2];
-			pBuffer[0] = ReadText(reinterpret_cast<LPTSTR>(pBuffer + 1), iBeginLine,
-			                      iEndLine);
+			pBuffer[0] = ReadText(reinterpret_cast<LPTSTR>(pBuffer + 1), pBuffer[1],  pBuffer[2]);
 			break;
 
 		case CCOM_GET_SCR_LINES:

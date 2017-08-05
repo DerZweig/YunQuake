@@ -37,6 +37,7 @@ int cl_numvisedicts;
 entity_t* cl_visedicts[MAX_VISEDICTS];
 
 extern cvar_t r_lerpmodels, r_lerpmove; //johnfitz
+devstats_t dev_stats, dev_peakstats;
 
 /*
 =====================

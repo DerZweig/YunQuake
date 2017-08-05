@@ -1536,19 +1536,20 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
 	case WM_MOUSEMOVE:
-		auto temp = 0;
+		{
+			auto temp = 0;
 
-		if (wParam & MK_LBUTTON)
-			temp |= 1;
+			if (wParam & MK_LBUTTON)
+				temp |= 1;
 
-		if (wParam & MK_RBUTTON)
-			temp |= 2;
+			if (wParam & MK_RBUTTON)
+				temp |= 2;
 
-		if (wParam & MK_MBUTTON)
-			temp |= 4;
+			if (wParam & MK_MBUTTON)
+				temp |= 4;
 
-		IN_MouseEvent(temp);
-
+			IN_MouseEvent(temp);
+		}
 		break;
 
 		// JACK: This is the mouse wheel with the Intellimouse
@@ -1580,13 +1581,14 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_ACTIVATE:
-		int fActive = LOWORD(wParam);
-		auto fMinimized = static_cast<BOOL>(HIWORD(wParam));
-		AppActivate(!(fActive == WA_INACTIVE), fMinimized);
+		{
+			int fActive = LOWORD(wParam);
+			auto fMinimized = static_cast<BOOL>(HIWORD(wParam));
+			AppActivate(!(fActive == WA_INACTIVE), fMinimized);
 
-		// fix the leftover Alt from any Alt-Tab or the like that switched us away
-		ClearAllStates();
-
+			// fix the leftover Alt from any Alt-Tab or the like that switched us away
+			ClearAllStates();
+		}
 		break;
 
 	case WM_DESTROY:

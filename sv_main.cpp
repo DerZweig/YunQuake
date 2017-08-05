@@ -24,14 +24,16 @@ void SV_Protocol_f()
 		Con_Printf("\"sv_protocol\" is \"%i\"\n", sv_protocol);
 		break;
 	case 2:
-		auto i = atoi(Cmd_Argv(1));
-		if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE)
-			Con_Printf("sv_protocol must be %i or %i\n", PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE);
-		else
 		{
-			sv_protocol = i;
-			if (sv.active)
-				Con_Printf("changes will not take effect until the next level load.\n");
+			auto i = atoi(Cmd_Argv(1));
+			if (i != PROTOCOL_NETQUAKE && i != PROTOCOL_FITZQUAKE)
+				Con_Printf("sv_protocol must be %i or %i\n", PROTOCOL_NETQUAKE, PROTOCOL_FITZQUAKE);
+			else
+			{
+				sv_protocol = i;
+				if (sv.active)
+					Con_Printf("changes will not take effect until the next level load.\n");
+			}
 		}
 		break;
 	default:

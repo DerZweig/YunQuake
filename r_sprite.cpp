@@ -95,17 +95,19 @@ void R_DrawSpriteModel(entity_t* e)
 		s_right = v_right;
 		break;
 	case SPR_VP_PARALLEL_ORIENTED: //faces view plane, but obeys roll value
-		float angle = currententity->angles[ROLL] * M_PI_DIV_180;
-		float sr = sin(angle);
-		float cr = cos(angle);
-		v_right[0] = vright[0] * cr + vup[0] * sr;
-		v_right[1] = vright[1] * cr + vup[1] * sr;
-		v_right[2] = vright[2] * cr + vup[2] * sr;
-		v_up[0] = vright[0] * -sr + vup[0] * cr;
-		v_up[1] = vright[1] * -sr + vup[1] * cr;
-		v_up[2] = vright[2] * -sr + vup[2] * cr;
-		s_up = v_up;
-		s_right = v_right;
+		{
+			float angle = currententity->angles[ROLL] * M_PI_DIV_180;
+			auto sr = sin(angle);
+			auto cr = cos(angle);
+			v_right[0] = vright[0] * cr + vup[0] * sr;
+			v_right[1] = vright[1] * cr + vup[1] * sr;
+			v_right[2] = vright[2] * cr + vup[2] * sr;
+			v_up[0] = vright[0] * -sr + vup[0] * cr;
+			v_up[1] = vright[1] * -sr + vup[1] * cr;
+			v_up[2] = vright[2] * -sr + vup[2] * cr;
+			s_up = v_up;
+			s_right = v_right;
+		}
 		break;
 	default:
 		return;

@@ -241,7 +241,7 @@ struct devstats_t
 	int dlights;
 };
 
-devstats_t dev_stats, dev_peakstats;
+extern devstats_t dev_stats, dev_peakstats;
 
 //johnfitz
 

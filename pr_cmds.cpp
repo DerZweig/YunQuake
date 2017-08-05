@@ -1286,12 +1286,13 @@ sizebuf_t* WriteDest()
 		return &sv.datagram;
 
 	case MSG_ONE:
-		auto ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
-		auto entnum = NUM_FOR_EDICT(ent);
-		if (entnum < 1 || entnum > svs.maxclients)
-			PR_RunError("WriteDest: not a client");
-		return &svs.clients[entnum - 1].message;
-
+		{
+			auto ent = PROG_TO_EDICT(pr_global_struct->msg_entity);
+			auto entnum = NUM_FOR_EDICT(ent);
+			if (entnum < 1 || entnum > svs.maxclients)
+				PR_RunError("WriteDest: not a client");
+			return &svs.clients[entnum - 1].message;
+		}
 	case MSG_ALL:
 		return &sv.reliable_datagram;
 

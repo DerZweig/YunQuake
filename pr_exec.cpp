@@ -582,22 +582,24 @@ void PR_ExecuteProgram(func_t fnum)
 		case opcode_t::OP_CALL6:
 		case opcode_t::OP_CALL7:
 		case opcode_t::OP_CALL8:
-			pr_argc = static_cast<int>(st->op) - static_cast<int>(opcode_t::OP_CALL0);
-			if (!a->function)
-				PR_RunError("nullptr function");
+			{
+				pr_argc = static_cast<int>(st->op) - static_cast<int>(opcode_t::OP_CALL0);
+				if (!a->function)
+					PR_RunError("nullptr function");
 
-			auto newf = &pr_functions[a->function];
+				auto newf = &pr_functions[a->function];
 
-			if (newf->first_statement < 0)
-			{ // negative statements are built in functions
-				auto i = -newf->first_statement;
-				if (i >= pr_numbuiltins)
-					PR_RunError("Bad builtin call number");
-				pr_builtins[i]();
-				break;
+				if (newf->first_statement < 0)
+				{ // negative statements are built in functions
+					auto i = -newf->first_statement;
+					if (i >= pr_numbuiltins)
+						PR_RunError("Bad builtin call number");
+					pr_builtins[i]();
+					break;
+				}
+
+				s = PR_EnterFunction(newf);
 			}
-
-			s = PR_EnterFunction(newf);
 			break;
 
 		case opcode_t::OP_DONE:

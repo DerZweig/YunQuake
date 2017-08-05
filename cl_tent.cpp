@@ -221,9 +221,7 @@ void CL_ParseTEnt()
 		pos[0] = MSG_ReadCoord();
 		pos[1] = MSG_ReadCoord();
 		pos[2] = MSG_ReadCoord();
-		int colorStart = MSG_ReadByte();
-		int colorLength = MSG_ReadByte();
-		R_ParticleExplosion2(pos, colorStart, colorLength);
+		R_ParticleExplosion2(pos, MSG_ReadByte(), MSG_ReadByte());
 		dl = CL_AllocDlight(0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
@@ -234,6 +232,7 @@ void CL_ParseTEnt()
 
 	default:
 		Sys_Error("CL_ParseTEnt: bad type");
+		break;
 	}
 }
 

@@ -176,14 +176,16 @@ byte* Image_LoadTGA(FILE* fin, int* width, int* height)
 					*pixbuf++ = 255;
 					break;
 				case 32:
-					blue = getc(fin);
-					green = getc(fin);
-					red = getc(fin);
-					unsigned char alphabyte = getc(fin);
-					*pixbuf++ = red;
-					*pixbuf++ = green;
-					*pixbuf++ = blue;
-					*pixbuf++ = alphabyte;
+					{
+						blue = getc(fin);
+						green = getc(fin);
+						red = getc(fin);
+						unsigned char alphabyte = getc(fin);
+						*pixbuf++ = red;
+						*pixbuf++ = green;
+						*pixbuf++ = blue;
+						*pixbuf++ = alphabyte;
+					}
 					break;
 				default: break;
 				}

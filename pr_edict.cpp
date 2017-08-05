@@ -262,12 +262,16 @@ char* PR_ValueString(etype_t type, eval_t* val)
 		sprintf(line, "entity %i", NUM_FOR_EDICT(PROG_TO_EDICT(val->edict)));
 		break;
 	case etype_t::ev_function:
-		auto f = pr_functions + val->function;
-		sprintf(line, "%s()", pr_strings + f->s_name);
+		{
+			auto f = pr_functions + val->function;
+			sprintf(line, "%s()", pr_strings + f->s_name);
+		}
 		break;
 	case etype_t::ev_field:
-		auto def = ED_FieldAtOfs(val->_int);
-		sprintf(line, ".%s", pr_strings + def->s_name);
+		{
+			auto def = ED_FieldAtOfs(val->_int);
+			sprintf(line, ".%s", pr_strings + def->s_name);
+		}
 		break;
 	case etype_t::ev_void:
 		sprintf(line, "void");
@@ -312,12 +316,16 @@ char* PR_UglyValueString(etype_t type, eval_t* val)
 		sprintf(line, "%i", NUM_FOR_EDICT(PROG_TO_EDICT(val->edict)));
 		break;
 	case etype_t::ev_function:
-		auto f = pr_functions + val->function;
-		sprintf(line, "%s", pr_strings + f->s_name);
+		{
+			auto f = pr_functions + val->function;
+			sprintf(line, "%s", pr_strings + f->s_name);
+		}
 		break;
 	case etype_t::ev_field:
-		ddef_t* def = ED_FieldAtOfs(val->_int);
-		sprintf(line, "%s", pr_strings + def->s_name);
+		{
+			auto def = ED_FieldAtOfs(val->_int);
+			sprintf(line, "%s", pr_strings + def->s_name);
+		}
 		break;
 	case etype_t::ev_void:
 		sprintf(line, "void");
@@ -683,16 +691,18 @@ bool ED_ParseEpair(void* base, ddef_t* key, char* s)
 		break;
 
 	case etype_t::ev_vector:
-		strcpy(string, s);
-		auto v = string;
-		auto w = string;
-		for (auto i = 0; i < 3; i++)
 		{
-			while (*v && *v != ' ')
-				v++;
-			*v = 0;
-			static_cast<float *>(d)[i] = atof(w);
-			w = v = v + 1;
+			strcpy(string, s);
+			auto v = string;
+			auto w = string;
+			for (auto i = 0; i < 3; i++)
+			{
+				while (*v && *v != ' ')
+					v++;
+				*v = 0;
+				static_cast<float *>(d)[i] = atof(w);
+				w = v = v + 1;
+			}
 		}
 		break;
 
@@ -713,13 +723,15 @@ bool ED_ParseEpair(void* base, ddef_t* key, char* s)
 		break;
 
 	case etype_t::ev_function:
-		dfunction_t* func = ED_FindFunction(s);
-		if (!func)
 		{
-			Con_Printf("Can't find function %s\n", s);
-			return false;
+			auto func = ED_FindFunction(s);
+			if (!func)
+			{
+				Con_Printf("Can't find function %s\n", s);
+				return false;
+			}
+			*static_cast<func_t *>(d) = func - pr_functions;
 		}
-		*static_cast<func_t *>(d) = func - pr_functions;
 		break;
 
 	default:
@@ -961,7 +973,7 @@ void PR_LoadProgs()
 	// byte swap the lumps
 	for (i = 0; i < progs->numstatements; i++)
 	{
-		pr_statements[i].op = LittleShort(pr_statements[i].op);
+		pr_statements[i].op = static_cast<opcode_t>(LittleShort(static_cast<short>(pr_statements[i].op)));
 		pr_statements[i].a = LittleShort(pr_statements[i].a);
 		pr_statements[i].b = LittleShort(pr_statements[i].b);
 		pr_statements[i].c = LittleShort(pr_statements[i].c);

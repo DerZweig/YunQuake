@@ -687,9 +687,11 @@ void GL_SetCanvas(canvastype newcanvas)
 		glViewport(glx, gly, glwidth, glheight);
 		break;
 	case canvastype::CANVAS_CONSOLE:
-		int lines = vid.conheight - scr_con_current * vid.conheight / glheight;
-		glOrtho(0, vid.conwidth, vid.conheight + lines, lines, -99999, 99999);
-		glViewport(glx, gly, glwidth, glheight);
+		{
+			int lines = vid.conheight - scr_con_current * vid.conheight / glheight;
+			glOrtho(0, vid.conwidth, vid.conheight + lines, lines, -99999, 99999);
+			glViewport(glx, gly, glwidth, glheight);
+		}
 		break;
 	case canvastype::CANVAS_MENU:
 		s = min ((float)glwidth / 320.0, (float)glheight / 200.0);

@@ -2273,28 +2273,6 @@ extern void M_DrawCheckbox(int x, int y, int on);
 
 extern bool m_entersound;
 
-enum
-{
-	m_none,
-	m_main,
-	m_singleplayer,
-	m_load,
-	m_save,
-	m_multiplayer,
-	m_setup,
-	m_net,
-	m_options,
-	m_video,
-	m_keys,
-	m_help,
-	m_quit,
-	m_serialconfig,
-	m_modemconfig,
-	m_lanconfig,
-	m_gameoptions,
-	m_search,
-	m_slist
-} m_state;
 
 #define VIDEO_OPTIONS_ITEMS 6
 int video_cursor_table[] = {48, 56, 64, 72, 88, 96};
@@ -2750,7 +2728,7 @@ VID_Menu_f
 void VID_Menu_f()
 {
 	key_dest = keydest_t::key_menu;
-	m_state = m_video;
+	m_state = m_state_t::m_video;
 	m_entersound = true;
 
 	//set all the cvars to match the current mode when entering the menu

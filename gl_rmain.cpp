@@ -9,6 +9,7 @@ int r_visframecount; // bumped when going to a new PVS
 int r_framecount; // used for dlight push checking
 
 mplane_t frustum[4];
+bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe;
 
 //johnfitz -- rendering statistics
 int rs_brushpolys, rs_aliaspolys, rs_skypolys, rs_particles, rs_fogpolys;

@@ -1,6 +1,7 @@
 #include "quakedef.h"
 #include "winquake.h"
 
+
 extern cvar_t hostname;
 
 #define MAXHOSTNAMELEN		256
@@ -18,6 +19,22 @@ bool winsock_lib_initialized;
 
 unsigned int winsock_initialized = 0;
 WSADATA winsockdata;
+int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
+int (PASCAL FAR *pWSACleanup)();
+int (PASCAL FAR *pWSAGetLastError)();
+SOCKET(PASCAL FAR *psocket)(int af, int type, int protocol);
+int (PASCAL FAR *pioctlsocket)(SOCKET s, long cmd, u_long FAR * argp);
+int (PASCAL FAR *psetsockopt)(SOCKET s, int level, int optname, const char FAR * optval, int optlen);
+int (PASCAL FAR *precvfrom)(SOCKET s, char FAR * buf, int len, int flags, sockaddr FAR * from, int FAR * fromlen);
+int (PASCAL FAR *psendto)(SOCKET s, const char FAR * buf, int len, int flags, const sockaddr FAR * to, int tolen);
+int (PASCAL FAR *pclosesocket)(SOCKET s);
+int (PASCAL FAR *pgethostname)(char FAR * name, int namelen);
+hostent FAR * (PASCAL FAR *pgethostbyname)(const char FAR * name);
+hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr, int len, int type);
+int (PASCAL FAR *pgetsockname)(SOCKET s, sockaddr FAR * name, int FAR * namelen);
+
+
+
 
 //=============================================================================
 

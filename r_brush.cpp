@@ -24,6 +24,7 @@ int allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 // the lightmap texture data needs to be kept in
 // main memory so texsubimage can update properly
 byte lightmaps[4 * MAX_LIGHTMAPS * BLOCK_WIDTH * BLOCK_HEIGHT];
+gltexture_t* lightmap_textures[MAX_LIGHTMAPS];
 
 void R_RenderDynamicLightmaps(msurface_t* fa);
 void R_BuildLightMap(msurface_t* surf, byte* dest, int stride);

@@ -47,6 +47,8 @@ float turbsin[] =
 #define WARPCALC(s,t) ((s + turbsin[(int)((t*2)+(cl.time*(128.0/M_PI))) & 255]) * (1.0/64)) //johnfitz -- correct warp
 #define WARPCALC2(s,t) ((s + turbsin[(int)((t*0.125+cl.time)*(128.0/M_PI)) & 255]) * (1.0/64)) //johnfitz -- old warp
 
+int gl_warpimagesize;
+
 //==============================================================================
 //
 //  OLD-STYLE WATER

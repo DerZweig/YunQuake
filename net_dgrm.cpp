@@ -30,8 +30,6 @@ struct
 	byte data[MAX_DATAGRAM];
 } packetBuffer;
 
-extern int m_return_state;
-extern int m_state;
 extern bool m_return_onerror;
 extern char m_return_reason[32];
 

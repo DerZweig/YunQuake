@@ -253,18 +253,18 @@ struct overflowtimes_t
 	double beams;
 };
 
-overflowtimes_t dev_overflows; //this stores the last time overflow messages were displayed, not the last time overflows occured
+extern overflowtimes_t dev_overflows; //this stores the last time overflow messages were displayed, not the last time overflows occured
 #define CONSOLE_RESPAM_TIME 3 // seconds between repeated warning messages
 //johnfitz
 
 //johnfitz -- moved here from r_brush.c
 #define MAX_LIGHTMAPS 256 //johnfitz -- was 64
-gltexture_t* lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
+extern gltexture_t* lightmap_textures[MAX_LIGHTMAPS]; //johnfitz -- changed to an array
 //johnfitz
 
-int gl_warpimagesize; //johnfitz -- for water warp
+extern int gl_warpimagesize; //johnfitz -- for water warp
 
-bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
+extern bool r_drawflat_cheatsafe, r_fullbright_cheatsafe, r_lightmap_cheatsafe, r_drawworld_cheatsafe; //johnfitz
 
 //johnfitz -- fog functions called from outside gl_fog.c
 void Fog_ParseServerMessage();

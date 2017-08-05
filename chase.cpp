@@ -5,6 +5,8 @@ cvar_t chase_up = {"chase_up", "16"};
 cvar_t chase_right = {"chase_right", "0"};
 cvar_t chase_active = {"chase_active", "0"};
 
+overflowtimes_t dev_overflows;
+
 /*
 ==============
 Chase_Init

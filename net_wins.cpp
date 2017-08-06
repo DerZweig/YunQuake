@@ -1,7 +1,7 @@
 #include "quakedef.h"
 #include "winquake.h"
 
-extern cvar_t hostname;
+
 
 #define MAXHOSTNAMELEN		256
 

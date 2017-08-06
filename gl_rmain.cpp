@@ -76,7 +76,7 @@ cvar_t gl_keeptjunctions = {"gl_keeptjunctions","0"};
 cvar_t gl_reporttjunctions = {"gl_reporttjunctions","0"};
 cvar_t gl_doubleeyes = {"gl_doubleeys", "1"};
 
-extern cvar_t gl_ztrick;
+
 
 /*
 =================

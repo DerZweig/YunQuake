@@ -15,7 +15,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="asm_i386.h" />
     <ClInclude Include="bspfile.h" />
     <ClInclude Include="client.h" />
     <ClInclude Include="cmd.h" />
@@ -25,7 +24,6 @@
     <ClInclude Include="crc.h" />
     <ClInclude Include="cvar.h" />
     <ClInclude Include="draw.h" />
-    <ClInclude Include="d_ifacea.h" />
     <ClInclude Include="glquake.h" />
     <ClInclude Include="gl_model.h" />
     <ClInclude Include="input.h" />
@@ -44,7 +42,6 @@
     <ClInclude Include="progs.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="pr_comp.h" />
-    <ClInclude Include="quakeasm.h" />
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="sbar.h" />
@@ -57,8 +54,7 @@
     <ClInclude Include="view.h" />
     <ClInclude Include="wad.h" />
     <ClInclude Include="winquake.h" />
-    <ClInclude Include="world.h" />
-    <ClInclude Include="zone.h" />
+    <ClInclude Include="sv_world.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chase.cpp" />
@@ -100,7 +96,7 @@
     <ClCompile Include="pr_cmds.cpp" />
     <ClCompile Include="pr_edict.cpp" />
     <ClCompile Include="pr_exec.cpp" />
-    <ClCompile Include="r_part.cpp" />
+    <ClCompile Include="gl_part.cpp" />
     <ClCompile Include="sbar.cpp" />
     <ClCompile Include="snd_dma.cpp" />
     <ClCompile Include="snd_mem.cpp" />
@@ -113,8 +109,7 @@
     <ClCompile Include="sys_win.cpp" />
     <ClCompile Include="view.cpp" />
     <ClCompile Include="wad.cpp" />
-    <ClCompile Include="world.cpp" />
-    <ClCompile Include="zone.cpp" />
+    <ClCompile Include="sv_world.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <SccProjectName />

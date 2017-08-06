@@ -1,7 +1,7 @@
 #include "quakedef.h"
 
 
-extern cvar_t gl_finish;
+
 
 /*
 ==================

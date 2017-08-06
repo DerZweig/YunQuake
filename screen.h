@@ -3,9 +3,6 @@ void SCR_Init(void);
 
 void SCR_UpdateScreen(void);
 
-
-void SCR_SizeUp(void);
-void SCR_SizeDown(void);
 void SCR_BringDownConsole(void);
 void SCR_CenterPrint(char* str);
 
@@ -24,9 +21,7 @@ extern int clearnotify; // set to 0 whenever notify text is drawn
 extern qboolean scr_disabled_for_loading;
 extern qboolean scr_skipupdate;
 
-extern cvar_t scr_viewsize;
 
-extern cvar_t scr_viewsize;
 
 // only the refresh window will be updated unless these variables are flagged 
 extern int scr_copytop;

@@ -1,6 +1,6 @@
 #include "quakedef.h"
 
-extern cvar_t pausable;
+
 
 int current_skill;
 

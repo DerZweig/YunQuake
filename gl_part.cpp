@@ -556,7 +556,6 @@ void R_RocketTrail(vec3_t start, vec3_t end, int type)
 R_DrawParticles
 ===============
 */
-extern cvar_t sv_gravity;
 
 void R_DrawParticles(void)
 {

@@ -43,7 +43,6 @@ struct mvertex_t
 
 
 // plane_t structure
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
 struct mplane_t
 {
 	vec3_t normal;
@@ -173,7 +172,6 @@ struct mleaf_t
 	byte ambient_sound_level[NUM_AMBIENTS];
 };
 
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
 struct hull_t
 {
 	dclipnode_t* clipnodes;
@@ -411,8 +409,6 @@ void Mod_ClearAll(void);
 model_t* Mod_ForName(char* name, qboolean crash);
 void* Mod_Extradata(model_t* mod); // handles caching
 void Mod_TouchModel(char* name);
-
-mleaf_t* Mod_PointInLeaf(float* p, model_t* model);
 byte* Mod_LeafPVS(mleaf_t* leaf, model_t* model);
 
 #endif	// __MODEL__

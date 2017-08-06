@@ -4,7 +4,6 @@
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
-// !!! if this is changed, it much be changed in asm_i386.h too !!!
 struct portable_samplepair_t
 {
 	int left;
@@ -17,7 +16,6 @@ struct sfx_t
 	cache_user_t cache;
 };
 
-// !!! if this is changed, it much be changed in asm_i386.h too !!!
 struct sfxcache_t
 {
 	int length;
@@ -42,7 +40,6 @@ struct dma_t
 	byte* buffer;
 };
 
-// !!! if this is changed, it much be changed in asm_i386.h too !!!
 struct channel_t
 {
 	sfx_t* sfx; // sfx number
@@ -134,9 +131,7 @@ extern volatile dma_t* shm;
 extern volatile dma_t sn;
 extern vec_t sound_nominal_clip_dist;
 
-extern cvar_t loadas8bit;
-extern cvar_t bgmvolume;
-extern cvar_t volume;
+
 
 extern qboolean snd_initialized;
 

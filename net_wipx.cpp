@@ -3,7 +3,7 @@
 #include <wsipx.h>
 #include "net_wipx.h"
 
-extern cvar_t hostname;
+
 
 #define MAXHOSTNAMELEN		256
 

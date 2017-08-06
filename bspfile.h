@@ -129,7 +129,6 @@ struct dplane_t
 #define	CONTENTS_CURRENT_DOWN	-14
 
 
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
 struct dnode_t
 {
 	int planenum;

@@ -2,9 +2,9 @@
 
 edict_t* sv_player;
 
-extern cvar_t sv_friction;
+
 cvar_t sv_edgefriction = {"edgefriction", "2"};
-extern cvar_t sv_stopspeed;
+
 
 static vec3_t forward, right, up;
 

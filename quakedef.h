@@ -56,7 +56,6 @@ void VID_UnlockBuffer(void);
 
 #define UNALIGNED_OK	0
 
-// !!! if this is changed, it must be changed in d_ifacea.h too !!!
 #define CACHE_SIZE	32		// used to align key data structures
 
 #define UNUSED(x)	(x = x)	// for pesky compiler / lint warnings
@@ -196,7 +195,6 @@ void VID_UnlockBuffer(void);
 #include "bspfile.h"
 #include "vid.h"
 #include "sys.h"
-#include "zone.h"
 #include "mathlib.h"
 
 struct entity_state_t
@@ -228,7 +226,7 @@ struct entity_state_t
 #include "gl_model.h"
 
 #include "input.h"
-#include "world.h"
+#include "sv_world.h"
 #include "keys.h"
 #include "console.h"
 #include "view.h"
@@ -286,10 +284,7 @@ extern qboolean noclip_anglehack;
 //
 extern quakeparms_t host_parms;
 
-extern cvar_t sys_ticrate;
-extern cvar_t sys_nostdout;
-extern cvar_t developer;
-extern cvar_t registered;
+
 
 extern qboolean host_initialized; // qtrue if into command execution
 extern double host_frametime;

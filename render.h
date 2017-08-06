@@ -100,9 +100,7 @@ struct msurface_t;
 
 void R_Init(void);
 void R_InitTextures(void);
-void R_InitEfrags(void);
 void R_RenderView(void); // must set r_refdef first
-void R_ViewChanged(vrect_t* pvrect, int lineadj, float aspect);
 // called whenever r_refdef or vid change
 void R_InitSky(texture_t * mt); // called at level load
 
@@ -144,15 +142,8 @@ qboolean R_CullBox(vec3_t mins, vec3_t maxs);
 void R_RotateForEntity(entity_t* e);
 void R_StoreEfrags(efrag_t** ppefrag);
 
-void R_FreeTextures(void);
-
 //
 // surface cache related
 //
 extern int reinit_surfcache; // if 1, surface cache is currently empty and
 extern qboolean r_cache_thrash; // set if thrashing the surface cache
-
-int D_SurfaceCacheForRes(int width, int height);
-void D_DeleteSurfaceCache(void);
-void D_InitCaches(void* buffer, int size);
-void R_SetVrect(vrect_t* pvrect, vrect_t* pvrectin, int lineadj);

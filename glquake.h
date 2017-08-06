@@ -234,6 +234,19 @@ extern lpMTexFUNC qglMTexCoord2fSGIS;
 extern lpSelTexFUNC qglSelectTextureSGIS;
 
 extern qboolean gl_mtexable;
+extern	int glwidth, glheight;
 
+void GL_Set2D(void);
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);
+int GL_LoadPicTexture(qpic_t *pic);
+void GL_SubdivideSurface(msurface_t *fa);
+void GL_MakeAliasModelDisplayLists(model_t* m, aliashdr_t* hdr);
+
+
+void GL_BuildLightmaps(void);
+
+
+void EmitWaterPolys(msurface_t *fa);
+void EmitSkyPolys(msurface_t *fa);
+void EmitBothSkyLayers(msurface_t *fa);

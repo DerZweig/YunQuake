@@ -4,6 +4,7 @@
 #define	TOP_RANGE		16			// soldier uniform colors
 #define	BOTTOM_RANGE	96
 
+struct dlight_t;
 //=============================================================================
 struct mleaf_t;
 struct entity_t;
@@ -95,6 +96,7 @@ extern vec3_t r_origin, vpn, vright, vup;
 
 extern texture_t* r_notexture_mip;
 
+struct msurface_t;
 
 void R_Init(void);
 void R_InitTextures(void);
@@ -122,7 +124,27 @@ void R_LavaSplash(vec3_t org);
 void R_TeleportSplash(vec3_t org);
 
 void R_PushDlights(void);
+void R_DrawSkyChain(msurface_t *s);
 
+void R_InitParticles(void);
+void R_DrawParticles(void);
+void R_ClearParticles(void);
+
+void R_RenderDlights(void);
+int R_LightPoint(vec3_t p);
+void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
+void R_AnimateLight(void);
+
+void R_DrawWorld(void);
+void R_MarkLeaves(void);
+void R_DrawWaterSurfaces(void);
+void R_DrawBrushModel(entity_t *e);
+void R_RenderBrushPoly(msurface_t *fa);
+qboolean R_CullBox(vec3_t mins, vec3_t maxs);
+void R_RotateForEntity(entity_t* e);
+void R_StoreEfrags(efrag_t** ppefrag);
+
+void R_FreeTextures(void);
 
 //
 // surface cache related
@@ -131,7 +153,6 @@ extern int reinit_surfcache; // if 1, surface cache is currently empty and
 extern qboolean r_cache_thrash; // set if thrashing the surface cache
 
 int D_SurfaceCacheForRes(int width, int height);
-void D_FlushCaches(void);
 void D_DeleteSurfaceCache(void);
 void D_InitCaches(void* buffer, int size);
 void R_SetVrect(vrect_t* pvrect, vrect_t* pvrectin, int lineadj);

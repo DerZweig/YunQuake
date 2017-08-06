@@ -890,7 +890,7 @@ void CL_ParseServerMessage(void)
 		case svc_cdtrack:
 			cl.cdtrack = MSG_ReadByte();
 			cl.looptrack = MSG_ReadByte();
-
+			break;
 		case svc_intermission:
 			cl.intermission = 1;
 			cl.completed_time = cl.time;

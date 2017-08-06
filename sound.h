@@ -39,7 +39,7 @@ struct dma_t
 	int samplepos; // in mono samples
 	int samplebits;
 	int speed;
-	unsigned char* buffer;
+	byte* buffer;
 };
 
 // !!! if this is changed, it much be changed in asm_i386.h too !!!

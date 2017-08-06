@@ -28,7 +28,7 @@ enum class etype_t
 #define	RESERVED_OFS	28
 
 
-enum class op_t
+enum class op_t : uint16_t
 {
 	OP_DONE,
 	OP_MUL_F,
@@ -110,7 +110,7 @@ enum class op_t
 
 struct dstatement_t
 {
-	unsigned short op;
+	op_t op;
 	short a, b, c;
 };
 

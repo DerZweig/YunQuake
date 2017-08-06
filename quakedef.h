@@ -54,11 +54,7 @@ void VID_UnlockBuffer(void);
 
 #define id386	0
 
-#if id386
-#define UNALIGNED_OK	1	// set to 0 if unaligned accesses are not supported
-#else
 #define UNALIGNED_OK	0
-#endif
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 #define CACHE_SIZE	32		// used to align key data structures
@@ -256,6 +252,28 @@ struct quakeparms_t
 	int memsize;
 };
 
+enum class m_state_t
+{
+	m_none,
+	m_main,
+	m_singleplayer,
+	m_load,
+	m_save,
+	m_multiplayer,
+	m_setup,
+	m_net,
+	m_options,
+	m_video,
+	m_keys,
+	m_help,
+	m_quit,
+	m_serialconfig,
+	m_modemconfig,
+	m_lanconfig,
+	m_gameoptions,
+	m_search,
+	m_slist
+};
 
 //=============================================================================
 
@@ -271,6 +289,7 @@ extern quakeparms_t host_parms;
 extern cvar_t sys_ticrate;
 extern cvar_t sys_nostdout;
 extern cvar_t developer;
+extern cvar_t registered;
 
 extern qboolean host_initialized; // qtrue if into command execution
 extern double host_frametime;

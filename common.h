@@ -112,7 +112,7 @@ void Q_strcat(char* dest, char* src);
 int Q_strcmp(char* s1, char* s2);
 int Q_strncmp(char* s1, char* s2, int count);
 int Q_strcasecmp(char* s1, char* s2);
-int Q_strncasecmp(char* s1, char* s2, int n);
+int Q_strncasecmp(const char* s1, char* s2, int n);
 int Q_atoi(char* str);
 float Q_atof(char* str);
 
@@ -156,8 +156,5 @@ byte* COM_LoadStackFile(char* path, void* buffer, int bufsize);
 byte* COM_LoadTempFile(char* path);
 byte* COM_LoadHunkFile(char* path);
 void COM_LoadCacheFile(char* path, cache_user_t* cu);
-
-
-extern struct cvar_s registered;
 
 extern qboolean standard_quake, rogue, hipnotic;

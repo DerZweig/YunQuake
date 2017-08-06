@@ -63,8 +63,8 @@ struct texture_t
 	msurface_t* texturechain; // for gl_texsort drawing
 	int anim_total; // total tenths in sequence ( 0 = no)
 	int anim_min, anim_max; // time for this frame min <=time< max
-	msurface_t* anim_next; // in the animation sequence
-	msurface_t* alternate_anims; // bmodels in frmae 1 use these
+	texture_t* anim_next; // in the animation sequence
+	texture_t* alternate_anims; // bmodels in frmae 1 use these
 	unsigned offsets[MIPLEVELS]; // four mip maps stored
 };
 

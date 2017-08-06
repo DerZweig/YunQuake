@@ -1,3 +1,4 @@
+struct mplane_t;
 using vec_t = float;
 using vec3_t = vec_t[3];
 using vec5_t = vec_t [5];
@@ -48,7 +49,7 @@ int GreatestCommonDivisor(int i1, int i2);
 void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, mplane_t* plane);
 float anglemod(float a);
-
+void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
 	(((p)->type < 3)?						\

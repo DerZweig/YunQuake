@@ -1,6 +1,6 @@
 #include <windows.h>
-#include "conproc.h"
 #include "quakedef.h"
+#include "winquake.h"
 
 HANDLE heventDone;
 HANDLE hfileBuffer;

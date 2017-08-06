@@ -5,7 +5,6 @@
 #define WM_MOUSEWHEEL                   0x020A
 
 #ifndef SERVERONLY
-#include <ddraw.h>
 #include <dsound.h>
 #endif
 
@@ -14,12 +13,6 @@ extern int global_nCmdShow;
 
 #ifndef SERVERONLY
 
-extern LPDIRECTDRAW lpDD;
-extern qboolean DDActive;
-extern LPDIRECTDRAWSURFACE lpPrimary;
-extern LPDIRECTDRAWSURFACE lpFrontBuffer;
-extern LPDIRECTDRAWSURFACE lpBackBuffer;
-extern LPDIRECTDRAWPALETTE lpDDPal;
 extern LPDIRECTSOUND pDS;
 extern LPDIRECTSOUNDBUFFER pDSBuf;
 
@@ -44,8 +37,6 @@ extern modestate_t modestate;
 extern HWND mainwindow;
 extern qboolean ActiveApp, Minimized;
 
-int VID_ForceUnlockedAndReturnState(void);
-void VID_ForceLockState(int lk);
 
 void IN_ShowMouse(void);
 void IN_DeactivateMouse(void);
@@ -86,3 +77,11 @@ extern int (PASCAL FAR *pgethostname)(char FAR * name, int namelen);
 extern hostent FAR * (PASCAL FAR *pgethostbyname)(const char FAR * name);
 extern hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr, int len, int type);
 extern int (PASCAL FAR *pgetsockname)(SOCKET s, sockaddr FAR * name, int FAR * namelen);
+
+#define CCOM_WRITE_TEXT		0x2
+#define CCOM_GET_TEXT		0x3
+#define CCOM_GET_SCR_LINES	0x4
+#define CCOM_SET_SCR_LINES	0x5
+
+void InitConProc(HANDLE hFile, HANDLE heventParent, HANDLE heventChild);
+void DeinitConProc(void);

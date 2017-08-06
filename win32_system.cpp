@@ -1,7 +1,6 @@
 #include "quakedef.h"
 #include "winquake.h"
 #include "errno.h"
-#include "conproc.h"
 #include <direct.h>
 
 #define MINIMUM_WIN_MEMORY		0x0880000
@@ -30,10 +29,7 @@ static HANDLE hFile;
 static HANDLE heventParent;
 static HANDLE heventChild;
 
-void MaskExceptions(void);
 void Sys_InitFloatTime(void);
-void Sys_PushFPCW_SetHigh(void);
-void Sys_PopFPCW(void);
 
 volatile int sys_checksum;
 
@@ -88,14 +84,10 @@ filelength
 */
 int filelength(FILE* f)
 {
-	auto t = VID_ForceUnlockedAndReturnState();
-
 	int pos = ftell(f);
 	fseek(f, 0, SEEK_END);
 	int end = ftell(f);
 	fseek(f, pos, SEEK_SET);
-
-	VID_ForceLockState(t);
 
 	return end;
 }
@@ -103,8 +95,6 @@ int filelength(FILE* f)
 int Sys_FileOpenRead(char* path, int* hndl)
 {
 	int retval;
-
-	auto t = VID_ForceUnlockedAndReturnState();
 	auto i = findhandle();
 	auto f = fopen(path, "rb");
 
@@ -120,14 +110,23 @@ int Sys_FileOpenRead(char* path, int* hndl)
 		retval = filelength(f);
 	}
 
-	VID_ForceLockState(t);
 
 	return retval;
 }
 
+int Sys_FileOpenAppend(char * path)
+{
+	auto i = findhandle();
+	auto f = fopen(path, "a");
+
+	if (!f)
+		Sys_Error("Error opening %s: %s", path, strerror(errno));
+	sys_handles[i] = f;
+	return i;
+}
+
 int Sys_FileOpenWrite(char* path)
 {
-	auto t = VID_ForceUnlockedAndReturnState();
 	auto i = findhandle();
 	auto f = fopen(path, "wb");
 
@@ -135,47 +134,36 @@ int Sys_FileOpenWrite(char* path)
 		Sys_Error("Error opening %s: %s", path, strerror(errno));
 	sys_handles[i] = f;
 
-	VID_ForceLockState(t);
 
 	return i;
 }
 
 void Sys_FileClose(int handle)
 {
-	auto t = VID_ForceUnlockedAndReturnState();
 	fclose(sys_handles[handle]);
 	sys_handles[handle] = nullptr;
-	VID_ForceLockState(t);
 }
 
 void Sys_FileSeek(int handle, int position)
 {
-	auto t = VID_ForceUnlockedAndReturnState();
 	fseek(sys_handles[handle], position, SEEK_SET);
-	VID_ForceLockState(t);
 }
 
 int Sys_FileRead(int handle, void* dest, int count)
 {
-	auto t = VID_ForceUnlockedAndReturnState();
 	int x = fread(dest, 1, count, sys_handles[handle]);
-	VID_ForceLockState(t);
 	return x;
 }
 
 int Sys_FileWrite(int handle, void* data, int count)
 {
-	auto t = VID_ForceUnlockedAndReturnState();
 	int x = fwrite(data, 1, count, sys_handles[handle]);
-	VID_ForceLockState(t);
 	return x;
 }
 
 int Sys_FileTime(char* path)
 {
 	int retval;
-
-	auto t = VID_ForceUnlockedAndReturnState();
 	auto f = fopen(path, "rb");
 
 	if (f)
@@ -188,7 +176,6 @@ int Sys_FileTime(char* path)
 		retval = -1;
 	}
 
-	VID_ForceLockState(t);
 	return retval;
 }
 
@@ -206,34 +193,6 @@ SYSTEM IO
 ===============================================================================
 */
 
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
-{
-	DWORD flOldProtect;
-
-	if (!VirtualProtect(reinterpret_cast<LPVOID>(startaddr), length, PAGE_READWRITE, &flOldProtect))
-		Sys_Error("Protection change failed\n");
-}
-
-void Sys_SetFPCW(void)
-{
-}
-
-void Sys_PushFPCW_SetHigh(void)
-{
-}
-
-void Sys_PopFPCW(void)
-{
-}
-
-void MaskExceptions(void)
-{
-}
 
 /*
 ================
@@ -243,9 +202,6 @@ Sys_Init
 void Sys_Init(void)
 {
 	LARGE_INTEGER PerformanceFreq;
-
-	MaskExceptions();
-	Sys_SetFPCW();
 
 	if (!QueryPerformanceFrequency(&PerformanceFreq))
 		Sys_Error("No hardware timer available");
@@ -286,7 +242,6 @@ void Sys_Error(char* error, ...)
 	if (!in_sys_error3)
 	{
 		in_sys_error3 = 1;
-		VID_ForceUnlockedAndReturnState();
 	}
 
 	va_start (argptr, error);
@@ -367,8 +322,6 @@ void Sys_Printf(char* fmt, ...)
 
 void Sys_Quit(void)
 {
-	VID_ForceUnlockedAndReturnState();
-
 	Host_Shutdown();
 
 	if (tevent)
@@ -395,8 +348,6 @@ double Sys_FloatTime(void)
 	static unsigned int oldtime;
 	static auto first = 1;
 	LARGE_INTEGER PerformanceCount;
-
-	Sys_PushFPCW_SetHigh();
 
 	QueryPerformanceCounter(&PerformanceCount);
 
@@ -442,8 +393,6 @@ double Sys_FloatTime(void)
 			lastcurtime = curtime;
 		}
 	}
-
-	Sys_PopFPCW();
 
 	return curtime;
 }
@@ -763,12 +712,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		else
 		{
 			// yield the CPU for a little while when paused, minimized, or not the focus
-			if (cl.paused && (!ActiveApp && !DDActive) || Minimized || block_drawing)
+			if (cl.paused && (!ActiveApp ) || Minimized || block_drawing)
 			{
 				SleepUntilInput(PAUSE_SLEEP);
 				scr_skipupdate = 1; // no point in bothering to draw
 			}
-			else if (!ActiveApp && !DDActive)
+			else if (!ActiveApp)
 			{
 				SleepUntilInput(NOT_FOCUS_SLEEP);
 			}

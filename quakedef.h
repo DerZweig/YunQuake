@@ -193,8 +193,6 @@ void VID_UnlockBuffer(void);
 
 #include "common.h"
 #include "bspfile.h"
-#include "vid.h"
-#include "sys.h"
 #include "mathlib.h"
 
 struct entity_state_t
@@ -208,6 +206,38 @@ struct entity_state_t
 	int effects;
 };
 
+#define VID_CBITS	6
+#define VID_GRADES	(1 << VID_CBITS)
+
+// a pixel can be one, two, or four bytes
+using pixel_t = byte;
+
+struct vrect_t
+{
+	int x, y, width, height;
+	vrect_t* pnext;
+};
+
+struct viddef_t
+{
+	pixel_t* buffer; // invisible buffer
+	pixel_t* colormap; // 256 * VID_GRADES size
+	unsigned short* colormap16; // 256 * VID_GRADES size
+	int fullbright; // index of first fullbright color
+	unsigned rowbytes; // may be > width if displayed in a window
+	unsigned width;
+	unsigned height;
+	float aspect; // width / height -- < 0 is taller than wide
+	int numpages;
+	int recalc_refdef; // if qtrue, recalc vid-based stuff
+	pixel_t* conbuffer;
+	int conrowbytes;
+	unsigned conwidth;
+	unsigned conheight;
+	int maxwarpwidth;
+	int maxwarpheight;
+	pixel_t* direct; 
+};
 
 #include "wad.h"
 #include "draw.h"
@@ -215,23 +245,20 @@ struct entity_state_t
 #include "screen.h"
 #include "net.h"
 #include "protocol.h"
-#include "cmd.h"
+#include "command.h"
 #include "sbar.h"
 #include "sound.h"
 #include "render.h"
-#include "client.h"
+#include "cl_shared.h"
 #include "progs.h"
 #include "server.h"
 
 #include "gl_model.h"
-
-#include "input.h"
 #include "sv_world.h"
 #include "keys.h"
 #include "console.h"
 #include "view.h"
 #include "menu.h"
-#include "crc.h"
 #include "glquake.h"
 
 //=============================================================================
@@ -250,28 +277,6 @@ struct quakeparms_t
 	int memsize;
 };
 
-enum class m_state_t
-{
-	m_none,
-	m_main,
-	m_singleplayer,
-	m_load,
-	m_save,
-	m_multiplayer,
-	m_setup,
-	m_net,
-	m_options,
-	m_video,
-	m_keys,
-	m_help,
-	m_quit,
-	m_serialconfig,
-	m_modemconfig,
-	m_lanconfig,
-	m_gameoptions,
-	m_search,
-	m_slist
-};
 
 //=============================================================================
 
@@ -306,14 +311,47 @@ void Host_Quit_f(void);
 void Host_ClientCommands(char* fmt, ...);
 void Host_ShutdownServer(qboolean crash);
 
-extern qboolean msg_suppress_1; // suppresses resolution and cache size console output
-//  an fullscreen DIB focus gain/loss
-extern int current_skill; // skill level for currently loaded level (in case
-//  the user changes the cvar while the level is
-//  running, this reflects the level actually in use)
+void IN_Init(void);
+void IN_Shutdown(void);
+void IN_Commands(void);
+void IN_Move(usercmd_t* cmd);
+void IN_ClearStates(void);
+void IN_Accumulate(void);
 
+int Sys_FileOpenRead(char* path, int* hndl);
+int Sys_FileOpenAppend(char * path);
+int Sys_FileOpenWrite(char* path);
+void Sys_FileClose(int handle);
+void Sys_FileSeek(int handle, int position);
+int Sys_FileRead(int handle, void* dest, int count);
+int Sys_FileWrite(int handle, void* data, int count);
+int Sys_FileTime(char* path);
+void Sys_mkdir(char* path);
+void Sys_Error(char* error, ...);
+void Sys_Printf(char* fmt, ...);
+void Sys_Quit(void);
+double Sys_FloatTime(void);
+char* Sys_ConsoleInput(void);
+void Sys_Sleep(void);
+void Sys_SendKeyEvents(void);
+
+
+
+extern viddef_t vid; // global video state
+extern unsigned short d_8to16table[256];
+extern unsigned d_8to24table[256];
+extern void(*vid_menudrawfn)(void);
+extern void(*vid_menukeyfn)(int key);
+
+void VID_SetPalette(unsigned char* palette);
+void VID_ShiftPalette(unsigned char* palette);
+void VID_Init(unsigned char* palette);
+void VID_Shutdown(void);
+int VID_SetMode(int modenum, unsigned char* palette);
+
+extern qboolean msg_suppress_1; 
+extern int current_skill; 
 extern qboolean isDedicated;
-
 extern int minimum_memory;
 
 //

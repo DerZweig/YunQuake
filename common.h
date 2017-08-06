@@ -202,3 +202,7 @@ void* Cache_Alloc(cache_user_t* c, int size, char* name);
 // wasn't enough room.
 
 void Cache_Report(void);
+
+void CRC_Init(unsigned short* crcvalue);
+void CRC_ProcessByte(unsigned short* crcvalue, byte data);
+unsigned short CRC_Value(unsigned short crcvalue);

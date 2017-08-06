@@ -36,12 +36,6 @@
     <ClInclude Include="view.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="vid.h">
-      <Filter>win32</Filter>
-    </ClInclude>
-    <ClInclude Include="sys.h">
-      <Filter>win32</Filter>
-    </ClInclude>
     <ClInclude Include="spritegn.h">
       <Filter>graphics</Filter>
     </ClInclude>
@@ -108,9 +102,6 @@
     <ClInclude Include="keys.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>win32</Filter>
-    </ClInclude>
     <ClInclude Include="glquake.h">
       <Filter>win32</Filter>
     </ClInclude>
@@ -120,29 +111,23 @@
     <ClInclude Include="draw.h">
       <Filter>graphics</Filter>
     </ClInclude>
-    <ClInclude Include="crc.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="cvar.h">
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="common.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="cmd.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="client.h">
-      <Filter>client</Filter>
-    </ClInclude>
     <ClInclude Include="console.h">
       <Filter>game</Filter>
     </ClInclude>
-    <ClInclude Include="conproc.h">
-      <Filter>win32</Filter>
-    </ClInclude>
     <ClInclude Include="quakedef.h" />
     <ClInclude Include="bspfile.h" />
+    <ClInclude Include="cl_shared.h">
+      <Filter>client</Filter>
+    </ClInclude>
+    <ClInclude Include="command.h">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cl_demo.cpp">
@@ -163,16 +148,7 @@
     <ClCompile Include="chase.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="cmd.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="common.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="conproc.cpp">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="crc.cpp">
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="cvar.cpp">
@@ -283,12 +259,6 @@
     <ClCompile Include="gl_warp.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="in_win.cpp">
-      <Filter>win32</Filter>
-    </ClCompile>
-    <ClCompile Include="sys_win.cpp">
-      <Filter>win32</Filter>
-    </ClCompile>
     <ClCompile Include="sbar.cpp">
       <Filter>game</Filter>
     </ClCompile>
@@ -298,11 +268,23 @@
     <ClCompile Include="wad.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="gl_vidnt.cpp">
-      <Filter>win32</Filter>
-    </ClCompile>
     <ClCompile Include="gl_part.cpp">
       <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="command.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_console.cpp">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_system.cpp">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_opengl.cpp">
+      <Filter>win32</Filter>
+    </ClCompile>
+    <ClCompile Include="win32_input.cpp">
+      <Filter>win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

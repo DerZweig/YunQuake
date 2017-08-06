@@ -332,9 +332,9 @@ void Con_DebugLog(char* file, char* fmt, ...)
 	va_start(argptr, fmt);
 	vsprintf(data, fmt, argptr);
 	va_end(argptr);
-	auto fd = fopen(file, "a");
-	fwrite(data, sizeof(char), strlen(data), fd);
-	fclose(fd);
+	auto fd = Sys_FileOpenAppend(file);
+	Sys_FileWrite(fd, data, strlen(data));
+	Sys_FileClose(fd);
 }
 
 

@@ -14,23 +14,6 @@ void GL_BeginRendering(int* x, int* y, int* width, int* height);
 void GL_EndRendering(void);
 
 
-#ifdef _WIN32
-// Function prototypes for the Texture Object Extension routines
-using ARETEXRESFUNCPTR= GLboolean (APIENTRY *)(GLsizei, const GLuint*,
-                                               const GLboolean*);
-using BINDTEXFUNCPTR= void (APIENTRY *)(GLenum, GLuint);
-using DELTEXFUNCPTR= void (APIENTRY *)(GLsizei, const GLuint*);
-using GENTEXFUNCPTR= void (APIENTRY *)(GLsizei, GLuint*);
-using ISTEXFUNCPTR= GLboolean (APIENTRY *)(GLuint);
-using PRIORTEXFUNCPTR= void (APIENTRY *)(GLsizei, const GLuint*,
-                                         const GLclampf*);
-using TEXSUBIMAGEPTR= void (APIENTRY *)(int, int, int, int, int, int, int, int, void*);
-
-extern BINDTEXFUNCPTR bindTexFunc;
-extern DELTEXFUNCPTR delTexFunc;
-extern TEXSUBIMAGEPTR TexSubImage2DFunc;
-#endif
-
 extern int texture_extension_number;
 extern int texture_mode;
 
@@ -52,13 +35,6 @@ extern glvert_t glv;
 
 extern int glx, gly, glwidth, glheight;
 
-#ifdef _WIN32
-extern PROC glArrayElementEXT;
-extern PROC glColorPointerEXT;
-extern PROC glTexturePointerEXT;
-extern PROC glVertexPointerEXT;
-#endif
-
 // r_local.h -- private refresh defs
 
 #define ALIAS_BASE_SIZE_RATIO		(1.0 / 11.0)
@@ -76,7 +52,6 @@ extern PROC glVertexPointerEXT;
 
 
 void R_TimeRefresh_f(void);
-void R_ReadPointFile_f(void);
 texture_t* R_TextureAnimation(texture_t* base);
 
 struct surfcache_t

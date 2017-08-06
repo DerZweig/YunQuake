@@ -1,4 +1,5 @@
 #include "quakedef.h"
+#include <ddraw.h>
 
 #ifdef _WIN32
 #include "winquake.h"

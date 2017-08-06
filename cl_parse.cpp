@@ -845,18 +845,6 @@ void CL_ParseServerMessage(void)
 			{
 				cl.paused = MSG_ReadByte();
 
-				if (cl.paused)
-				{
-#ifdef _WIN32
-					VID_HandlePause(qtrue);
-#endif
-				}
-				else
-				{
-#ifdef _WIN32
-					VID_HandlePause(qfalse);
-#endif
-				}
 			}
 			break;
 

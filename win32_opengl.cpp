@@ -46,7 +46,6 @@ const char* gl_renderer;
 const char* gl_version;
 const char* gl_extensions;
 
-qboolean DDActive;
 qboolean scr_skipupdate;
 
 static vmode_t modelist[MAX_MODE_LIST];
@@ -135,32 +134,13 @@ RECT window_rect;
 
 // direct draw software compatability stuff
 
-void VID_HandlePause(qboolean pause)
-{
-}
 
-void VID_ForceLockState(int lk)
-{
-}
 
 void VID_LockBuffer(void)
 {
 }
 
 void VID_UnlockBuffer(void)
-{
-}
-
-int VID_ForceUnlockedAndReturnState(void)
-{
-	return 0;
-}
-
-void D_BeginDirectRect(int x, int y, byte* pbitmap, int width, int height)
-{
-}
-
-void D_EndDirectRect(int x, int y, int width, int height)
 {
 }
 
@@ -432,67 +412,6 @@ void VID_UpdateWindowStatus(void)
 
 //====================================
 
-BINDTEXFUNCPTR bindTexFunc;
-
-#define TEXTURE_EXT_STRING "GL_EXT_texture_object"
-
-
-void CheckTextureExtensions(void)
-{
-	qboolean texture_ext = FALSE;
-	/* check for texture extension */
-	auto tmp = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-	while (*tmp)
-	{
-		if (strncmp(tmp, TEXTURE_EXT_STRING, strlen(TEXTURE_EXT_STRING)) == 0)
-			texture_ext = TRUE;
-		tmp++;
-	}
-
-	if (!texture_ext || COM_CheckParm("-gl11"))
-	{
-		auto hInstGL = LoadLibrary("opengl32.dll");
-
-		if (hInstGL == nullptr)
-			Sys_Error("Couldn't load opengl32.dll\n");
-
-		bindTexFunc = reinterpret_cast<BINDTEXFUNCPTR>(GetProcAddress(hInstGL, "glBindTexture"));
-
-		if (!bindTexFunc)
-			Sys_Error("No texture objects!");
-		return;
-	}
-
-	/* load library and get procedure adresses for texture extension API */
-	if ((bindTexFunc = reinterpret_cast<BINDTEXFUNCPTR>(wglGetProcAddress(static_cast<LPCSTR>("glBindTextureEXT")))) == nullptr)
-	{
-		Sys_Error("GetProcAddress for BindTextureEXT failed");
-	}
-}
-
-void CheckArrayExtensions(void)
-{
-	/* check for texture extension */
-	auto tmp = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-	while (*tmp)
-	{
-		if (strncmp(static_cast<const char*>(tmp), "GL_EXT_vertex_array", strlen("GL_EXT_vertex_array")) == 0)
-		{
-			if ((glArrayElementEXT = wglGetProcAddress("glArrayElementEXT")) == nullptr ||
-				(glColorPointerEXT = wglGetProcAddress("glColorPointerEXT")) == nullptr ||
-				(glTexCoordPointerEXT = wglGetProcAddress("glTexCoordPointerEXT")) == nullptr ||
-				(glVertexPointerEXT = wglGetProcAddress("glVertexPointerEXT")) == nullptr)
-			{
-				Sys_Error("GetProcAddress for vertex extension failed");
-				return;
-			}
-			return;
-		}
-		tmp++;
-	}
-
-	Sys_Error("Vertex array extension not present");
-}
 
 int texture_mode = GL_LINEAR;
 
@@ -541,7 +460,6 @@ void GL_Init(void)
 	if (_strnicmp(gl_renderer, "Permedia", 8) == 0)
 		isPermedia = qtrue;
 
-	CheckTextureExtensions();
 	CheckMultiTextureExtensions();
 
 	glClearColor(1, 0, 0, 0);

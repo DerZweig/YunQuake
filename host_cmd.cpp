@@ -203,8 +203,8 @@ void Host_Ping_f()
 		if (!client->active)
 			continue;
 		float     total = 0;
-		for (auto j     = 0; j < NUM_PING_TIMES; j++)
-			total += client->ping_times[j];
+		for (float ping_time : client->ping_times)
+			total += ping_time;
 		total /= NUM_PING_TIMES;
 		SV_ClientPrintf("%4i %s\n", static_cast<int>(total * 1000), client->name);
 	}

@@ -110,7 +110,6 @@ struct particle_t
 
 
 extern entity_t  r_worldentity;
-extern qboolean  r_cache_thrash; // compatability
 extern vec3_t    modelorg, r_entorigin;
 extern entity_t* currententity;
 extern int       r_visframecount; // ??? what difs?
@@ -120,20 +119,11 @@ extern int       c_brush_polys, c_alias_polys;
 
 
 //
-// view origin
-//
-extern vec3_t vup;
-extern vec3_t vpn;
-extern vec3_t vright;
-extern vec3_t r_origin;
-
-//
 // screen size info
 //
-extern refdef_t   r_refdef;
-extern mleaf_t *  r_viewleaf, *r_oldviewleaf;
-extern texture_t* r_notexture_mip;
-extern int        d_lightstylevalue[256]; // 8.8 fraction of base light value
+extern mleaf_t* r_viewleaf;
+extern mleaf_t* r_oldviewleaf;
+extern int      d_lightstylevalue[256]; // 8.8 fraction of base light value
 
 extern qboolean envmap;
 extern int      currenttexture;
@@ -179,7 +169,6 @@ extern lpMTexFUNC   qglMTexCoord2fSGIS;
 extern lpSelTexFUNC qglSelectTextureSGIS;
 
 extern qboolean gl_mtexable;
-extern int      glwidth, glheight;
 
 void GL_Set2D();
 void GL_DisableMultitexture();

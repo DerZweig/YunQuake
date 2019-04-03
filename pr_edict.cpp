@@ -208,11 +208,11 @@ eval_t* GetEdictFieldValue(edict_t* ed, char* field)
 	ddef_t*     def;
 	static auto rep = 0;
 
-	for (auto i = 0; i < GEFV_CACHESIZE; i++)
+	for (auto& i : gefvCache)
 	{
-		if (!strcmp(field, gefvCache[i].field))
+		if (!strcmp(field, i.field))
 		{
-			def = gefvCache[i].pcache;
+			def = i.pcache;
 			goto Done;
 		}
 	}

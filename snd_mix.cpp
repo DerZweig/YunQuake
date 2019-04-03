@@ -9,7 +9,9 @@
 #define	PAINTBUFFER_SIZE	512
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 int                   snd_scaletable[32][256];
-int *                 snd_p, snd_linear_count, snd_vol;
+int*                  snd_p;
+int                   snd_linear_count;
+int                   snd_vol;
 short*                snd_out;
 
 void Snd_WriteLinearBlastStereo16()
@@ -34,11 +36,12 @@ void Snd_WriteLinearBlastStereo16()
 	}
 }
 
-void S_TransferStereo16(int endtime)
+void S_TransferStereo16(const int endtime)
 {
 	DWORD* pbuf;
 #ifdef _WIN32
-	DWORD   dwSize, dwSize2;
+	DWORD   dwSize;
+	DWORD   dwSize2;
 	DWORD*  pbuf2;
 	HRESULT hresult;
 #endif
@@ -81,7 +84,7 @@ void S_TransferStereo16(int endtime)
 	while (lpaintedtime < endtime)
 	{
 		// handle recirculating buffer issues
-		auto lpos = lpaintedtime & (shm->samples >> 1) - 1;
+		const auto lpos = lpaintedtime & (shm->samples >> 1) - 1;
 
 		snd_out = reinterpret_cast<short *>(pbuf) + (lpos << 1);
 
@@ -104,7 +107,7 @@ void S_TransferStereo16(int endtime)
 #endif
 }
 
-void S_TransferPaintBuffer(int endtime)
+void S_TransferPaintBuffer(const int endtime)
 {
 	int    val;
 	DWORD* pbuf;
@@ -120,12 +123,12 @@ void S_TransferPaintBuffer(int endtime)
 		return;
 	}
 
-	auto p        = reinterpret_cast<int *>(paintbuffer);
-	auto count    = (endtime - paintedtime) * shm->channels;
-	auto out_mask = shm->samples - 1;
-	auto out_idx  = paintedtime * shm->channels & out_mask;
-	auto step     = 3 - shm->channels;
-	int  snd_vol  = volume.value * 256;
+	auto       p        = reinterpret_cast<int *>(paintbuffer);
+	auto       count    = (endtime - paintedtime) * shm->channels;
+	const auto out_mask = shm->samples - 1;
+	auto       out_idx  = paintedtime * shm->channels & out_mask;
+	const auto step     = 3 - shm->channels;
+	const int  snd_vol  = volume.value * 256;
 
 #ifdef _WIN32
 	if (pDSBuf)
@@ -159,7 +162,7 @@ void S_TransferPaintBuffer(int endtime)
 
 	if (shm->samplebits == 16)
 	{
-		auto out = reinterpret_cast<short *>(pbuf);
+		const auto out = reinterpret_cast<short *>(pbuf);
 		while (count--)
 		{
 			val = *p * snd_vol >> 8;
@@ -174,7 +177,7 @@ void S_TransferPaintBuffer(int endtime)
 	}
 	else if (shm->samplebits == 8)
 	{
-		auto out = reinterpret_cast<unsigned char *>(pbuf);
+		const auto out = reinterpret_cast<unsigned char *>(pbuf);
 		while (count--)
 		{
 			val = *p * snd_vol >> 8;
@@ -213,7 +216,7 @@ CHANNEL MIXING
 void SND_PaintChannelFrom8(channel_t*  ch, sfxcache_t* sc, int endtime);
 void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int endtime);
 
-void S_PaintChannels(int endtime)
+void S_PaintChannels(const int endtime)
 {
 	int count;
 
@@ -235,7 +238,7 @@ void S_PaintChannels(int endtime)
 				continue;
 			if (!ch->leftvol && !ch->rightvol)
 				continue;
-			auto sc = S_LoadSound(ch->sfx);
+			const auto sc = S_LoadSound(ch->sfx);
 			if (!sc)
 				continue;
 
@@ -291,42 +294,42 @@ void SND_InitScaletable()
 }
 
 
-void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count)
+void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, const int endtime)
 {
 	if (ch->leftvol > 255)
 		ch->leftvol = 255;
 	if (ch->rightvol > 255)
 		ch->rightvol = 255;
 
-	auto lscale = snd_scaletable[ch->leftvol >> 3];
-	auto rscale = snd_scaletable[ch->rightvol >> 3];
-	auto sfx    = static_cast<unsigned char *>(sc->data) + ch->pos;
+	const auto lscale = snd_scaletable[ch->leftvol >> 3];
+	const auto rscale = snd_scaletable[ch->rightvol >> 3];
+	const auto sfx    = static_cast<unsigned char *>(sc->data) + ch->pos;
 
-	for (auto i = 0; i < count; i++)
+	for (auto i = 0; i < endtime; i++)
 	{
-		int data = sfx[i];
+		const int data = sfx[i];
 		paintbuffer[i].left += lscale[data];
 		paintbuffer[i].right += rscale[data];
 	}
 
-	ch->pos += count;
+	ch->pos += endtime;
 }
 
 
-void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count)
+void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, const int endtime)
 {
-	auto leftvol  = ch->leftvol;
-	auto rightvol = ch->rightvol;
-	auto sfx      = reinterpret_cast<signed short *>(sc->data) + ch->pos;
+	const auto leftvol  = ch->leftvol;
+	const auto rightvol = ch->rightvol;
+	const auto sfx      = reinterpret_cast<signed short *>(sc->data) + ch->pos;
 
-	for (auto i = 0; i < count; i++)
+	for (auto i = 0; i < endtime; i++)
 	{
-		int  data  = sfx[i];
-		auto left  = data * leftvol >> 8;
-		auto right = data * rightvol >> 8;
+		const int  data  = sfx[i];
+		const auto left  = data * leftvol >> 8;
+		const auto right = data * rightvol >> 8;
 		paintbuffer[i].left += left;
 		paintbuffer[i].right += right;
 	}
 
-	ch->pos += count;
+	ch->pos += endtime;
 }

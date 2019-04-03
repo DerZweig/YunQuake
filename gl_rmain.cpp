@@ -86,8 +86,8 @@ Returns qtrue if the box is completely outside the frustom
 */
 qboolean R_CullBox(vec3_t mins, vec3_t maxs)
 {
-	for (auto i = 0; i < 4; i++)
-		if (BoxOnPlaneSide(mins, maxs, &frustum[i]) == 2)
+	for (auto& i : frustum)
+		if (BoxOnPlaneSide(mins, maxs, &i) == 2)
 			return qtrue;
 	return qfalse;
 }
@@ -911,9 +911,9 @@ void R_DrawViewModel()
 	auto ambientlight = j;
 
 	// add dynamic lights		
-	for (auto lnum = 0; lnum < MAX_DLIGHTS; lnum++)
+	for (auto& cl_dlight : cl_dlights)
 	{
-		dl = &cl_dlights[lnum];
+		dl = &cl_dlight;
 		if (!dl->radius)
 			continue;
 		if (!dl->radius)

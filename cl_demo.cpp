@@ -45,9 +45,9 @@ void CL_WriteDemoMessage()
 {
 	auto len = LittleLong(net_message.cursize);
 	fwrite(&len, 4, 1, cls.demofile);
-	for (auto i = 0; i < 3; i++)
+	for (float viewangle : cl.viewangles)
 	{
-		auto f = LittleFloat(cl.viewangles[i]);
+		auto f = LittleFloat(viewangle);
 		fwrite(&f, 4, 1, cls.demofile);
 	}
 	fwrite(net_message.data, net_message.cursize, 1, cls.demofile);

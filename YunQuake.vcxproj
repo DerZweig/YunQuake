@@ -31,7 +31,6 @@
     <ClInclude Include="net.h" />
     <ClInclude Include="net_dgrm.h" />
     <ClInclude Include="net_loop.h" />
-    <ClInclude Include="net_ser.h" />
     <ClInclude Include="net_vcr.h" />
     <ClInclude Include="net_wins.h" />
     <ClInclude Include="net_wipx.h" />

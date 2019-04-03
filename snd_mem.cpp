@@ -2,26 +2,24 @@
 
 int cache_full_cycle;
 
-byte* S_Alloc(int size);
-
 /*
 ================
 ResampleSfx
 ================
 */
-void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
+void ResampleSfx(sfx_t* sfx, const int inrate, const int inwidth, byte* data)
 {
 	int i;
 	int sample;
 
-	auto sc = static_cast<sfxcache_t *>(Cache_Check(&sfx->cache));
+	const auto sc = static_cast<sfxcache_t *>(Cache_Check(&sfx->cache));
 	if (!sc)
 		return;
 
-	auto stepscale = static_cast<float>(inrate) / shm->speed; // this is usually 0.5, 1, or 2
+	const auto stepscale = static_cast<float>(inrate) / shm->speed; // this is usually 0.5, 1, or 2
+	const int  outcount  = sc->length / stepscale;
 
-	int outcount = sc->length / stepscale;
-	sc->length   = outcount;
+	sc->length = outcount;
 	if (sc->loopstart != -1)
 		sc->loopstart = sc->loopstart / stepscale;
 
@@ -43,11 +41,11 @@ void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
 	else
 	{
 		// general case
-		auto samplefrac = 0;
-		int  fracstep   = stepscale * 256;
-		for (i          = 0; i < outcount; i++)
+		auto      samplefrac = 0;
+		const int fracstep   = stepscale * 256;
+		for (i               = 0; i < outcount; i++)
 		{
-			auto srcsample = samplefrac >> 8;
+			const auto srcsample = samplefrac >> 8;
 			samplefrac += fracstep;
 			if (inwidth == 2)
 				sample = LittleShort(reinterpret_cast<short *>(data)[srcsample]);
@@ -85,7 +83,7 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 
 	//	Con_Printf ("loading %s\n",namebuffer);
 
-	auto data = COM_LoadStackFile(namebuffer, stackbuf, sizeof stackbuf);
+	const auto data = COM_LoadStackFile(namebuffer, stackbuf, sizeof stackbuf);
 
 	if (!data)
 	{
@@ -93,15 +91,15 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 		return nullptr;
 	}
 
-	auto info = GetWavinfo(s->name, data, com_filesize);
+	const auto info = GetWavinfo(s->name, data, com_filesize);
 	if (info.channels != 1)
 	{
 		Con_Printf("%s is a stereo sample\n", s->name);
 		return nullptr;
 	}
 
-	auto stepscale = static_cast<float>(info.rate) / shm->speed;
-	int  len       = info.samples / stepscale;
+	const auto stepscale = static_cast<float>(info.rate) / shm->speed;
+	int        len       = info.samples / stepscale;
 
 	len = len * info.width * info.channels;
 
@@ -213,7 +211,7 @@ void DumpChunks()
 GetWavinfo
 ============
 */
-wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
+wavinfo_t GetWavinfo(char* name, byte* wav, const int wavlength)
 {
 	wavinfo_t info;
 
@@ -244,7 +242,7 @@ wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
 		return info;
 	}
 	data_p += 8;
-	int format = GetLittleShort();
+	const int format = GetLittleShort();
 	if (format != 1)
 	{
 		Con_Printf("Microsoft PCM format only\n");
@@ -272,7 +270,7 @@ wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
 			{
 				// this is not a proper parse, but it works with cooledit...
 				data_p += 24;
-				auto i       = GetLittleLong(); // samples in loop
+				const auto i = GetLittleLong(); // samples in loop
 				info.samples = info.loopstart + i;
 				//				Con_Printf("looped length: %i\n", i);
 			}
@@ -290,7 +288,7 @@ wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
 	}
 
 	data_p += 4;
-	auto samples = GetLittleLong() / info.width;
+	const auto samples = GetLittleLong() / info.width;
 
 	if (info.samples)
 	{

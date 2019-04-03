@@ -89,8 +89,8 @@ Con_ClearNotify
 */
 void Con_ClearNotify()
 {
-	for (auto i      = 0; i < NUM_CON_TIMES; i++)
-		con_times[i] = 0;
+	for (float& con_time : con_times)
+		con_time = 0;
 }
 
 

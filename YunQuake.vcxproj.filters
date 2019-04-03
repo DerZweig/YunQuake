@@ -75,9 +75,6 @@
     <ClInclude Include="net_loop.h">
       <Filter>network</Filter>
     </ClInclude>
-    <ClInclude Include="net_ser.h">
-      <Filter>network</Filter>
-    </ClInclude>
     <ClInclude Include="net_vcr.h">
       <Filter>network</Filter>
     </ClInclude>

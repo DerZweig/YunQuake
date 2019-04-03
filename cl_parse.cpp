@@ -104,8 +104,8 @@ void CL_ParseStartSoundPacket()
 	if (ent > MAX_EDICTS)
 		Host_Error("CL_ParseStartSoundPacket: ent = %i", ent);
 
-	for (auto i = 0; i < 3; i++)
-		pos[i]  = MSG_ReadCoord();
+	for (float& po : pos)
+		po = MSG_ReadCoord();
 
 	S_StartSound(ent, channel, cl.sound_precache[sound_num], pos, volume / 255.0, attenuation);
 }
@@ -667,8 +667,8 @@ void CL_ParseStaticSound()
 {
 	vec3_t org;
 
-	for (auto i    = 0; i < 3; i++)
-		org[i]     = MSG_ReadCoord();
+	for (float& i : org)
+		i = MSG_ReadCoord();
 	auto sound_num = MSG_ReadByte();
 	auto vol       = MSG_ReadByte();
 	auto atten     = MSG_ReadByte();

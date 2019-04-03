@@ -270,8 +270,8 @@ void V_ParseDamage()
 
 	auto      armor = MSG_ReadByte();
 	auto      blood = MSG_ReadByte();
-	for (auto i     = 0; i < 3; i++)
-		from[i]     = MSG_ReadCoord();
+	for (float& i : from)
+		i = MSG_ReadCoord();
 
 	float count = blood * 0.5 + armor * 0.5;
 	if (count < 10)
@@ -430,12 +430,12 @@ void V_CalcBlend()
 	float b = 0;
 	float a = 0;
 
-	for (auto j = 0; j < NUM_CSHIFTS; j++)
+	for (auto& cshift : cl.cshifts)
 	{
 		if (!gl_cshiftpercent.value)
 			continue;
 
-		float a2 = cl.cshifts[j].percent * gl_cshiftpercent.value / 100.0 / 255.0;
+		float a2 = cshift.percent * gl_cshiftpercent.value / 100.0 / 255.0;
 
 		//		a2 = cl.cshifts[j].percent/255.0;
 		if (!a2)
@@ -443,9 +443,9 @@ void V_CalcBlend()
 		a = a + a2 * (1 - a);
 		//Con_Printf ("j:%i a:%f\n", j, a);
 		a2 = a2 / a;
-		r  = r * (1 - a2) + cl.cshifts[j].destcolor[0] * a2;
-		g  = g * (1 - a2) + cl.cshifts[j].destcolor[1] * a2;
-		b  = b * (1 - a2) + cl.cshifts[j].destcolor[2] * a2;
+		r  = r * (1 - a2) + cshift.destcolor[0] * a2;
+		g  = g * (1 - a2) + cshift.destcolor[1] * a2;
+		b  = b * (1 - a2) + cshift.destcolor[2] * a2;
 	}
 
 	v_blend[0] = r / 255.0;

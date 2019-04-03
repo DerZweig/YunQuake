@@ -9,7 +9,6 @@ void S_Play();
 void S_PlayVol();
 void S_SoundList();
 void S_Update_();
-void S_StopAllSounds(qboolean clear);
 void S_StopAllSoundsC();
 
 // =======================================================================
@@ -48,9 +47,8 @@ int desired_bits  = 16;
 
 int sound_started = 0;
 
-cvar_t bgmvolume = {"bgmvolume", "1", qtrue};
-cvar_t volume    = {"volume", "0.7", qtrue};
-
+cvar_t bgmvolume         = {"bgmvolume", "1", qtrue};
+cvar_t volume            = {"volume", "0.7", qtrue};
 cvar_t nosound           = {"nosound", "0"};
 cvar_t precache          = {"precache", "1"};
 cvar_t loadas8bit        = {"loadas8bit", "0"};
@@ -121,7 +119,7 @@ void S_Startup()
 
 	if (!fakedma)
 	{
-		int rc = SNDDMA_Init();
+		const int rc = SNDDMA_Init();
 
 		if (!rc)
 		{
@@ -321,7 +319,7 @@ sfx_t* S_PrecacheSound(char* name)
 SND_PickChannel
 =================
 */
-channel_t* SND_PickChannel(int entnum, int entchannel)
+channel_t* SND_PickChannel(const int entnum, const int entchannel)
 {
 	// Check for replacement sound, or find the best one to replace
 	auto      first_to_die = -1;
@@ -493,9 +491,13 @@ void S_StopAllSounds(qboolean clear)
 
 	total_channels = MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS; // no statics
 
-	for (auto i = 0; i < MAX_CHANNELS; i++)
-		if (channels[i].sfx)
-			channels[i].sfx = nullptr;
+	for (auto& channel : channels)
+	{
+		if (channel.sfx)
+		{
+			channel.sfx = nullptr;
+		}
+	}
 
 	Q_memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
 
@@ -566,7 +568,7 @@ void S_ClearBuffer()
 S_StaticSound
 =================
 */
-void S_StaticSound(sfx_t* sfx, vec3_t origin, float vol, float attenuation)
+void S_StaticSound(sfx_t* sfx, vec3_t origin, const float vol, const float attenuation)
 {
 	channel_t* ss;
 
@@ -752,14 +754,14 @@ void GetSoundtime()
 	static int buffers;
 	static int oldsamplepos;
 
-	auto fullsamples = shm->samples / shm->channels;
+	const auto fullsamples = shm->samples / shm->channels;
 
 	// it is possible to miscount buffers if it has wrapped twice between
 	// calls to S_Update.  Oh well.
 #ifdef __sun__
 	soundtime = SNDDMA_GetSamples();
 #else
-	auto samplepos = SNDDMA_GetDMAPos();
+	const auto samplepos = SNDDMA_GetDMAPos();
 
 
 	if (samplepos < oldsamplepos)
@@ -807,8 +809,8 @@ void S_Update_()
 	}
 
 	// mix ahead of current position
-	unsigned endtime = soundtime + _snd_mixahead.value * shm->speed;
-	auto     samps   = shm->samples >> shm->channels - 1;
+	unsigned   endtime = soundtime + _snd_mixahead.value * shm->speed;
+	const auto samps   = shm->samples >> shm->channels - 1;
 	if (endtime - soundtime > samps)
 		endtime = soundtime + samps;
 
@@ -859,7 +861,7 @@ void S_Play()
 		}
 		else
 			Q_strcpy(name, Cmd_Argv(i));
-		auto sfx = S_PrecacheSound(name);
+		const auto sfx = S_PrecacheSound(name);
 		S_StartSound(hash++, 0, sfx, listener_origin, 1.0, 1.0);
 		i++;
 	}
@@ -880,8 +882,8 @@ void S_PlayVol()
 		}
 		else
 			Q_strcpy(name, Cmd_Argv(i));
-		auto sfx = S_PrecacheSound(name);
-		auto vol = Q_atof(Cmd_Argv(i + 1));
+		const auto sfx = S_PrecacheSound(name);
+		const auto vol = Q_atof(Cmd_Argv(i + 1));
 		S_StartSound(hash++, 0, sfx, listener_origin, vol, 1.0);
 		i += 2;
 	}
@@ -895,10 +897,10 @@ void S_SoundList()
 	auto total = 0;
 	for (sfx   = known_sfx, i = 0; i < num_sfx; i++, sfx++)
 	{
-		auto sc = static_cast<sfxcache_t *>(Cache_Check(&sfx->cache));
+		const auto sc = static_cast<sfxcache_t *>(Cache_Check(&sfx->cache));
 		if (!sc)
 			continue;
-		auto size = sc->length * sc->width * (sc->stereo + 1);
+		const auto size = sc->length * sc->width * (sc->stereo + 1);
 		total += size;
 		if (sc->loopstart >= 0)
 			Con_Printf("L");
@@ -910,17 +912,17 @@ void S_SoundList()
 }
 
 
-void S_LocalSound(char* sound)
+void S_LocalSound(char* s)
 {
 	if (nosound.value)
 		return;
 	if (!sound_started)
 		return;
 
-	auto sfx = S_PrecacheSound(sound);
+	const auto sfx = S_PrecacheSound(s);
 	if (!sfx)
 	{
-		Con_Printf("S_LocalSound: can't cache %s\n", sound);
+		Con_Printf("S_LocalSound: can't cache %s\n", s);
 		return;
 	}
 	S_StartSound(cl.viewentity, -1, sfx, vec3_origin, 1, 1);

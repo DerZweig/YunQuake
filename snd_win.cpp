@@ -21,11 +21,14 @@ enum class sndinitstat
 static qboolean wavonly;
 static qboolean dsound_init;
 static qboolean wav_init;
-static qboolean snd_firsttime = qtrue, snd_isdirect, snd_iswave;
+static qboolean snd_firsttime = qtrue;
+static qboolean snd_isdirect;
+static qboolean snd_iswave;
 static qboolean primary_format_set;
 
 static int sample16;
-static int snd_sent, snd_completed;
+static int snd_sent;
+static int snd_completed;
 
 
 /* 
@@ -34,7 +37,8 @@ static int snd_sent, snd_completed;
  */
 
 HANDLE hData;
-HPSTR  lpData, lpData2;
+HPSTR  lpData;
+HPSTR  lpData2;
 
 HGLOBAL   hWaveHdr;
 LPWAVEHDR lpWaveHdr;
@@ -48,7 +52,8 @@ DWORD gSndBufSize;
 MMTIME mmstarttime;
 
 LPDIRECTSOUND       pDS;
-LPDIRECTSOUNDBUFFER pDSBuf, pDSPBuf;
+LPDIRECTSOUNDBUFFER pDSBuf;
+LPDIRECTSOUNDBUFFER pDSPBuf;
 
 HINSTANCE hInstDS;
 
@@ -414,15 +419,13 @@ qboolean SNDDMA_InitWav()
 	shm->speed      = 11025;
 
 	memset(&format, 0, sizeof format);
-	format.wFormatTag     = WAVE_FORMAT_PCM;
-	format.nChannels      = shm->channels;
-	format.wBitsPerSample = shm->samplebits;
-	format.nSamplesPerSec = shm->speed;
-	format.nBlockAlign    = format.nChannels
-		* format.wBitsPerSample / 8;
+	format.wFormatTag      = WAVE_FORMAT_PCM;
+	format.nChannels       = shm->channels;
+	format.wBitsPerSample  = shm->samplebits;
+	format.nSamplesPerSec  = shm->speed;
+	format.nBlockAlign     = format.nChannels * format.wBitsPerSample / 8;
 	format.cbSize          = 0;
-	format.nAvgBytesPerSec = format.nSamplesPerSec
-		* format.nBlockAlign;
+	format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
 
 	/* Open a waveform device for output using window callback. */
 	while ((hr = waveOutOpen(static_cast<LPHWAVEOUT>(&hWaveOut), WAVE_MAPPER, &format, 0, 0L, CALLBACK_NULL)) != MMSYSERR_NOERROR)

@@ -871,14 +871,14 @@ void PF_precache_sound()
 	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
 	PR_CheckEmptyString(s);
 
-	for (auto i = 0; i < MAX_SOUNDS; i++)
+	for (auto& i : sv.sound_precache)
 	{
-		if (!sv.sound_precache[i])
+		if (!i)
 		{
-			sv.sound_precache[i] = s;
+			i = s;
 			return;
 		}
-		if (!strcmp(sv.sound_precache[i], s))
+		if (!strcmp(i, s))
 			return;
 	}
 	PR_RunError("PF_precache_sound: overflow");

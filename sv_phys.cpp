@@ -34,7 +34,7 @@ void SV_Physics_Toss(edict_t* ent);
 SV_CheckAllEnts
 ================
 */
-void SV_CheckAllEnts(void)
+void SV_CheckAllEnts()
 {
 	edict_t* check;
 
@@ -1113,7 +1113,7 @@ SV_Physics
 
 ================
 */
-void SV_Physics(void)
+void SV_Physics()
 {
 	edict_t* ent;
 

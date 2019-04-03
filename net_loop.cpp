@@ -5,7 +5,7 @@ qboolean localconnectpending = qfalse;
 qsocket_t* loop_client = nullptr;
 qsocket_t* loop_server = nullptr;
 
-int Loop_Init(void)
+int Loop_Init()
 {
 	if (cls.state == cactive_t::ca_dedicated)
 		return -1;
@@ -13,7 +13,7 @@ int Loop_Init(void)
 }
 
 
-void Loop_Shutdown(void)
+void Loop_Shutdown()
 {
 }
 
@@ -81,7 +81,7 @@ qsocket_t* Loop_Connect(char* host)
 }
 
 
-qsocket_t* Loop_CheckNewConnections(void)
+qsocket_t* Loop_CheckNewConnections()
 {
 	if (!localconnectpending)
 		return nullptr;

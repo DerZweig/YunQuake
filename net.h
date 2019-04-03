@@ -136,13 +136,13 @@ struct net_landriver_t
 	char* name;
 	qboolean initialized;
 	int controlSock;
-	int (*Init)(void);
-	void (*Shutdown)(void);
+	int (*Init)();
+	void (*Shutdown)();
 	void (*Listen)(qboolean state);
 	int (*OpenSocket)(int port);
 	int (*CloseSocket)(int socket);
 	int (*Connect)(int socket, qsockaddr* addr);
-	int (*CheckNewConnections)(void);
+	int (*CheckNewConnections)();
 	int (*Read)(int socket, byte* buf, int len, qsockaddr* addr);
 	int (*Write)(int socket, byte* buf, int len, qsockaddr* addr);
 	int (*Broadcast)(int socket, byte* buf, int len);
@@ -164,18 +164,18 @@ struct net_driver_t
 {
 	char* name;
 	qboolean initialized;
-	int (*Init)(void);
+	int (*Init)();
 	void (*Listen)(qboolean state);
 	void (*SearchForHosts)(qboolean xmit);
 	qsocket_t*(*Connect)(char* host);
-	qsocket_t*(*CheckNewConnections)(void);
+	qsocket_t*(*CheckNewConnections)();
 	int (*QGetMessage)(qsocket_t* sock);
 	int (*QSendMessage)(qsocket_t* sock, sizebuf_t* data);
 	int (*SendUnreliableMessage)(qsocket_t* sock, sizebuf_t* data);
 	qboolean (*CanSendMessage)(qsocket_t* sock);
 	qboolean (*CanSendUnreliableMessage)(qsocket_t* sock);
 	void (*Close)(qsocket_t* sock);
-	void (*Shutdown)(void);
+	void (*Shutdown)();
 	int controlSock;
 };
 
@@ -194,9 +194,9 @@ extern int messagesReceived;
 extern int unreliableMessagesSent;
 extern int unreliableMessagesReceived;
 
-qsocket_t* NET_NewQSocket(void);
+qsocket_t* NET_NewQSocket();
 void NET_FreeQSocket(qsocket_t*);
-double SetNetTime(void);
+double SetNetTime();
 
 
 #define HOSTCACHESIZE	8
@@ -245,10 +245,10 @@ extern double net_time;
 extern sizebuf_t net_message;
 extern int net_activeconnections;
 
-void NET_Init(void);
-void NET_Shutdown(void);
+void NET_Init();
+void NET_Shutdown();
 
-qsocket_t* NET_CheckNewConnections(void);
+qsocket_t* NET_CheckNewConnections();
 // returns a new connection number if there is one pending, else -1
 
 qsocket_t* NET_Connect(char* host);
@@ -285,7 +285,7 @@ void NET_Close(qsocket_t* sock);
 // from a server.
 // A netcon_t number will not be reused until this function is called for it
 
-void NET_Poll(void);
+void NET_Poll();
 
 
 struct PollProcedure
@@ -312,4 +312,4 @@ extern qboolean slistInProgress;
 extern qboolean slistSilent;
 extern qboolean slistLocal;
 
-void NET_Slist_f(void);
+void NET_Slist_f();

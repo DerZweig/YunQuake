@@ -19,8 +19,8 @@ extern LPDIRECTSOUNDBUFFER pDSBuf;
 extern DWORD gSndBufSize;
 //#define SNDBUFSIZE 65536
 
-void VID_LockBuffer(void);
-void VID_UnlockBuffer(void);
+void VID_LockBuffer();
+void VID_UnlockBuffer();
 
 #endif
 
@@ -38,12 +38,12 @@ extern HWND mainwindow;
 extern qboolean ActiveApp, Minimized;
 
 
-void IN_ShowMouse(void);
-void IN_DeactivateMouse(void);
-void IN_HideMouse(void);
-void IN_ActivateMouse(void);
-void IN_RestoreOriginalMouseState(void);
-void IN_SetQuakeMouseState(void);
+void IN_ShowMouse();
+void IN_DeactivateMouse();
+void IN_HideMouse();
+void IN_ActivateMouse();
+void IN_RestoreOriginalMouseState();
+void IN_SetQuakeMouseState();
 void IN_MouseEvent(int mstate);
 
 extern qboolean winsock_lib_initialized;
@@ -56,17 +56,17 @@ extern qboolean mouseinitialized;
 
 extern HANDLE hinput, houtput;
 
-void IN_UpdateClipCursor(void);
+void IN_UpdateClipCursor();
 void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify);
 
-void S_BlockSound(void);
-void S_UnblockSound(void);
+void S_BlockSound();
+void S_UnblockSound();
 
-void VID_SetDefaultMode(void);
+void VID_SetDefaultMode();
 
 extern int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
-extern int (PASCAL FAR *pWSACleanup)(void);
-extern int (PASCAL FAR *pWSAGetLastError)(void);
+extern int (PASCAL FAR *pWSACleanup)();
+extern int (PASCAL FAR *pWSAGetLastError)();
 extern SOCKET (PASCAL FAR *psocket)(int af, int type, int protocol);
 extern int (PASCAL FAR *pioctlsocket)(SOCKET s, long cmd, u_long FAR * argp);
 extern int (PASCAL FAR *psetsockopt)(SOCKET s, int level, int optname, const char FAR * optval, int optlen);
@@ -84,4 +84,4 @@ extern int (PASCAL FAR *pgetsockname)(SOCKET s, sockaddr FAR * name, int FAR * n
 #define CCOM_SET_SCR_LINES	0x5
 
 void InitConProc(HANDLE hFile, HANDLE heventParent, HANDLE heventChild);
-void DeinitConProc(void);
+void DeinitConProc();

@@ -1,13 +1,13 @@
 #pragma once
-int Datagram_Init(void);
+int Datagram_Init();
 void Datagram_Listen(qboolean state);
 void Datagram_SearchForHosts(qboolean xmit);
 qsocket_t* Datagram_Connect(char* host);
-qsocket_t* Datagram_CheckNewConnections(void);
+qsocket_t* Datagram_CheckNewConnections();
 int Datagram_GetMessage(qsocket_t* sock);
 int Datagram_SendMessage(qsocket_t* sock, sizebuf_t* data);
 int Datagram_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data);
 qboolean Datagram_CanSendMessage(qsocket_t* sock);
 qboolean Datagram_CanSendUnreliableMessage(qsocket_t* sock);
 void Datagram_Close(qsocket_t* sock);
-void Datagram_Shutdown(void);
+void Datagram_Shutdown();

@@ -98,19 +98,19 @@ extern texture_t* r_notexture_mip;
 
 struct msurface_t;
 
-void R_Init(void);
-void R_InitTextures(void);
-void R_RenderView(void); // must set r_refdef first
+void R_Init();
+void R_InitTextures();
+void R_RenderView(); // must set r_refdef first
 // called whenever r_refdef or vid change
 void R_InitSky(texture_t * mt); // called at level load
 
 void R_AddEfrags(entity_t* ent);
 void R_RemoveEfrags(entity_t* ent);
 
-void R_NewMap(void);
+void R_NewMap();
 
 
-void R_ParseParticleEffect(void);
+void R_ParseParticleEffect();
 void R_RunParticleEffect(vec3_t org, vec3_t dir, int color, int count);
 void R_RocketTrail(vec3_t start, vec3_t end, int type);
 
@@ -121,21 +121,21 @@ void R_ParticleExplosion2(vec3_t org, int colorStart, int colorLength);
 void R_LavaSplash(vec3_t org);
 void R_TeleportSplash(vec3_t org);
 
-void R_PushDlights(void);
+void R_PushDlights();
 void R_DrawSkyChain(msurface_t *s);
 
-void R_InitParticles(void);
-void R_DrawParticles(void);
-void R_ClearParticles(void);
+void R_InitParticles();
+void R_DrawParticles();
+void R_ClearParticles();
 
-void R_RenderDlights(void);
+void R_RenderDlights();
 int R_LightPoint(vec3_t p);
 void R_MarkLights(dlight_t* light, int bit, mnode_t* node);
-void R_AnimateLight(void);
+void R_AnimateLight();
 
-void R_DrawWorld(void);
-void R_MarkLeaves(void);
-void R_DrawWaterSurfaces(void);
+void R_DrawWorld();
+void R_MarkLeaves();
+void R_DrawWaterSurfaces();
 void R_DrawBrushModel(entity_t *e);
 void R_RenderBrushPoly(msurface_t *fa);
 qboolean R_CullBox(vec3_t mins, vec3_t maxs);

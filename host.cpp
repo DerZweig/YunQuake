@@ -128,7 +128,7 @@ void Host_Error(char* error, ...)
 Host_FindMaxClients
 ================
 */
-void Host_FindMaxClients(void)
+void Host_FindMaxClients()
 {
 	svs.maxclients = 1;
 
@@ -178,7 +178,7 @@ void Host_FindMaxClients(void)
 Host_InitLocal
 ======================
 */
-void Host_InitLocal(void)
+void Host_InitLocal()
 {
 	Host_InitCommands();
 
@@ -215,7 +215,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration(void)
+void Host_WriteConfiguration()
 {
 	// dedicated servers initialize the host but don't parse and set the
 	// config.cfg cvars
@@ -443,7 +443,7 @@ This clears all the memory used by both the client and server, but does
 not reinitialize anything.
 ================
 */
-void Host_ClearMemory(void)
+void Host_ClearMemory()
 {
 	Con_DPrintf("Clearing memory\n");
 	Mod_ClearAll();
@@ -497,7 +497,7 @@ Host_GetConsoleCommands
 Add them exactly as if they had been typed at the console
 ===================
 */
-void Host_GetConsoleCommands(void)
+void Host_GetConsoleCommands()
 {
 	while (true)
 	{
@@ -516,7 +516,7 @@ Host_ServerFrame
 ==================
 */
 
-void Host_ServerFrame(void)
+void Host_ServerFrame()
 {
 	// run the world state	
 	pr_global_struct->frametime = host_frametime;
@@ -833,7 +833,7 @@ FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
 to run quit through here before the final handoff to the sys code.
 ===============
 */
-void Host_Shutdown(void)
+void Host_Shutdown()
 {
 	static auto isdown = qfalse;
 

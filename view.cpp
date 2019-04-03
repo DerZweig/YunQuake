@@ -82,7 +82,7 @@ V_CalcBob
 
 ===============
 */
-float V_CalcBob(void)
+float V_CalcBob()
 {
 	float cycle = cl.time - static_cast<int>(cl.time / cl_bobcycle.value) * cl_bobcycle.value;
 	cycle /= cl_bobcycle.value;
@@ -112,7 +112,7 @@ cvar_t v_centermove = {"v_centermove", "0.15", qfalse};
 cvar_t v_centerspeed = {"v_centerspeed","500"};
 
 
-void V_StartPitchDrift(void)
+void V_StartPitchDrift()
 {
 	if (cl.nodrift || !cl.pitchvel)
 	{
@@ -122,7 +122,7 @@ void V_StartPitchDrift(void)
 	}
 }
 
-void V_StopPitchDrift(void)
+void V_StopPitchDrift()
 {
 	cl.laststop = cl.time;
 	cl.nodrift = qtrue;
@@ -142,7 +142,7 @@ Drifting is enabled when the center view key is hit, mlook is released and
 lookspring is non 0, or when 
 ===============
 */
-void V_DriftPitch(void)
+void V_DriftPitch()
 {
 	if (noclip_anglehack || !cl.onground || cls.demoplayback)
 	{
@@ -248,7 +248,7 @@ void BuildGammaTable(float g)
 V_CheckGamma
 =================
 */
-qboolean V_CheckGamma(void)
+qboolean V_CheckGamma()
 {
 	static float oldgammavalue;
 
@@ -268,7 +268,7 @@ qboolean V_CheckGamma(void)
 V_ParseDamage
 ===============
 */
-void V_ParseDamage(void)
+void V_ParseDamage()
 {
 	vec3_t from;
 	vec3_t forward;
@@ -337,7 +337,7 @@ void V_ParseDamage(void)
 V_cshift_f
 ==================
 */
-void V_cshift_f(void)
+void V_cshift_f()
 {
 	cshift_empty.destcolor[0] = atoi(Cmd_Argv(1));
 	cshift_empty.destcolor[1] = atoi(Cmd_Argv(2));
@@ -353,7 +353,7 @@ V_BonusFlash_f
 When you run over an item, the server sends this command
 ==================
 */
-void V_BonusFlash_f(void)
+void V_BonusFlash_f()
 {
 	cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
 	cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
@@ -392,7 +392,7 @@ void V_SetContentsColor(int contents)
 V_CalcPowerupCshift
 =============
 */
-void V_CalcPowerupCshift(void)
+void V_CalcPowerupCshift()
 {
 	if (cl.items & IT_QUAD)
 	{
@@ -431,7 +431,7 @@ void V_CalcPowerupCshift(void)
 V_CalcBlend
 =============
 */
-void V_CalcBlend(void)
+void V_CalcBlend()
 {
 	float r = 0;
 	float g = 0;
@@ -471,7 +471,7 @@ void V_CalcBlend(void)
 V_UpdatePalette
 =============
 */
-void V_UpdatePalette(void)
+void V_UpdatePalette()
 {
 	int i;
 	byte pal[768];
@@ -576,7 +576,7 @@ float angledelta(float a)
 CalcGunAngle
 ==================
 */
-void CalcGunAngle(void)
+void CalcGunAngle()
 {
 	static float oldyaw = 0;
 	static float oldpitch = 0;
@@ -633,7 +633,7 @@ void CalcGunAngle(void)
 V_BoundOffsets
 ==============
 */
-void V_BoundOffsets(void)
+void V_BoundOffsets()
 {
 	auto ent = &cl_entities[cl.viewentity];
 
@@ -661,7 +661,7 @@ V_AddIdle
 Idle swaying
 ==============
 */
-void V_AddIdle(void)
+void V_AddIdle()
 {
 	r_refdef.viewangles[ROLL] += v_idlescale.value * sin(cl.time * v_iroll_cycle.value) * v_iroll_level.value;
 	r_refdef.viewangles[PITCH] += v_idlescale.value * sin(cl.time * v_ipitch_cycle.value) * v_ipitch_level.value;
@@ -676,7 +676,7 @@ V_CalcViewRoll
 Roll is induced by movement and damage
 ==============
 */
-void V_CalcViewRoll(void)
+void V_CalcViewRoll()
 {
 	auto side = V_CalcRoll(cl_entities[cl.viewentity].angles, cl.velocity);
 	r_refdef.viewangles[ROLL] += side;
@@ -701,7 +701,7 @@ V_CalcIntermissionRefdef
 
 ==================
 */
-void V_CalcIntermissionRefdef(void)
+void V_CalcIntermissionRefdef()
 {
 	auto ent = &cl_entities[cl.viewentity]; // ent is the player model (visible when out of body)
 	auto view = &cl.viewent; // view is the weapon model (only visible from inside body)
@@ -723,7 +723,7 @@ V_CalcRefdef
 
 ==================
 */
-void V_CalcRefdef(void)
+void V_CalcRefdef()
 {
 	entity_t* ent;
 	entity_t* view;
@@ -851,7 +851,7 @@ the entity origin, so any view position inside that will be valid
 */
 extern vrect_t scr_vrect;
 
-void V_RenderView(void)
+void V_RenderView()
 {
 	if (con_forcedup)
 		return;
@@ -920,7 +920,7 @@ void V_RenderView(void)
 V_Init
 =============
 */
-void V_Init(void)
+void V_Init()
 {
 	Cmd_AddCommand("v_cshift", V_cshift_f);
 	Cmd_AddCommand("bf", V_BonusFlash_f);

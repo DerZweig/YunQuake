@@ -11,7 +11,7 @@
 #include <GL/glu.h>
 
 void GL_BeginRendering(int* x, int* y, int* width, int* height);
-void GL_EndRendering(void);
+void GL_EndRendering();
 
 
 extern int texture_extension_number;
@@ -51,7 +51,7 @@ extern int glx, gly, glwidth, glheight;
 #define BACKFACE_EPSILON	0.01
 
 
-void R_TimeRefresh_f(void);
+void R_TimeRefresh_f();
 texture_t* R_TextureAnimation(texture_t* base);
 
 struct surfcache_t
@@ -185,15 +185,15 @@ extern lpSelTexFUNC qglSelectTextureSGIS;
 extern qboolean gl_mtexable;
 extern	int glwidth, glheight;
 
-void GL_Set2D(void);
-void GL_DisableMultitexture(void);
-void GL_EnableMultitexture(void);
+void GL_Set2D();
+void GL_DisableMultitexture();
+void GL_EnableMultitexture();
 int GL_LoadPicTexture(qpic_t *pic);
 void GL_SubdivideSurface(msurface_t *fa);
 void GL_MakeAliasModelDisplayLists(model_t* m, aliashdr_t* hdr);
 
 
-void GL_BuildLightmaps(void);
+void GL_BuildLightmaps();
 
 
 void EmitWaterPolys(msurface_t *fa);

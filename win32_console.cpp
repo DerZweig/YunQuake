@@ -62,7 +62,7 @@ void InitConProc(HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
 }
 
 
-void DeinitConProc(void)
+void DeinitConProc()
 {
 	if (heventDone)
 		SetEvent(heventDone);

@@ -132,8 +132,8 @@ static DIDATAFORMAT df = {
 };
 
 // forward-referenced functions
-void IN_StartupJoystick(void);
-void Joy_AdvancedUpdate_f(void);
+void IN_StartupJoystick();
+void Joy_AdvancedUpdate_f();
 void IN_JoyMove(usercmd_t* cmd);
 
 
@@ -142,7 +142,7 @@ void IN_JoyMove(usercmd_t* cmd);
 Force_CenterView_f
 ===========
 */
-void Force_CenterView_f(void)
+void Force_CenterView_f()
 {
 	cl.viewangles[PITCH] = 0;
 }
@@ -153,7 +153,7 @@ void Force_CenterView_f(void)
 IN_UpdateClipCursor
 ===========
 */
-void IN_UpdateClipCursor(void)
+void IN_UpdateClipCursor()
 {
 	if (mouseinitialized && mouseactive && !dinput)
 	{
@@ -167,7 +167,7 @@ void IN_UpdateClipCursor(void)
 IN_ShowMouse
 ===========
 */
-void IN_ShowMouse(void)
+void IN_ShowMouse()
 {
 	if (!mouseshowtoggle)
 	{
@@ -182,7 +182,7 @@ void IN_ShowMouse(void)
 IN_HideMouse
 ===========
 */
-void IN_HideMouse(void)
+void IN_HideMouse()
 {
 	if (mouseshowtoggle)
 	{
@@ -197,7 +197,7 @@ void IN_HideMouse(void)
 IN_ActivateMouse
 ===========
 */
-void IN_ActivateMouse(void)
+void IN_ActivateMouse()
 {
 	mouseactivatetoggle = qtrue;
 
@@ -238,7 +238,7 @@ void IN_ActivateMouse(void)
 IN_SetQuakeMouseState
 ===========
 */
-void IN_SetQuakeMouseState(void)
+void IN_SetQuakeMouseState()
 {
 	if (mouseactivatetoggle)
 		IN_ActivateMouse();
@@ -250,7 +250,7 @@ void IN_SetQuakeMouseState(void)
 IN_DeactivateMouse
 ===========
 */
-void IN_DeactivateMouse(void)
+void IN_DeactivateMouse()
 {
 	mouseactivatetoggle = qfalse;
 
@@ -286,7 +286,7 @@ void IN_DeactivateMouse(void)
 IN_RestoreOriginalMouseState
 ===========
 */
-void IN_RestoreOriginalMouseState(void)
+void IN_RestoreOriginalMouseState()
 {
 	if (mouseactivatetoggle)
 	{
@@ -306,7 +306,7 @@ void IN_RestoreOriginalMouseState(void)
 IN_InitDInput
 ===========
 */
-qboolean IN_InitDInput(void)
+qboolean IN_InitDInput()
 {
 	HRESULT hr;
 	DIPROPDWORD dipdw = {
@@ -396,7 +396,7 @@ qboolean IN_InitDInput(void)
 IN_StartupMouse
 ===========
 */
-void IN_StartupMouse(void)
+void IN_StartupMouse()
 {
 	if (COM_CheckParm("-nomouse"))
 		return;
@@ -455,7 +455,7 @@ void IN_StartupMouse(void)
 IN_Init
 ===========
 */
-void IN_Init(void)
+void IN_Init()
 {
 	// mouse variables
 	Cvar_RegisterVariable(&m_filter);
@@ -495,7 +495,7 @@ void IN_Init(void)
 IN_Shutdown
 ===========
 */
-void IN_Shutdown(void)
+void IN_Shutdown()
 {
 	IN_DeactivateMouse();
 	IN_ShowMouse();
@@ -707,7 +707,7 @@ void IN_Move(usercmd_t* cmd)
 IN_Accumulate
 ===========
 */
-void IN_Accumulate(void)
+void IN_Accumulate()
 {
 	if (mouseactive)
 	{
@@ -730,7 +730,7 @@ void IN_Accumulate(void)
 IN_ClearStates
 ===================
 */
-void IN_ClearStates(void)
+void IN_ClearStates()
 {
 	if (mouseactive)
 	{
@@ -746,7 +746,7 @@ void IN_ClearStates(void)
 IN_StartupJoystick 
 =============== 
 */
-void IN_StartupJoystick(void)
+void IN_StartupJoystick()
 {
 	int numdevs;
 	JOYCAPS jc;
@@ -841,7 +841,7 @@ PDWORD RawValuePointer(int axis)
 Joy_AdvancedUpdate_f
 ===========
 */
-void Joy_AdvancedUpdate_f(void)
+void Joy_AdvancedUpdate_f()
 {
 	// called once by IN_ReadJoystick and by user whenever an update is needed
 	// cvars are now available
@@ -916,7 +916,7 @@ void Joy_AdvancedUpdate_f(void)
 IN_Commands
 ===========
 */
-void IN_Commands(void)
+void IN_Commands()
 {
 	int i;
 	int key_index;
@@ -986,7 +986,7 @@ void IN_Commands(void)
 IN_ReadJoystick
 =============== 
 */
-qboolean IN_ReadJoystick(void)
+qboolean IN_ReadJoystick()
 {
 	memset(&ji, 0, sizeof ji);
 	ji.dwSize = sizeof ji;

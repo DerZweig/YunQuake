@@ -40,7 +40,7 @@ int static_registered = 1; // only for startup check, then set
 
 qboolean msg_suppress_1 = 0;
 
-void COM_InitFilesystem(void);
+void COM_InitFilesystem();
 void Cache_FreeLow(int new_low_hunk);
 void Cache_FreeHigh(int new_high_hunk);
 
@@ -571,14 +571,14 @@ void MSG_WriteAngle(sizebuf_t* sb, float f)
 int msg_readcount;
 qboolean msg_badread;
 
-void MSG_BeginReading(void)
+void MSG_BeginReading()
 {
 	msg_readcount = 0;
 	msg_badread = qfalse;
 }
 
 // returns -1 and sets msg_badread if no more characters are available
-int MSG_ReadChar(void)
+int MSG_ReadChar()
 {
 	if (msg_readcount + 1 > net_message.cursize)
 	{
@@ -592,7 +592,7 @@ int MSG_ReadChar(void)
 	return c;
 }
 
-int MSG_ReadByte(void)
+int MSG_ReadByte()
 {
 	if (msg_readcount + 1 > net_message.cursize)
 	{
@@ -606,7 +606,7 @@ int MSG_ReadByte(void)
 	return c;
 }
 
-int MSG_ReadShort(void)
+int MSG_ReadShort()
 {
 	if (msg_readcount + 2 > net_message.cursize)
 	{
@@ -622,7 +622,7 @@ int MSG_ReadShort(void)
 	return c;
 }
 
-int MSG_ReadLong(void)
+int MSG_ReadLong()
 {
 	if (msg_readcount + 4 > net_message.cursize)
 	{
@@ -640,7 +640,7 @@ int MSG_ReadLong(void)
 	return c;
 }
 
-float MSG_ReadFloat(void)
+float MSG_ReadFloat()
 {
 	union
 	{
@@ -660,7 +660,7 @@ float MSG_ReadFloat(void)
 	return dat.f;
 }
 
-char* MSG_ReadString(void)
+char* MSG_ReadString()
 {
 	static char string[2048];
 
@@ -680,12 +680,12 @@ char* MSG_ReadString(void)
 	return string;
 }
 
-float MSG_ReadCoord(void)
+float MSG_ReadCoord()
 {
 	return MSG_ReadShort() * (1.0 / 8);
 }
 
-float MSG_ReadAngle(void)
+float MSG_ReadAngle()
 {
 	return MSG_ReadChar() * (360.0 / 256);
 }
@@ -970,7 +970,7 @@ Immediately exits out if an alternate game was attempted to be started without
 being registered.
 ================
 */
-void COM_CheckRegistered(void)
+void COM_CheckRegistered()
 {
 	int h;
 	unsigned short check[128];
@@ -1003,7 +1003,7 @@ void COM_CheckRegistered(void)
 }
 
 
-void COM_Path_f(void);
+void COM_Path_f();
 
 
 /*
@@ -1209,7 +1209,7 @@ COM_Path_f
 
 ============
 */
-void COM_Path_f(void)
+void COM_Path_f()
 {
 	Con_Printf("Current search path:\n");
 	for (auto s = com_searchpaths; s; s = s->next)
@@ -1662,7 +1662,7 @@ void COM_AddGameDirectory(char* dir)
 COM_InitFilesystem
 ================
 */
-void COM_InitFilesystem(void)
+void COM_InitFilesystem()
 {
 	char basedir[MAX_OSPATH];
 
@@ -1947,7 +1947,7 @@ void Z_Print(memzone_t* zone)
 Z_CheckHeap
 ========================
 */
-void Z_CheckHeap(void)
+void Z_CheckHeap()
 {
 	for (auto block = mainzone->blocklist.next; ; block = block->next)
 	{
@@ -1990,7 +1990,7 @@ Hunk_Check
 Run consistancy and sentinal trahing checks
 ==============
 */
-void Hunk_Check(void)
+void Hunk_Check()
 {
 	for (auto h = reinterpret_cast<hunk_t *>(hunk_base); reinterpret_cast<byte *>(h) != hunk_base + hunk_low_used;)
 	{
@@ -2128,7 +2128,7 @@ void* Hunk_Alloc(int size)
 	return Hunk_AllocName(size, "unknown");
 }
 
-int Hunk_LowMark(void)
+int Hunk_LowMark()
 {
 	return hunk_low_used;
 }
@@ -2141,7 +2141,7 @@ void Hunk_FreeToLowMark(int mark)
 	hunk_low_used = mark;
 }
 
-int Hunk_HighMark(void)
+int Hunk_HighMark()
 {
 	if (hunk_tempactive)
 	{
@@ -2437,7 +2437,7 @@ Cache_Flush
 Throw everything out, so new data will be demand cached
 ============
 */
-void Cache_Flush(void)
+void Cache_Flush()
 {
 	while (cache_head.next != &cache_head)
 		Cache_Free(cache_head.next->user); // reclaim the space
@@ -2450,7 +2450,7 @@ Cache_Print
 
 ============
 */
-void Cache_Print(void)
+void Cache_Print()
 {
 	for (auto cd = cache_head.next; cd != &cache_head; cd = cd->next)
 	{
@@ -2464,7 +2464,7 @@ Cache_Report
 
 ============
 */
-void Cache_Report(void)
+void Cache_Report()
 {
 	Con_DPrintf("%4.1f megabyte data cache\n", (hunk_size - hunk_high_used - hunk_low_used) / static_cast<float>(1024 * 1024));
 }
@@ -2475,7 +2475,7 @@ Cache_Compact
 
 ============
 */
-void Cache_Compact(void)
+void Cache_Compact()
 {
 }
 
@@ -2485,7 +2485,7 @@ Cache_Init
 
 ============
 */
-void Cache_Init(void)
+void Cache_Init()
 {
 	cache_head.next = cache_head.prev = &cache_head;
 	cache_head.lru_next = cache_head.lru_prev = &cache_head;

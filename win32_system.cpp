@@ -29,7 +29,7 @@ static HANDLE hFile;
 static HANDLE heventParent;
 static HANDLE heventChild;
 
-void Sys_InitFloatTime(void);
+void Sys_InitFloatTime();
 
 volatile int sys_checksum;
 
@@ -68,7 +68,7 @@ FILE IO
 #define	MAX_HANDLES		10
 FILE* sys_handles[MAX_HANDLES];
 
-int findhandle(void)
+int findhandle()
 {
 	for (auto i = 1; i < MAX_HANDLES; i++)
 		if (!sys_handles[i])
@@ -199,7 +199,7 @@ SYSTEM IO
 Sys_Init
 ================
 */
-void Sys_Init(void)
+void Sys_Init()
 {
 	LARGE_INTEGER PerformanceFreq;
 
@@ -320,7 +320,7 @@ void Sys_Printf(char* fmt, ...)
 	}
 }
 
-void Sys_Quit(void)
+void Sys_Quit()
 {
 	Host_Shutdown();
 
@@ -342,7 +342,7 @@ void Sys_Quit(void)
 Sys_FloatTime
 ================
 */
-double Sys_FloatTime(void)
+double Sys_FloatTime()
 {
 	static int sametimecount;
 	static unsigned int oldtime;
@@ -403,7 +403,7 @@ double Sys_FloatTime(void)
 Sys_InitFloatTime
 ================
 */
-void Sys_InitFloatTime(void)
+void Sys_InitFloatTime()
 {
 	Sys_FloatTime();
 
@@ -422,7 +422,7 @@ void Sys_InitFloatTime(void)
 }
 
 
-char* Sys_ConsoleInput(void)
+char* Sys_ConsoleInput()
 {
 	static char text[256];
 	static int len;
@@ -501,13 +501,13 @@ char* Sys_ConsoleInput(void)
 	return nullptr;
 }
 
-void Sys_Sleep(void)
+void Sys_Sleep()
 {
 	Sleep(1);
 }
 
 
-void Sys_SendKeyEvents(void)
+void Sys_SendKeyEvents()
 {
 	MSG msg;
 

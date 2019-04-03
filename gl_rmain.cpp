@@ -721,7 +721,7 @@ void R_DrawAliasModel(entity_t* e)
 R_DrawEntitiesOnList
 =============
 */
-void R_DrawEntitiesOnList(void)
+void R_DrawEntitiesOnList()
 {
 	int i;
 
@@ -764,7 +764,7 @@ void R_DrawEntitiesOnList(void)
 R_DrawViewModel
 =============
 */
-void R_DrawViewModel(void)
+void R_DrawViewModel()
 {
 	vec3_t dist;
 	dlight_t* dl;
@@ -826,7 +826,7 @@ void R_DrawViewModel(void)
 R_PolyBlend
 ============
 */
-void R_PolyBlend(void)
+void R_PolyBlend()
 {
 	if (!gl_polyblend.value)
 		return;
@@ -873,7 +873,7 @@ int SignbitsForPlane(mplane_t* out)
 }
 
 
-void R_SetFrustum(void)
+void R_SetFrustum()
 {
 	int i;
 
@@ -913,7 +913,7 @@ void R_SetFrustum(void)
 R_SetupFrame
 ===============
 */
-void R_SetupFrame(void)
+void R_SetupFrame()
 {
 	// don't allow cheats in multiplayer
 	if (cl.maxclients > 1)
@@ -959,7 +959,7 @@ void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble z
 R_SetupGL
 =============
 */
-void R_SetupGL(void)
+void R_SetupGL()
 {
 	//
 	// set up viewpoint
@@ -1038,7 +1038,7 @@ R_RenderScene
 r_refdef must be set before the first call
 ================
 */
-void R_RenderScene(void)
+void R_RenderScene()
 {
 	R_SetupFrame();
 
@@ -1067,7 +1067,7 @@ void R_RenderScene(void)
 R_Clear
 =============
 */
-void R_Clear(void)
+void R_Clear()
 {
 	if (r_mirroralpha.value != 1.0)
 	{
@@ -1119,7 +1119,7 @@ void R_Clear(void)
 R_Mirror
 =============
 */
-void R_Mirror(void)
+void R_Mirror()
 {
 	if (!mirror)
 		return;
@@ -1188,7 +1188,7 @@ R_RenderView
 r_refdef must be set before the first call
 ================
 */
-void R_RenderView(void)
+void R_RenderView()
 {
 	double time1 = 0;
 	if (r_norefresh.value)

@@ -15,7 +15,7 @@ static struct
 	long session;
 } next;
 
-int VCR_Init(void)
+int VCR_Init()
 {
 	net_drivers[0].Init = VCR_Init;
 
@@ -32,7 +32,7 @@ int VCR_Init(void)
 	return 0;
 }
 
-void VCR_ReadNext(void)
+void VCR_ReadNext()
 {
 	if (Sys_FileRead(vcrFile, &next, sizeof next) == 0)
 	{
@@ -49,7 +49,7 @@ void VCR_Listen(qboolean state)
 }
 
 
-void VCR_Shutdown(void)
+void VCR_Shutdown()
 {
 }
 
@@ -123,7 +123,7 @@ qsocket_t* VCR_Connect(char* host)
 }
 
 
-qsocket_t* VCR_CheckNewConnections(void)
+qsocket_t* VCR_CheckNewConnections()
 {
 	if (host_time != next.time || next.op != VCR_OP_CONNECT)
 		Sys_Error("VCR missmatch");

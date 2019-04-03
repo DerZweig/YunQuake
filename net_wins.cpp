@@ -15,8 +15,8 @@ static unsigned long myAddr;
 qboolean winsock_lib_initialized;
 
 int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
-int (PASCAL FAR *pWSACleanup)(void);
-int (PASCAL FAR *pWSAGetLastError)(void);
+int (PASCAL FAR *pWSACleanup)();
+int (PASCAL FAR *pWSAGetLastError)();
 SOCKET (PASCAL FAR *psocket)(int af, int type, int protocol);
 int (PASCAL FAR *pioctlsocket)(SOCKET s, long cmd, u_long FAR * argp);
 int (PASCAL FAR *psetsockopt)(SOCKET s, int level, int optname, const char FAR * optval, int optlen);
@@ -37,7 +37,7 @@ WSADATA winsockdata;
 
 static double blocktime;
 
-BOOL PASCAL FAR BlockingHook(void)
+BOOL PASCAL FAR BlockingHook()
 {
 	MSG msg;
 
@@ -86,7 +86,7 @@ void WINS_GetLocalAddress()
 }
 
 
-int WINS_Init(void)
+int WINS_Init()
 {
 	int i;
 	char buff[MAXHOSTNAMELEN];
@@ -213,7 +213,7 @@ int WINS_Init(void)
 
 //=============================================================================
 
-void WINS_Shutdown(void)
+void WINS_Shutdown()
 {
 	WINS_Listen(qfalse);
 	WINS_CloseSocket(net_controlsocket);
@@ -341,7 +341,7 @@ int WINS_Connect(int socket, qsockaddr* addr)
 
 //=============================================================================
 
-int WINS_CheckNewConnections(void)
+int WINS_CheckNewConnections()
 {
 	char buf[4096];
 

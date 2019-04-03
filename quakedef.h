@@ -42,8 +42,8 @@
 #define __i386__	1
 #endif
 
-void VID_LockBuffer(void);
-void VID_UnlockBuffer(void);
+void VID_LockBuffer();
+void VID_UnlockBuffer();
 
 #else
 
@@ -299,24 +299,24 @@ extern int host_framecount; // incremented every frame, never reset
 extern double realtime; // not bounded in any way, changed at
 // start of every frame, never reset
 
-void Host_ClearMemory(void);
-void Host_ServerFrame(void);
-void Host_InitCommands(void);
+void Host_ClearMemory();
+void Host_ServerFrame();
+void Host_InitCommands();
 void Host_Init(quakeparms_t* parms);
-void Host_Shutdown(void);
+void Host_Shutdown();
 void Host_Error(char* error, ...);
 void Host_EndGame(char* message, ...);
 void Host_Frame(float time);
-void Host_Quit_f(void);
+void Host_Quit_f();
 void Host_ClientCommands(char* fmt, ...);
 void Host_ShutdownServer(qboolean crash);
 
-void IN_Init(void);
-void IN_Shutdown(void);
-void IN_Commands(void);
+void IN_Init();
+void IN_Shutdown();
+void IN_Commands();
 void IN_Move(usercmd_t* cmd);
-void IN_ClearStates(void);
-void IN_Accumulate(void);
+void IN_ClearStates();
+void IN_Accumulate();
 
 int Sys_FileOpenRead(char* path, int* hndl);
 int Sys_FileOpenAppend(char * path);
@@ -329,24 +329,24 @@ int Sys_FileTime(char* path);
 void Sys_mkdir(char* path);
 void Sys_Error(char* error, ...);
 void Sys_Printf(char* fmt, ...);
-void Sys_Quit(void);
-double Sys_FloatTime(void);
-char* Sys_ConsoleInput(void);
-void Sys_Sleep(void);
-void Sys_SendKeyEvents(void);
+void Sys_Quit();
+double Sys_FloatTime();
+char* Sys_ConsoleInput();
+void Sys_Sleep();
+void Sys_SendKeyEvents();
 
 
 
 extern viddef_t vid; // global video state
 extern unsigned short d_8to16table[256];
 extern unsigned d_8to24table[256];
-extern void(*vid_menudrawfn)(void);
+extern void(*vid_menudrawfn)();
 extern void(*vid_menukeyfn)(int key);
 
 void VID_SetPalette(unsigned char* palette);
 void VID_ShiftPalette(unsigned char* palette);
 void VID_Init(unsigned char* palette);
-void VID_Shutdown(void);
+void VID_Shutdown();
 int VID_SetMode(int modenum, unsigned char* palette);
 
 extern qboolean msg_suppress_1; 
@@ -359,6 +359,6 @@ extern int minimum_memory;
 //
 extern cvar_t chase_active;
 
-void Chase_Init(void);
-void Chase_Reset(void);
-void Chase_Update(void);
+void Chase_Init();
+void Chase_Reset();
+void Chase_Update();

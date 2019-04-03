@@ -12,7 +12,7 @@ vec3_t chase_dest;
 vec3_t chase_dest_angles;
 
 
-void Chase_Init(void)
+void Chase_Init()
 {
 	Cvar_RegisterVariable(&chase_back);
 	Cvar_RegisterVariable(&chase_up);
@@ -20,7 +20,7 @@ void Chase_Init(void)
 	Cvar_RegisterVariable(&chase_active);
 }
 
-void Chase_Reset(void)
+void Chase_Reset()
 {
 	// for respawning and teleporting
 	//	start position 12 units behind head
@@ -36,7 +36,7 @@ void TraceLine(vec3_t start, vec3_t end, vec3_t impact)
 	VectorCopy (trace.endpos, impact);
 }
 
-void Chase_Update(void)
+void Chase_Update()
 {
 	vec3_t forward, up, right;
 	vec3_t dest, stop;

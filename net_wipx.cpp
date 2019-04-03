@@ -20,7 +20,7 @@ static int sequence[IPXSOCKETS];
 
 //=============================================================================
 
-int WIPX_Init(void)
+int WIPX_Init()
 {
 	int i;
 	char buff[MAXHOSTNAMELEN];
@@ -99,7 +99,7 @@ int WIPX_Init(void)
 
 //=============================================================================
 
-void WIPX_Shutdown(void)
+void WIPX_Shutdown()
 {
 	WIPX_Listen(qfalse);
 	WIPX_CloseSocket(net_controlsocket);
@@ -189,7 +189,7 @@ int WIPX_Connect(int handle, qsockaddr* addr)
 
 //=============================================================================
 
-int WIPX_CheckNewConnections(void)
+int WIPX_CheckNewConnections()
 {
 	unsigned long available;
 

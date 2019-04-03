@@ -204,7 +204,7 @@ facing it.
 
 ======================
 */
-void PF_changeyaw(void);
+void PF_changeyaw();
 
 qboolean SV_StepDirection(edict_t* ent, float yaw, float dist)
 {
@@ -362,7 +362,7 @@ SV_MoveToGoal
 
 ======================
 */
-void SV_MoveToGoal(void)
+void SV_MoveToGoal()
 {
 	auto ent = PROG_TO_EDICT(pr_global_struct->self);
 	auto goal = PROG_TO_EDICT(ent->v.goalentity);

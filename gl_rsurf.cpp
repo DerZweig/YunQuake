@@ -248,7 +248,7 @@ qboolean mtexenabled = qfalse;
 
 void GL_SelectTexture(GLenum target);
 
-void GL_DisableMultitexture(void)
+void GL_DisableMultitexture()
 {
 	if (mtexenabled)
 	{
@@ -258,7 +258,7 @@ void GL_DisableMultitexture(void)
 	}
 }
 
-void GL_EnableMultitexture(void)
+void GL_EnableMultitexture()
 {
 	if (gl_mtexable)
 	{
@@ -524,7 +524,7 @@ void DrawGLPoly(glpoly_t* p)
 R_BlendLightmaps
 ================
 */
-void R_BlendLightmaps(void)
+void R_BlendLightmaps()
 {
 	if (r_fullbright.value)
 		return;
@@ -743,7 +743,7 @@ void R_MirrorChain(msurface_t* s)
 R_DrawWaterSurfaces
 ================
 */
-void R_DrawWaterSurfaces(void)
+void R_DrawWaterSurfaces()
 {
 	msurface_t* s;
 
@@ -814,7 +814,7 @@ void R_DrawWaterSurfaces(void)
 DrawTextureChains
 ================
 */
-void DrawTextureChains(void)
+void DrawTextureChains()
 {
 	if (!gl_texsort.value)
 	{
@@ -1097,7 +1097,7 @@ void R_RecursiveWorldNode(mnode_t* node)
 R_DrawWorld
 =============
 */
-void R_DrawWorld(void)
+void R_DrawWorld()
 {
 	entity_t ent;
 
@@ -1125,7 +1125,7 @@ void R_DrawWorld(void)
 R_MarkLeaves
 ===============
 */
-void R_MarkLeaves(void)
+void R_MarkLeaves()
 {
 	byte* vis;
 	byte solid[4096];
@@ -1355,7 +1355,7 @@ Builds the lightmap texture
 with all the surfaces from all brush models
 ==================
 */
-void GL_BuildLightmaps(void)
+void GL_BuildLightmaps()
 {
 	int i;
 	extern qboolean isPermedia;

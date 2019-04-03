@@ -350,7 +350,7 @@ void PrintStats(qsocket_t* s)
 	Con_Printf("\n");
 }
 
-void NET_Stats_f(void)
+void NET_Stats_f()
 {
 	qsocket_t* s;
 
@@ -395,10 +395,10 @@ static int testPollCount;
 static int testDriver;
 static int testSocket;
 
-static void Test_Poll(void);
+static void Test_Poll();
 PollProcedure testPollProcedure = {nullptr, 0.0, Test_Poll};
 
-static void Test_Poll(void)
+static void Test_Poll()
 {
 	struct qsockaddr clientaddr;
 	char name[32];
@@ -449,7 +449,7 @@ static void Test_Poll(void)
 	}
 }
 
-static void Test_f(void)
+static void Test_f()
 {
 	int n;
 	auto max = MAX_SCOREBOARD;
@@ -516,10 +516,10 @@ static qboolean test2InProgress = qfalse;
 static int test2Driver;
 static int test2Socket;
 
-static void Test2_Poll(void);
+static void Test2_Poll();
 PollProcedure test2PollProcedure = {nullptr, 0.0, Test2_Poll};
 
-static void Test2_Poll(void)
+static void Test2_Poll()
 {
 	struct qsockaddr clientaddr;
 	char name[256];
@@ -574,7 +574,7 @@ Done:
 	test2InProgress = qfalse;
 }
 
-static void Test2_f(void)
+static void Test2_f()
 {
 	int n;
 	struct qsockaddr sendaddr;
@@ -631,7 +631,7 @@ JustDoIt:
 }
 
 
-int Datagram_Init(void)
+int Datagram_Init()
 {
 	myDriverLevel = net_driverlevel;
 	Cmd_AddCommand("net_stats", NET_Stats_f);
@@ -655,7 +655,7 @@ int Datagram_Init(void)
 }
 
 
-void Datagram_Shutdown(void)
+void Datagram_Shutdown()
 {
 	//
 	// shutdown the lan drivers
@@ -685,7 +685,7 @@ void Datagram_Listen(qboolean state)
 }
 
 
-static qsocket_t* _Datagram_CheckNewConnections(void)
+static qsocket_t* _Datagram_CheckNewConnections()
 {
 	struct qsockaddr clientaddr;
 	struct qsockaddr newaddr;
@@ -915,7 +915,7 @@ static qsocket_t* _Datagram_CheckNewConnections(void)
 	return sock;
 }
 
-qsocket_t* Datagram_CheckNewConnections(void)
+qsocket_t* Datagram_CheckNewConnections()
 {
 	qsocket_t* ret = nullptr;
 

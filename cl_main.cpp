@@ -38,7 +38,7 @@ CL_ClearState
 
 =====================
 */
-void CL_ClearState(void)
+void CL_ClearState()
 {
 	int i;
 
@@ -75,7 +75,7 @@ Sends a disconnect message to the server
 This is also called on Host_Error, so it shouldn't cause any errors
 =====================
 */
-void CL_Disconnect(void)
+void CL_Disconnect()
 {
 	// stop sounds (especially looping!)
 	S_StopAllSounds(qtrue);
@@ -107,7 +107,7 @@ void CL_Disconnect(void)
 	cls.signon = 0;
 }
 
-void CL_Disconnect_f(void)
+void CL_Disconnect_f()
 {
 	CL_Disconnect();
 	if (sv.active)
@@ -149,7 +149,7 @@ CL_SignonReply
 An svc_signonnum has been received, perform a client side setup
 =====================
 */
-void CL_SignonReply(void)
+void CL_SignonReply()
 {
 	char str[8192];
 
@@ -194,7 +194,7 @@ CL_NextDemo
 Called to play the next demo in the demo loop
 =====================
 */
-void CL_NextDemo(void)
+void CL_NextDemo()
 {
 	char str[1024];
 
@@ -224,7 +224,7 @@ void CL_NextDemo(void)
 CL_PrintEntities_f
 ==============
 */
-void CL_PrintEntities_f(void)
+void CL_PrintEntities_f()
 {
 	entity_t* ent;
 	int i;
@@ -305,7 +305,7 @@ CL_DecayLights
 
 ===============
 */
-void CL_DecayLights(void)
+void CL_DecayLights()
 {
 	float time = cl.time - cl.oldtime;
 
@@ -330,7 +330,7 @@ Determines the fraction between the last two messages that the objects
 should be put at.
 ===============
 */
-float CL_LerpPoint(void)
+float CL_LerpPoint()
 {
 	float f = cl.mtime[0] - cl.mtime[1];
 
@@ -379,7 +379,7 @@ float CL_LerpPoint(void)
 CL_RelinkEntities
 ===============
 */
-void CL_RelinkEntities(void)
+void CL_RelinkEntities()
 {
 	entity_t* ent;
 	int i, j;
@@ -543,7 +543,7 @@ CL_ReadFromServer
 Read all incoming data from the server
 ===============
 */
-int CL_ReadFromServer(void)
+int CL_ReadFromServer()
 {
 	int ret;
 
@@ -580,7 +580,7 @@ int CL_ReadFromServer(void)
 CL_SendCmd
 =================
 */
-void CL_SendCmd(void)
+void CL_SendCmd()
 {
 	usercmd_t cmd;
 
@@ -626,7 +626,7 @@ void CL_SendCmd(void)
 CL_Init
 =================
 */
-void CL_Init(void)
+void CL_Init()
 {
 	SZ_Alloc(&cls.message, 1024);
 

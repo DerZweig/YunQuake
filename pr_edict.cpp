@@ -129,7 +129,7 @@ ddef_t* ED_GlobalAtOfs(int ofs)
 {
 	for (auto i = 0; i < progs->numglobaldefs; i++)
 	{
-		auto def = &pr_globaldefs[i];
+		const auto def = &pr_globaldefs[i];
 		if (def->ofs == ofs)
 			return def;
 	}
@@ -145,7 +145,7 @@ ddef_t* ED_FieldAtOfs(int ofs)
 {
 	for (auto i = 0; i < progs->numfielddefs; i++)
 	{
-		auto def = &pr_fielddefs[i];
+		const auto def = &pr_fielddefs[i];
 		if (def->ofs == ofs)
 			return def;
 	}
@@ -161,7 +161,7 @@ ddef_t* ED_FindField(char* name)
 {
 	for (auto i = 0; i < progs->numfielddefs; i++)
 	{
-		auto def = &pr_fielddefs[i];
+		const auto def = &pr_fielddefs[i];
 		if (!strcmp(pr_strings + def->s_name, name))
 			return def;
 	}
@@ -178,7 +178,7 @@ ddef_t* ED_FindGlobal(char* name)
 {
 	for (auto i = 0; i < progs->numglobaldefs; i++)
 	{
-		auto def = &pr_globaldefs[i];
+		const auto def = &pr_globaldefs[i];
 		if (!strcmp(pr_strings + def->s_name, name))
 			return def;
 	}
@@ -195,7 +195,7 @@ dfunction_t* ED_FindFunction(char* name)
 {
 	for (auto i = 0; i < progs->numfunctions; i++)
 	{
-		auto func = &pr_functions[i];
+		const auto func = &pr_functions[i];
 		if (!strcmp(pr_strings + func->s_name, name))
 			return func;
 	}
@@ -257,13 +257,13 @@ char* PR_ValueString(etype_t type, eval_t* val)
 		break;
 	case etype_t::ev_function:
 		{
-			auto f = pr_functions + val->function;
+			const auto f = pr_functions + val->function;
 			sprintf(line, "%s()", pr_strings + f->s_name);
 		}
 		break;
 	case etype_t::ev_field:
 		{
-			auto def = ED_FieldAtOfs(val->_int);
+			const auto def = ED_FieldAtOfs(val->_int);
 			sprintf(line, ".%s", pr_strings + def->s_name);
 		}
 		break;
@@ -310,13 +310,13 @@ char* PR_UglyValueString(etype_t type, eval_t* val)
 		break;
 	case etype_t::ev_function:
 		{
-			auto f = pr_functions + val->function;
+			const auto f = pr_functions + val->function;
 			sprintf(line, "%s", pr_strings + f->s_name);
 		}
 		break;
 	case etype_t::ev_field:
 		{
-			auto def = ED_FieldAtOfs(val->_int);
+			const auto def = ED_FieldAtOfs(val->_int);
 			sprintf(line, "%s", pr_strings + def->s_name);
 		}
 		break;
@@ -349,13 +349,13 @@ char* PR_GlobalString(int ofs)
 {
 	static char line[128];
 
-	auto val = static_cast<void *>(&pr_globals[ofs]);
-	auto def = ED_GlobalAtOfs(ofs);
+	const auto val = static_cast<void *>(&pr_globals[ofs]);
+	auto       def = ED_GlobalAtOfs(ofs);
 	if (!def)
 		sprintf(line, "%i(???)", ofs);
 	else
 	{
-		auto s = PR_ValueString(static_cast<etype_t>(def->type), static_cast<eval_t*>(val));
+		const auto s = PR_ValueString(static_cast<etype_t>(def->type), static_cast<eval_t*>(val));
 		sprintf(line, "%i(%s)%s", ofs, pr_strings + def->s_name, s);
 	}
 
@@ -371,7 +371,7 @@ char* PR_GlobalStringNoContents(int ofs)
 {
 	static char line[128];
 
-	auto def = ED_GlobalAtOfs(ofs);
+	const auto def = ED_GlobalAtOfs(ofs);
 	if (!def)
 		sprintf(line, "%i(???)", ofs);
 	else
@@ -406,15 +406,15 @@ void ED_Print(edict_t* ed)
 	Con_Printf("\nEDICT %i:\n", NUM_FOR_EDICT(ed));
 	for (auto i = 1; i < progs->numfielddefs; i++)
 	{
-		auto d    = &pr_fielddefs[i];
-		auto name = pr_strings + d->s_name;
+		auto       d    = &pr_fielddefs[i];
+		const auto name = pr_strings + d->s_name;
 		if (name[strlen(name) - 2] == '_')
 			continue; // skip _x, _y, _z vars
 
-		auto v = reinterpret_cast<int *>(reinterpret_cast<char *>(&ed->v) + d->ofs * 4);
+		const auto v = reinterpret_cast<int *>(reinterpret_cast<char *>(&ed->v) + d->ofs * 4);
 
 		// if the value is still all 0, skip the field
-		auto type = d->type & ~DEF_SAVEGLOBAL;
+		const auto type = d->type & ~DEF_SAVEGLOBAL;
 
 		for (j = 0; j < type_size[type]; j++)
 			if (v[j])
@@ -452,16 +452,16 @@ void ED_Write(FILE* f, edict_t* ed)
 
 	for (auto i = 1; i < progs->numfielddefs; i++)
 	{
-		auto d    = &pr_fielddefs[i];
-		auto name = pr_strings + d->s_name;
+		auto       d    = &pr_fielddefs[i];
+		const auto name = pr_strings + d->s_name;
 		if (name[strlen(name) - 2] == '_')
 			continue; // skip _x, _y, _z vars
 
-		auto v = reinterpret_cast<int *>(reinterpret_cast<char *>(&ed->v) + d->ofs * 4);
+		const auto v = reinterpret_cast<int *>(reinterpret_cast<char *>(&ed->v) + d->ofs * 4);
 
 		// if the value is still all 0, skip the field
-		auto type = d->type & ~DEF_SAVEGLOBAL;
-		for (j    = 0; j < type_size[type]; j++)
+		const auto type = d->type & ~DEF_SAVEGLOBAL;
+		for (j          = 0; j < type_size[type]; j++)
 			if (v[j])
 				break;
 		if (j == type_size[type])
@@ -474,7 +474,7 @@ void ED_Write(FILE* f, edict_t* ed)
 	fprintf(f, "}\n");
 }
 
-void ED_PrintNum(int ent)
+void ED_PrintNum(const int ent)
 {
 	ED_Print(EDICT_NUM(ent));
 }
@@ -502,7 +502,7 @@ For debugging, prints a single edicy
 */
 void ED_PrintEdict_f()
 {
-	auto i = Q_atoi(Cmd_Argv(1));
+	const auto i = Q_atoi(Cmd_Argv(1));
 	if (i >= sv.num_edicts)
 	{
 		Con_Printf("Bad edict number\n");
@@ -527,7 +527,7 @@ void ED_Count()
 	auto      active = models = solid = step = 0;
 	for (auto i      = 0; i < sv.num_edicts; i++)
 	{
-		auto ent = EDICT_NUM(i);
+		const auto ent = EDICT_NUM(i);
 		if (ent->free)
 			continue;
 		active++;
@@ -565,8 +565,8 @@ void ED_WriteGlobals(FILE* f)
 	fprintf(f, "{\n");
 	for (auto i = 0; i < progs->numglobaldefs; i++)
 	{
-		auto def  = &pr_globaldefs[i];
-		int  type = def->type;
+		const auto def  = &pr_globaldefs[i];
+		int        type = def->type;
 		if (!(def->type & DEF_SAVEGLOBAL))
 			continue;
 		type &= ~DEF_SAVEGLOBAL;
@@ -576,7 +576,7 @@ void ED_WriteGlobals(FILE* f)
 			&& type != static_cast<int>(etype_t::ev_entity))
 			continue;
 
-		auto name = pr_strings + def->s_name;
+		const auto name = pr_strings + def->s_name;
 		fprintf(f, "\"%s\" ", name);
 		fprintf(f, "\"%s\"\n", PR_UglyValueString(static_cast<etype_t>(type), reinterpret_cast<eval_t *>(&pr_globals[def->ofs])));
 	}
@@ -611,7 +611,7 @@ void ED_ParseGlobals(char* data)
 		if (com_token[0] == '}')
 			Sys_Error("ED_ParseEntity: closing brace without data");
 
-		auto key = ED_FindGlobal(keyname);
+		const auto key = ED_FindGlobal(keyname);
 		if (!key)
 		{
 			Con_Printf("'%s' is not a global\n", keyname);
@@ -633,9 +633,9 @@ ED_NewString
 */
 char* ED_NewString(char* string)
 {
-	int  l        = strlen(string) + 1;
-	auto newvalue = static_cast<char*>(Hunk_Alloc(l));
-	auto new_p    = newvalue;
+	const int  l        = strlen(string) + 1;
+	const auto newvalue = static_cast<char*>(Hunk_Alloc(l));
+	auto       new_p    = newvalue;
 
 	for (auto i = 0; i < l; i++)
 	{
@@ -668,7 +668,7 @@ qboolean ED_ParseEpair(void* base, ddef_t* key, char* s)
 	char    string[128];
 	ddef_t* def;
 
-	auto d = static_cast<void *>(static_cast<int *>(base) + key->ofs);
+	const auto d = static_cast<void *>(static_cast<int *>(base) + key->ofs);
 
 	switch (static_cast<etype_t>(key->type & ~DEF_SAVEGLOBAL))
 	{
@@ -712,7 +712,7 @@ qboolean ED_ParseEpair(void* base, ddef_t* key, char* s)
 
 	case etype_t::ev_function:
 		{
-			auto func = ED_FindFunction(s);
+			const auto func = ED_FindFunction(s);
 			if (!func)
 			{
 				Con_Printf("Can't find function %s\n", s);
@@ -797,7 +797,7 @@ char* ED_ParseEdict(char* data, edict_t* ent)
 		if (keyname[0] == '_')
 			continue;
 
-		auto key = ED_FindField(keyname);
+		const auto key = ED_FindField(keyname);
 		if (!key)
 		{
 			Con_Printf("'%s' is not a field\n", keyname);
@@ -892,7 +892,7 @@ void ED_LoadFromFile(char* data)
 		}
 
 		// look for the spawn function
-		auto func = ED_FindFunction(pr_strings + ent->v.classname);
+		const auto func = ED_FindFunction(pr_strings + ent->v.classname);
 
 		if (!func)
 		{

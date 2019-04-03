@@ -206,8 +206,8 @@ void R_TranslatePlayerSkin(int playernum)
 
 	GL_DisableMultitexture();
 
-	auto top    = cl.scores[playernum].colors & 0xf0;
-	auto bottom = (cl.scores[playernum].colors & 15) << 4;
+	const auto top    = cl.scores[playernum].colors & 0xf0;
+	const auto bottom = (cl.scores[playernum].colors & 15) << 4;
 
 	for (i           = 0; i < 256; i++)
 		translate[i] = i;
@@ -229,14 +229,14 @@ void R_TranslatePlayerSkin(int playernum)
 	// locate the original skin pixels
 	//
 	currententity = &cl_entities[1 + playernum];
-	auto model    = currententity->model;
+	const auto model    = currententity->model;
 	if (!model)
 		return; // player doesn't have a model yet
 	if (model->type != modtype_t::mod_alias)
 		return; // only translate skins on alias models
 
 	auto paliashdr = static_cast<aliashdr_t *>(Mod_Extradata(model));
-	auto s         = paliashdr->skinwidth * paliashdr->skinheight;
+	const auto s         = paliashdr->skinwidth * paliashdr->skinheight;
 	if (currententity->skinnum < 0 || currententity->skinnum >= paliashdr->numskins)
 	{
 		Con_Printf("(%d): Invalid player skin #%d\n", playernum, currententity->skinnum);
@@ -247,8 +247,8 @@ void R_TranslatePlayerSkin(int playernum)
 	if (s & 3)
 		Sys_Error("R_TranslateSkin: s&3");
 
-	auto inwidth  = paliashdr->skinwidth;
-	auto inheight = paliashdr->skinheight;
+	const auto inwidth  = paliashdr->skinwidth;
+	const auto inheight = paliashdr->skinheight;
 
 	// because this happens during gameplay, do it fast
 	// instead of sending it through gl_upload 8
@@ -265,10 +265,10 @@ void R_TranslatePlayerSkin(int playernum)
 		translate32[i] = d_8to24table[translate[i]];
 
 	auto out      = pixels;
-	auto fracstep = inwidth * 0x10000 / scaled_width;
+	const auto fracstep = inwidth * 0x10000 / scaled_width;
 	for (i        = 0; i < scaled_height; i++, out += scaled_width)
 	{
-		auto      inrow = original + inwidth * (i * inheight / scaled_height);
+		const auto      inrow = original + inwidth * (i * inheight / scaled_height);
 		auto      frac  = fracstep >> 1;
 		for (auto j     = 0; j < scaled_width; j += 4)
 		{
@@ -343,7 +343,7 @@ void R_TimeRefresh_f()
 	glDrawBuffer(GL_FRONT);
 	glFinish();
 
-	float     start = Sys_FloatTime();
+	const float     start = Sys_FloatTime();
 	for (auto i     = 0; i < 128; i++)
 	{
 		r_refdef.viewangles[1] = i / 128.0 * 360.0;
@@ -351,8 +351,8 @@ void R_TimeRefresh_f()
 	}
 
 	glFinish();
-	float stop = Sys_FloatTime();
-	auto  time = stop - start;
+	const float stop = Sys_FloatTime();
+	const auto  time = stop - start;
 	Con_Printf("%f seconds (%f fps)\n", time, 128 / time);
 
 	glDrawBuffer(GL_BACK);

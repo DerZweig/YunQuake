@@ -55,7 +55,7 @@ CL_EntityNum
 This error checks and tracks the total number of entities
 ===============
 */
-entity_t* CL_EntityNum(int num)
+entity_t* CL_EntityNum(const int num)
 {
 	if (num >= cl.num_entities)
 	{
@@ -83,7 +83,7 @@ void CL_ParseStartSoundPacket()
 	int    volume;
 	float  attenuation;
 
-	auto field_mask = MSG_ReadByte();
+	const auto field_mask = MSG_ReadByte();
 
 	if (field_mask & SND_VOLUME)
 		volume = MSG_ReadByte();
@@ -95,16 +95,16 @@ void CL_ParseStartSoundPacket()
 	else
 		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
 
-	auto channel   = MSG_ReadShort();
-	auto sound_num = MSG_ReadByte();
+	auto       channel   = MSG_ReadShort();
+	const auto sound_num = MSG_ReadByte();
+	const auto ent       = channel >> 3;
 
-	auto ent = channel >> 3;
 	channel &= 7;
 
 	if (ent > MAX_EDICTS)
 		Host_Error("CL_ParseStartSoundPacket: ent = %i", ent);
 
-	for (float& po : pos)
+	for (auto& po : pos)
 		po = MSG_ReadCoord();
 
 	S_StartSound(ent, channel, cl.sound_precache[sound_num], pos, volume / 255.0, attenuation);
@@ -130,7 +130,7 @@ void CL_KeepaliveMessage()
 		return;
 
 	// read messages from server, should just be nops
-	auto old = net_message;
+	const auto old = net_message;
 	memcpy(olddata, net_message.data, net_message.cursize);
 
 	do
@@ -157,7 +157,7 @@ void CL_KeepaliveMessage()
 	memcpy(net_message.data, olddata, net_message.cursize);
 
 	// check time
-	float time = Sys_FloatTime();
+	const float time = Sys_FloatTime();
 	if (time - lastmsg < 5)
 		return;
 	lastmsg = time;
@@ -301,12 +301,11 @@ int bitcounts[16];
 
 void CL_ParseUpdate(int bits)
 {
-	int       i;
-	int       modnum;
-	qboolean  forcelink;
-	entity_t* ent;
-	int       num;
-	int       skin;
+	int      i;
+	int      modnum;
+	qboolean forcelink;
+	int      num;
+	int      skin;
 
 	if (cls.signon == SIGNONS - 1)
 	{
@@ -326,7 +325,7 @@ void CL_ParseUpdate(int bits)
 	else
 		num = MSG_ReadByte();
 
-	ent = CL_EntityNum(num);
+	auto ent = CL_EntityNum(num);
 
 	for (i = 0; i < 16; i++)
 		if (bits & 1 << i)
@@ -348,7 +347,7 @@ void CL_ParseUpdate(int bits)
 	else
 		modnum = ent->baseline.modelindex;
 
-	auto model = cl.model_precache[modnum];
+	const auto model = cl.model_precache[modnum];
 	if (model != ent->model)
 	{
 		ent->model = model;
@@ -483,7 +482,7 @@ CL_ParseClientdata
 Server information pertaining to this client only
 ==================
 */
-void CL_ParseClientdata(int bits)
+void CL_ParseClientdata(const int bits)
 {
 	int i, j;
 
@@ -609,8 +608,9 @@ void CL_NewTranslation(int slot)
 	auto dest   = cl.scores[slot].translations;
 	auto source = vid.colormap;
 	memcpy(dest, vid.colormap, sizeof cl.scores[slot].translations);
-	auto top    = cl.scores[slot].colors & 0xf0;
-	auto bottom = (cl.scores[slot].colors & 15) << 4;
+
+	const auto top    = cl.scores[slot].colors & 0xf0;
+	const auto bottom = (cl.scores[slot].colors & 15) << 4;
 
 	R_TranslatePlayerSkin(slot);
 
@@ -637,12 +637,10 @@ CL_ParseStatic
 */
 void CL_ParseStatic()
 {
-	entity_t* ent;
-
-	auto i = cl.num_statics;
+	const auto i = cl.num_statics;
 	if (i >= MAX_STATIC_ENTITIES)
 		Host_Error("Too many static entities");
-	ent = &cl_static_entities[i];
+	auto ent = &cl_static_entities[i];
 	cl.num_statics++;
 	CL_ParseBaseline(ent);
 
@@ -667,11 +665,14 @@ void CL_ParseStaticSound()
 {
 	vec3_t org;
 
-	for (float& i : org)
+	for (auto& i : org)
+	{
 		i = MSG_ReadCoord();
-	auto sound_num = MSG_ReadByte();
-	auto vol       = MSG_ReadByte();
-	auto atten     = MSG_ReadByte();
+	}
+
+	const auto sound_num = MSG_ReadByte();
+	const auto vol       = MSG_ReadByte();
+	const auto atten     = MSG_ReadByte();
 
 	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
 }
@@ -686,7 +687,6 @@ CL_ParseServerMessage
 */
 void CL_ParseServerMessage()
 {
-	int cmd;
 	int i;
 
 	//
@@ -708,7 +708,7 @@ void CL_ParseServerMessage()
 		if (msg_badread)
 			Host_Error("CL_ParseServerMessage: Bad server message");
 
-		cmd = MSG_ReadByte();
+		const auto cmd = MSG_ReadByte();
 
 		if (cmd == -1)
 		{

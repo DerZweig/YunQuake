@@ -414,35 +414,35 @@ int (*  LittleLong)(int    l);
 float (*BigFloat)(float    l);
 float (*LittleFloat)(float l);
 
-short ShortSwap(short l)
+short ShortSwap(const short l)
 {
-	byte b1 = l & 255;
-	byte b2 = l >> 8 & 255;
+	const byte b1 = l & 255;
+	const byte b2 = l >> 8 & 255;
 
 	return (b1 << 8) + b2;
 }
 
-short ShortNoSwap(short l)
+short ShortNoSwap(const short l)
 {
 	return l;
 }
 
-int LongSwap(int l)
+int LongSwap(const int l)
 {
-	byte b1 = l & 255;
-	byte b2 = l >> 8 & 255;
-	byte b3 = l >> 16 & 255;
-	byte b4 = l >> 24 & 255;
+	const byte b1 = l & 255;
+	const byte b2 = l >> 8 & 255;
+	const byte b3 = l >> 16 & 255;
+	const byte b4 = l >> 24 & 255;
 
 	return (static_cast<int>(b1) << 24) + (static_cast<int>(b2) << 16) + (static_cast<int>(b3) << 8) + b4;
 }
 
-int LongNoSwap(int l)
+int LongNoSwap(const int l)
 {
 	return l;
 }
 
-float FloatSwap(float f)
+float FloatSwap(const float f)
 {
 	union
 	{
@@ -459,7 +459,7 @@ float FloatSwap(float f)
 	return dat2.f;
 }
 
-float FloatNoSwap(float f)
+float FloatNoSwap(const float f)
 {
 	return f;
 }
@@ -477,50 +477,50 @@ Handles byte ordering and avoids alignment errors
 // writing functions
 //
 
-void MSG_WriteChar(sizebuf_t* sb, int c)
+void MSG_WriteChar(sizebuf_t* sb, const int c)
 {
 #ifdef PARANOID
 	if (c < -128 || c > 127)
 		Sys_Error ("MSG_WriteChar: range error");
 #endif
 
-	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 1));
-	buf[0]   = c;
+	const auto buf = static_cast<byte *>(SZ_GetSpace(sb, 1));
+	buf[0]         = c;
 }
 
-void MSG_WriteByte(sizebuf_t* sb, int c)
+void MSG_WriteByte(sizebuf_t* sb, const int c)
 {
 #ifdef PARANOID
 	if (c < 0 || c > 255)
 		Sys_Error ("MSG_WriteByte: range error");
 #endif
 
-	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 1));
-	buf[0]   = c;
+	const auto buf = static_cast<byte *>(SZ_GetSpace(sb, 1));
+	buf[0]         = c;
 }
 
-void MSG_WriteShort(sizebuf_t* sb, int c)
+void MSG_WriteShort(sizebuf_t* sb, const int c)
 {
 #ifdef PARANOID
 	if (c < ((short)0x8000) || c > (short)0x7fff)
 		Sys_Error ("MSG_WriteShort: range error");
 #endif
 
-	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 2));
-	buf[0]   = c & 0xff;
-	buf[1]   = c >> 8;
+	const auto buf = static_cast<byte *>(SZ_GetSpace(sb, 2));
+	buf[0]         = c & 0xff;
+	buf[1]         = c >> 8;
 }
 
-void MSG_WriteLong(sizebuf_t* sb, int c)
+auto MSG_WriteLong(sizebuf_t* sb, const int c) -> void
 {
-	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 4));
-	buf[0]   = c & 0xff;
-	buf[1]   = c >> 8 & 0xff;
-	buf[2]   = c >> 16 & 0xff;
-	buf[3]   = c >> 24;
+	const auto buf = static_cast<byte *>(SZ_GetSpace(sb, 4));
+	buf[0]         = c & 0xff;
+	buf[1]         = c >> 8 & 0xff;
+	buf[2]         = c >> 16 & 0xff;
+	buf[3]         = c >> 24;
 }
 
-void MSG_WriteFloat(sizebuf_t* sb, float f)
+void MSG_WriteFloat(sizebuf_t* sb, const float f)
 {
 	union
 	{
@@ -543,12 +543,12 @@ void MSG_WriteString(sizebuf_t* sb, char* s)
 		SZ_Write(sb, s, Q_strlen(s) + 1);
 }
 
-void MSG_WriteCoord(sizebuf_t* sb, float f)
+void MSG_WriteCoord(sizebuf_t* sb, const float f)
 {
 	MSG_WriteShort(sb, static_cast<int>(f * 8));
 }
 
-void MSG_WriteAngle(sizebuf_t* sb, float f)
+void MSG_WriteAngle(sizebuf_t* sb, const float f)
 {
 	MSG_WriteByte(sb, static_cast<int>(f) * 256 / 360 & 255);
 }
@@ -574,7 +574,7 @@ int MSG_ReadChar()
 		return -1;
 	}
 
-	int c = static_cast<signed char>(net_message.data[msg_readcount]);
+	const int c = static_cast<signed char>(net_message.data[msg_readcount]);
 	msg_readcount++;
 
 	return c;
@@ -588,7 +588,7 @@ int MSG_ReadByte()
 		return -1;
 	}
 
-	int c = static_cast<unsigned char>(net_message.data[msg_readcount]);
+	const int c = static_cast<unsigned char>(net_message.data[msg_readcount]);
 	msg_readcount++;
 
 	return c;
@@ -602,8 +602,7 @@ int MSG_ReadShort()
 		return -1;
 	}
 
-	int c = static_cast<short>(net_message.data[msg_readcount]
-		+ (net_message.data[msg_readcount + 1] << 8));
+	const int c = static_cast<short>(net_message.data[msg_readcount] + (net_message.data[msg_readcount + 1] << 8));
 
 	msg_readcount += 2;
 
@@ -618,7 +617,7 @@ int MSG_ReadLong()
 		return -1;
 	}
 
-	auto c = net_message.data[msg_readcount]
+	const auto c = net_message.data[msg_readcount]
 		+ (net_message.data[msg_readcount + 1] << 8)
 		+ (net_message.data[msg_readcount + 2] << 16)
 		+ (net_message.data[msg_readcount + 3] << 24);
@@ -655,7 +654,7 @@ char* MSG_ReadString()
 	auto l = 0;
 	do
 	{
-		auto c = MSG_ReadChar();
+		const auto c = MSG_ReadChar();
 		if (c == -1 || c == 0)
 			break;
 		string[l] = c;
@@ -704,7 +703,7 @@ void SZ_Clear(sizebuf_t* buf)
 	buf->cursize = 0;
 }
 
-void* SZ_GetSpace(sizebuf_t* buf, int length)
+void* SZ_GetSpace(sizebuf_t* buf, const int length)
 {
 	if (buf->cursize + length > buf->maxsize)
 	{
@@ -732,7 +731,7 @@ void SZ_Write(sizebuf_t* buf, void* data, int length)
 
 void SZ_Print(sizebuf_t* buf, char* data)
 {
-	auto len = Q_strlen(data) + 1;
+	const auto len = Q_strlen(data) + 1;
 
 	// byte * cast to keep VC++ happy
 	if (buf->data[buf->cursize - 1])
@@ -999,7 +998,7 @@ void COM_Path_f();
 COM_InitArgv
 ================
 */
-void COM_InitArgv(int argc, char** argv)
+void COM_InitArgv(const int argc, char** argv)
 {
 	int i;
 
@@ -1124,7 +1123,7 @@ char* va(char* format, ...)
 
 
 /// just for debugging
-int memsearch(byte* start, int count, int search)
+int memsearch(const byte* start, const int count, const int search)
 {
 	for (auto i = 0; i < count; i++)
 		if (start[i] == search)
@@ -1224,7 +1223,7 @@ void COM_WriteFile(char* filename, void* data, int len)
 
 	sprintf(name, "%s/%s", com_gamedir, filename);
 
-	auto handle = Sys_FileOpenWrite(name);
+	const auto handle = Sys_FileOpenWrite(name);
 	if (handle == -1)
 	{
 		Sys_Printf("COM_WriteFile: failed on %s\n", name);
@@ -1275,7 +1274,7 @@ void COM_CopyFile(char* netpath, char* cachepath)
 
 	auto remaining = Sys_FileOpenRead(netpath, &in);
 	COM_CreatePath(cachepath); // create directories up to the cache file
-	auto out = Sys_FileOpenWrite(cachepath);
+	const auto out = Sys_FileOpenWrite(cachepath);
 
 	while (remaining)
 	{
@@ -1362,7 +1361,7 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 
 			sprintf(netpath, "%s/%s", search->filename, filename);
 
-			auto findtime = Sys_FileTime(netpath);
+			const auto findtime = Sys_FileTime(netpath);
 			if (findtime == -1)
 				continue;
 
@@ -1380,7 +1379,7 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 				sprintf (cachepath,"%s%s", com_cachedir, netpath);
 #endif
 
-				auto cachetime = Sys_FileTime(cachepath);
+				const auto cachetime = Sys_FileTime(cachepath);
 
 				if (cachetime < findtime)
 					COM_CopyFile(netpath, cachepath);
@@ -1420,9 +1419,9 @@ returns a handle and a length
 it may actually be inside a pak file
 ===========
 */
-int COM_OpenFile(char* filename, int* handle)
+int COM_OpenFile(char* filename, int* hndl)
 {
-	return COM_FindFile(filename, handle, nullptr);
+	return COM_FindFile(filename, hndl, nullptr);
 }
 
 /*
@@ -1445,7 +1444,7 @@ COM_CloseFile
 If it is a pak file handle, don't really close it
 ============
 */
-void COM_CloseFile(int h)
+void COM_CloseFile(const int h)
 {
 	for (auto s = com_searchpaths; s; s = s->next)
 		if (s->pack && s->pack->handle == h)
@@ -1475,7 +1474,7 @@ byte* COM_LoadFile(char* path, int usehunk)
 	byte* buf = nullptr; // quiet compiler warning
 
 	// look for it in the filesystem or pack files
-	auto len = COM_OpenFile(path, &h);
+	const auto len = COM_OpenFile(path, &h);
 	if (h == -1)
 		return nullptr;
 
@@ -1532,9 +1531,9 @@ void COM_LoadCacheFile(char* path, cache_user_t* cu)
 // uses temp hunk if larger than bufsize
 byte* COM_LoadStackFile(char* path, void* buffer, int bufsize)
 {
-	loadbuf  = static_cast<byte *>(buffer);
-	loadsize = bufsize;
-	auto buf = COM_LoadFile(path, 4);
+	loadbuf        = static_cast<byte *>(buffer);
+	loadsize       = bufsize;
+	const auto buf = COM_LoadFile(path, 4);
 
 	return buf;
 }
@@ -1569,7 +1568,7 @@ pack_t* COM_LoadPackFile(char* packfile)
 	header.dirofs = LittleLong(header.dirofs);
 	header.dirlen = LittleLong(header.dirlen);
 
-	int numpackfiles = header.dirlen / sizeof(dpackfile_t);
+	const int numpackfiles = header.dirlen / sizeof(dpackfile_t);
 
 	if (numpackfiles > MAX_FILES_IN_PACK)
 		Sys_Error("%s has %i files", packfile, numpackfiles);
@@ -1577,7 +1576,7 @@ pack_t* COM_LoadPackFile(char* packfile)
 	if (numpackfiles != PAK0_COUNT)
 		com_modified = qtrue; // not the original file
 
-	auto newfiles = static_cast<packfile_t *>(Hunk_AllocName(numpackfiles * sizeof(packfile_t), "packfile"));
+	const auto newfiles = static_cast<packfile_t *>(Hunk_AllocName(numpackfiles * sizeof(packfile_t), "packfile"));
 
 	Sys_FileSeek(packhandle, header.dirofs);
 	Sys_FileRead(packhandle, static_cast<void *>(info), header.dirlen);
@@ -1636,7 +1635,7 @@ void COM_AddGameDirectory(char* dir)
 	for (auto i = 0; ; i++)
 	{
 		sprintf(pakfile, "%s/pak%i.pak", dir, i);
-		auto pak = COM_LoadPackFile(pakfile);
+		const auto pak = COM_LoadPackFile(pakfile);
 		if (!pak)
 			break;
 		search          = static_cast<searchpath_t*>(Hunk_Alloc(sizeof(searchpath_t)));
@@ -1669,7 +1668,7 @@ void COM_InitFilesystem()
 	else
 		strcpy(basedir, host_parms.basedir);
 
-	int j = strlen(basedir);
+	const int j = strlen(basedir);
 
 	if (j > 0)
 	{
@@ -1780,7 +1779,7 @@ void Z_ClearZone(memzone_t* zone, int size)
 
 	zone->blocklist.next = reinterpret_cast<memblock_t *>(reinterpret_cast<byte *>(zone) + sizeof(memzone_t));
 	zone->blocklist.prev = zone->blocklist.next;
-	auto block           = zone->blocklist.next;
+	const auto block     = zone->blocklist.next;
 
 	zone->blocklist.tag  = 1; // in use block
 	zone->blocklist.id   = 0;
@@ -1845,7 +1844,7 @@ Z_Malloc
 void* Z_Malloc(int size)
 {
 	Z_CheckHeap(); // DEBUG
-	auto buf = Z_TagMalloc(size, 1);
+	const auto buf = Z_TagMalloc(size, 1);
 	if (!buf)
 		Sys_Error("Z_Malloc: failed on allocation of %i bytes", size);
 	Q_memset(buf, 0, size);
@@ -1868,8 +1867,8 @@ void* Z_TagMalloc(int size, int tag)
 	size += 4; // space for memory trash tester
 	size = size + 7 & ~7; // align to 8-byte boundary
 
-	auto base  = rover = mainzone->rover;
-	auto start = base->prev;
+	auto       base  = rover = mainzone->rover;
+	const auto start = base->prev;
 
 	do
 	{
@@ -1885,11 +1884,11 @@ void* Z_TagMalloc(int size, int tag)
 	//
 	// found a block big enough
 	//
-	auto extra = base->size - size;
+	const auto extra = base->size - size;
 	if (extra > MINFRAGMENT)
 	{
 		// there will be a free fragment after the allocated block
-		auto res        = reinterpret_cast<memblock_t *>(reinterpret_cast<byte *>(base) + size);
+		const auto res  = reinterpret_cast<memblock_t *>(reinterpret_cast<byte *>(base) + size);
 		res->size       = extra;
 		res->tag        = 0; // free block
 		res->prev       = base;
@@ -2016,10 +2015,10 @@ void Hunk_Print(qboolean all)
 	auto sum         = 0;
 	auto totalblocks = 0;
 
-	auto h         = reinterpret_cast<hunk_t *>(hunk_base);
-	auto endlow    = reinterpret_cast<hunk_t *>(hunk_base + hunk_low_used);
-	auto starthigh = reinterpret_cast<hunk_t *>(hunk_base + hunk_size - hunk_high_used);
-	auto endhigh   = reinterpret_cast<hunk_t *>(hunk_base + hunk_size);
+	auto       h         = reinterpret_cast<hunk_t *>(hunk_base);
+	const auto endlow    = reinterpret_cast<hunk_t *>(hunk_base + hunk_low_used);
+	const auto starthigh = reinterpret_cast<hunk_t *>(hunk_base + hunk_size - hunk_high_used);
+	const auto endhigh   = reinterpret_cast<hunk_t *>(hunk_base + hunk_size);
 
 	Con_Printf("          :%8i total hunk size\n", hunk_size);
 	Con_Printf("-------------------------\n");
@@ -2224,7 +2223,7 @@ void* Hunk_TempAlloc(int size)
 
 	hunk_tempmark = Hunk_HighMark();
 
-	auto buf = Hunk_HighAllocName(size, "temp");
+	const auto buf = Hunk_HighAllocName(size, "temp");
 
 	hunk_tempactive = qtrue;
 
@@ -2290,7 +2289,7 @@ void Cache_FreeLow(int new_low_hunk)
 {
 	while (true)
 	{
-		auto c = cache_head.next;
+		const auto c = cache_head.next;
 		if (c == &cache_head)
 			return; // nothing in cache at all
 		if (reinterpret_cast<byte *>(c) >= hunk_base + new_low_hunk)
@@ -2311,7 +2310,7 @@ void Cache_FreeHigh(int new_high_hunk)
 	cache_system_t* prev = nullptr;
 	while (true)
 	{
-		auto c = cache_head.prev;
+		const auto c = cache_head.prev;
 		if (c == &cache_head)
 			return; // nothing in cache at all
 		if (reinterpret_cast<byte *>(c) + c->size <= hunk_base + hunk_size - new_high_hunk)
@@ -2504,7 +2503,7 @@ void Cache_Free(cache_user_t* c)
 	if (!c->data)
 		Sys_Error("Cache_Free: not allocated");
 
-	auto cs = static_cast<cache_system_t *>(c->data) - 1;
+	const auto cs = static_cast<cache_system_t *>(c->data) - 1;
 
 	cs->prev->next = cs->next;
 	cs->next->prev = cs->prev;
@@ -2526,7 +2525,7 @@ void* Cache_Check(cache_user_t* c)
 	if (!c->data)
 		return nullptr;
 
-	auto cs = static_cast<cache_system_t *>(c->data) - 1;
+	const auto cs = static_cast<cache_system_t *>(c->data) - 1;
 
 	// move to head of LRU
 	Cache_UnlinkLRU(cs);
@@ -2591,7 +2590,7 @@ void Memory_Init(void* buf, int size)
 	hunk_high_used = 0;
 
 	Cache_Init();
-	auto p = COM_CheckParm("-zone");
+	const auto p = COM_CheckParm("-zone");
 	if (p)
 	{
 		if (p < com_argc - 1)

@@ -382,8 +382,8 @@ void Key_SetBinding(int keynum, char* binding)
 	}
 
 	// allocate memory for new binding
-	auto l        = Q_strlen(binding);
-	auto newvalue = static_cast<char*>(Z_Malloc(l + 1));
+	const auto l        = Q_strlen(binding);
+	const auto newvalue = static_cast<char*>(Z_Malloc(l + 1));
 	Q_strcpy(newvalue, binding);
 	newvalue[l]         = 0;
 	keybindings[keynum] = newvalue;
@@ -402,7 +402,7 @@ void Key_Unbind_f()
 		return;
 	}
 
-	auto b = Key_StringToKeynum(Cmd_Argv(1));
+	const auto b = Key_StringToKeynum(Cmd_Argv(1));
 	if (b == -1)
 	{
 		Con_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));
@@ -429,14 +429,14 @@ void Key_Bind_f()
 {
 	char cmd[1024];
 
-	auto c = Cmd_Argc();
+	const auto c = Cmd_Argc();
 	if (c != 2 && c != 3)
 	{
 		Con_Printf("bind <key> [command] : attach a command to a key\n");
 		return;
 	}
 
-	auto b = Key_StringToKeynum(Cmd_Argv(1));
+	const auto b = Key_StringToKeynum(Cmd_Argv(1));
 	if (b == -1)
 	{
 		Con_Printf("\"%s\" isn't a valid key\n", Cmd_Argv(1));

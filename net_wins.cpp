@@ -47,7 +47,7 @@ BOOL PASCAL FAR BlockingHook()
 	}
 
 	/* get the next message, if any */
-	auto ret = static_cast<BOOL>(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE));
+	const auto ret = static_cast<BOOL>(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE));
 
 	/* if we got one, process it */
 	if (ret)
@@ -73,14 +73,14 @@ void WINS_GetLocalAddress()
 
 	blocktime = Sys_FloatTime();
 	WSASetBlockingHook(BlockingHook);
-	auto local = pgethostbyname(buff);
+	const auto local = pgethostbyname(buff);
 	WSAUnhookBlockingHook();
 	if (local == nullptr)
 		return;
 
 	myAddr = *reinterpret_cast<int *>(local->h_addr_list[0]);
 
-	auto addr = ntohl(myAddr);
+	const auto addr = ntohl(myAddr);
 	sprintf(my_tcpip_address, "%d.%d.%d.%d", addr >> 24 & 0xff, addr >> 16 & 0xff, addr >> 8 & 0xff, addr & 0xff);
 }
 
@@ -93,7 +93,7 @@ int WINS_Init()
 
 	// initialize the Winsock function vectors (we do this instead of statically linking
 	// so we can run on Win 3.1, where there isn't necessarily Winsock)
-	auto hInst = LoadLibrary("wsock32.dll");
+	const auto hInst = LoadLibrary("wsock32.dll");
 
 	if (hInst == nullptr)
 	{
@@ -133,7 +133,7 @@ int WINS_Init()
 
 	if (winsock_initialized == 0)
 	{
-		auto r = pWSAStartup(MAKEWORD(1, 1), &winsockdata);
+		const auto r = pWSAStartup(MAKEWORD(1, 1), &winsockdata);
 
 		if (r)
 		{
@@ -359,11 +359,11 @@ int WINS_CheckNewConnections()
 int WINS_Read(int socket, byte* buf, int len, qsockaddr* addr)
 {
 	int  addrlen = sizeof(struct qsockaddr);
-	auto ret     = precvfrom(socket, reinterpret_cast<char*>(buf), len, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
+	const auto ret     = precvfrom(socket, reinterpret_cast<char*>(buf), len, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
 
 	if (ret == -1)
 	{
-		auto errnum = pWSAGetLastError();
+		const auto errnum = pWSAGetLastError();
 		if (errnum == WSAEWOULDBLOCK || errnum == WSAECONNREFUSED)
 			return 0;
 	}
@@ -393,7 +393,7 @@ int WINS_Broadcast(int socket, byte* buf, int len)
 		if (net_broadcastsocket != 0)
 			Sys_Error("Attempted to use multiple broadcasts sockets\n");
 		WINS_GetLocalAddress();
-		auto ret = WINS_MakeSocketBroadcastCapable(socket);
+		const auto ret = WINS_MakeSocketBroadcastCapable(socket);
 		if (ret == -1)
 		{
 			Con_Printf("Unable to make socket broadcast capable\n");
@@ -408,7 +408,7 @@ int WINS_Broadcast(int socket, byte* buf, int len)
 
 int WINS_Write(int socket, byte* buf, int len, qsockaddr* addr)
 {
-	auto ret = psendto(socket, reinterpret_cast<const char*>(buf), len, 0, reinterpret_cast<sockaddr *>(addr), sizeof(struct qsockaddr));
+	const auto ret = psendto(socket, reinterpret_cast<const char*>(buf), len, 0, reinterpret_cast<sockaddr *>(addr), sizeof(struct qsockaddr));
 	if (ret == -1)
 		if (pWSAGetLastError() == WSAEWOULDBLOCK)
 			return 0;
@@ -422,7 +422,7 @@ char* WINS_AddrToString(qsockaddr* addr)
 {
 	static char buffer[22];
 
-	int haddr = ntohl(reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr);
+	const int haddr = ntohl(reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr);
 	sprintf(buffer, "%d.%d.%d.%d:%d", haddr >> 24 & 0xff, haddr >> 16 & 0xff, haddr >> 8 & 0xff, haddr & 0xff, ntohs(reinterpret_cast<sockaddr_in *>(addr)->sin_port));
 	return buffer;
 }
@@ -434,7 +434,7 @@ int WINS_StringToAddr(char* string, qsockaddr* addr)
 	int ha1, ha2, ha3, ha4, hp;
 
 	sscanf(string, "%d.%d.%d.%d:%d", &ha1, &ha2, &ha3, &ha4, &hp);
-	auto ipaddr = ha1 << 24 | ha2 << 16 | ha3 << 8 | ha4;
+	const auto ipaddr = ha1 << 24 | ha2 << 16 | ha3 << 8 | ha4;
 
 	addr->sa_family                                        = AF_INET;
 	reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr = htonl(ipaddr);
@@ -450,7 +450,7 @@ int WINS_GetSocketAddr(int socket, qsockaddr* addr)
 
 	Q_memset(addr, 0, sizeof(struct qsockaddr));
 	pgetsockname(socket, reinterpret_cast<sockaddr *>(addr), &addrlen);
-	unsigned int a = reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr;
+	const unsigned int a = reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr;
 	if (a == 0 || a == inet_addr("127.0.0.1"))
 		reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr = myAddr;
 
@@ -461,7 +461,7 @@ int WINS_GetSocketAddr(int socket, qsockaddr* addr)
 
 int WINS_GetNameFromAddr(qsockaddr* addr, char* name)
 {
-	auto hostentry = pgethostbyaddr(reinterpret_cast<char *>(&reinterpret_cast<sockaddr_in *>(addr)->sin_addr), sizeof(struct in_addr), AF_INET);
+	const auto hostentry = pgethostbyaddr(reinterpret_cast<char *>(&reinterpret_cast<sockaddr_in *>(addr)->sin_addr), sizeof(struct in_addr), AF_INET);
 	if (hostentry)
 	{
 		Q_strncpy(name, static_cast<char *>(hostentry->h_name), NET_NAMELEN - 1);
@@ -479,7 +479,7 @@ int WINS_GetAddrFromName(char* name, qsockaddr* addr)
 	if (name[0] >= '0' && name[0] <= '9')
 		return PartialIPAddress(name, addr);
 
-	auto hostentry = pgethostbyname(name);
+	const auto hostentry = pgethostbyname(name);
 	if (!hostentry)
 		return -1;
 

@@ -51,11 +51,11 @@ vec3_t forward, right, up;
 float V_CalcRoll(vec3_t angles, vec3_t velocity)
 {
 	AngleVectors(angles, forward, right, up);
-	auto  side = DotProduct (velocity, right);
-	float sign = side < 0 ? -1 : 1;
-	side       = fabs(side);
+	auto        side = DotProduct (velocity, right);
+	const float sign = side < 0 ? -1 : 1;
+	side             = fabs(side);
 
-	auto value = cl_rollangle.value;
+	const auto value = cl_rollangle.value;
 	//	if (cl.inwater)
 	//		value *= 6;
 
@@ -158,7 +158,7 @@ void V_DriftPitch()
 		return;
 	}
 
-	auto delta = cl.idealpitch - cl.viewangles[PITCH];
+	const auto delta = cl.idealpitch - cl.viewangles[PITCH];
 
 	if (!delta)
 	{
@@ -262,15 +262,14 @@ V_ParseDamage
 */
 void V_ParseDamage()
 {
-	vec3_t    from;
-	vec3_t    forward;
-	vec3_t    right;
-	vec3_t    up;
-	entity_t* ent;
+	vec3_t from;
+	vec3_t forward;
+	vec3_t right;
+	vec3_t up;
 
-	auto      armor = MSG_ReadByte();
-	auto      blood = MSG_ReadByte();
-	for (float& i : from)
+	const auto armor = MSG_ReadByte();
+	const auto blood = MSG_ReadByte();
+	for (auto& i : from)
 		i = MSG_ReadCoord();
 
 	float count = blood * 0.5 + armor * 0.5;
@@ -307,7 +306,7 @@ void V_ParseDamage()
 	//
 	// calculate view angle kicks
 	//
-	ent = &cl_entities[cl.viewentity];
+	auto ent = &cl_entities[cl.viewentity];
 
 	VectorSubtract (from, ent->origin, from);
 	VectorNormalize(from);
@@ -498,16 +497,16 @@ void V_UpdatePalette()
 	if (cl.cshifts[CSHIFT_BONUS].percent <= 0)
 		cl.cshifts[CSHIFT_BONUS].percent = 0;
 
-	auto force = V_CheckGamma();
+	const auto force = V_CheckGamma();
 	if (!newval && !force)
 		return;
 
 	V_CalcBlend();
 
-	auto a = v_blend[3];
-	auto r = 255 * v_blend[0] * a;
-	auto g = 255 * v_blend[1] * a;
-	auto b = 255 * v_blend[2] * a;
+	auto       a = v_blend[3];
+	const auto r = 255 * v_blend[0] * a;
+	const auto g = 255 * v_blend[1] * a;
+	const auto b = 255 * v_blend[2] * a;
 
 	a      = 1 - a;
 	for (i = 0; i < 256; i++)
@@ -585,8 +584,8 @@ void CalcGunAngle()
 	if (pitch > 10)
 		pitch = 10;
 	if (pitch < -10)
-		pitch  = -10;
-	float move = host_frametime * 20;
+		pitch        = -10;
+	const float move = host_frametime * 20;
 	if (yaw > oldyaw)
 	{
 		if (oldyaw + move < yaw)
@@ -670,7 +669,7 @@ Roll is induced by movement and damage
 */
 void V_CalcViewRoll()
 {
-	auto side = V_CalcRoll(cl_entities[cl.viewentity].angles, cl.velocity);
+	const auto side = V_CalcRoll(cl_entities[cl.viewentity].angles, cl.velocity);
 	r_refdef.viewangles[ROLL] += side;
 
 	if (v_dmg_time > 0)
@@ -695,15 +694,15 @@ V_CalcIntermissionRefdef
 */
 void V_CalcIntermissionRefdef()
 {
-	auto ent  = &cl_entities[cl.viewentity]; // ent is the player model (visible when out of body)
-	auto view = &cl.viewent; // view is the weapon model (only visible from inside body)
+	auto       ent  = &cl_entities[cl.viewentity]; // ent is the player model (visible when out of body)
+	const auto view = &cl.viewent; // view is the weapon model (only visible from inside body)
 
 	VectorCopy (ent->origin, r_refdef.vieworg);
 	VectorCopy (ent->angles, r_refdef.viewangles);
 	view->model = nullptr;
 
 	// allways idle in intermission
-	auto old          = v_idlescale.value;
+	const auto old    = v_idlescale.value;
 	v_idlescale.value = 1;
 	V_AddIdle();
 	v_idlescale.value = old;
@@ -717,8 +716,6 @@ V_CalcRefdef
 */
 void V_CalcRefdef()
 {
-	entity_t*    ent;
-	entity_t*    view;
 	int          i;
 	vec3_t       forward;
 	vec3_t       right;
@@ -729,9 +726,9 @@ void V_CalcRefdef()
 	V_DriftPitch();
 
 	// ent is the player model (visible when out of body)
-	ent = &cl_entities[cl.viewentity];
+	auto ent = &cl_entities[cl.viewentity];
 	// view is the weapon model (only visible from inside body)
-	view = &cl.viewent;
+	auto view = &cl.viewent;
 
 
 	// transform the view offset by the model's matrix to get the offset from
@@ -742,7 +739,7 @@ void V_CalcRefdef()
 	// the view dir
 
 
-	auto bob = V_CalcBob();
+	const auto bob = V_CalcBob();
 
 	// refresh position
 	VectorCopy (ent->origin, r_refdef.vieworg);

@@ -47,15 +47,14 @@ R_AddDynamicLights
 */
 void R_AddDynamicLights(msurface_t* surf)
 {
-	int         lnum;
 	vec3_t      impact, local;
 	mtexinfo_t* tex;
 
-	auto smax = (surf->extents[0] >> 4) + 1;
-	auto tmax = (surf->extents[1] >> 4) + 1;
+	const auto smax = (surf->extents[0] >> 4) + 1;
+	const auto tmax = (surf->extents[1] >> 4) + 1;
 	tex       = surf->texinfo;
 
-	for (lnum = 0; lnum < MAX_DLIGHTS; lnum++)
+	for (int lnum = 0; lnum < MAX_DLIGHTS; lnum++)
 	{
 		if (!(surf->dlightbits & 1 << lnum))
 			continue; // not lit by this light
@@ -116,9 +115,9 @@ void R_BuildLightMap(msurface_t* surf, byte* dest, int stride)
 
 	surf->cached_dlight = surf->dlightframe == r_framecount;
 
-	auto smax     = (surf->extents[0] >> 4) + 1;
-	auto tmax     = (surf->extents[1] >> 4) + 1;
-	auto size     = smax * tmax;
+	const auto smax     = (surf->extents[0] >> 4) + 1;
+	const auto tmax     = (surf->extents[1] >> 4) + 1;
+	const auto size     = smax * tmax;
 	auto lightmap = surf->samples;
 
 	// set to full bright if no light data
@@ -138,7 +137,7 @@ void R_BuildLightMap(msurface_t* surf, byte* dest, int stride)
 		for (auto maps = 0; maps < MAXLIGHTMAPS && surf->styles[maps] != 255;
 		     maps++)
 		{
-			unsigned scale           = d_lightstylevalue[surf->styles[maps]];
+			const unsigned scale           = d_lightstylevalue[surf->styles[maps]];
 			surf->cached_light[maps] = scale; // 8.8 fraction
 			for (i                   = 0; i < size; i++)
 				blocklights[i] += lightmap[i] * scale;
@@ -209,7 +208,7 @@ texture_t* R_TextureAnimation(texture_t* base)
 	if (!base->anim_total)
 		return base;
 
-	auto reletive = static_cast<int>(cl.time * 10) % base->anim_total;
+	const auto reletive = static_cast<int>(cl.time * 10) % base->anim_total;
 
 	auto count = 0;
 	while (base->anim_min > reletive || base->anim_max <= reletive)
@@ -556,7 +555,7 @@ void R_BlendLightmaps()
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = qfalse;
-			auto theRect         = &lightmap_rectchange[i];
+			const auto theRect         = &lightmap_rectchange[i];
 
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, BLOCK_WIDTH,
 			                theRect->h, gl_lightmap_format, GL_UNSIGNED_BYTE,
@@ -613,7 +612,7 @@ void R_RenderBrushPoly(msurface_t* fa)
 		return;
 	}
 
-	auto t = R_TextureAnimation(fa->texinfo->texture);
+	const auto t = R_TextureAnimation(fa->texinfo->texture);
 	GL_Bind(t->gl_texturenum);
 
 	if (fa->flags & SURF_DRAWTURB)
@@ -659,8 +658,9 @@ void R_RenderBrushPoly(msurface_t* fa)
 					theRect->w += theRect->l - fa->light_s;
 				theRect->l = fa->light_s;
 			}
-			auto smax = (fa->extents[0] >> 4) + 1;
-			auto tmax = (fa->extents[1] >> 4) + 1;
+			const auto smax = (fa->extents[0] >> 4) + 1;
+			const auto tmax = (fa->extents[1] >> 4) + 1;
+
 			if (theRect->w + theRect->l < fa->light_s + smax)
 				theRect->w = fa->light_s - theRect->l + smax;
 			if (theRect->h + theRect->t < fa->light_t + tmax)
@@ -714,8 +714,8 @@ void R_RenderDynamicLightmaps(msurface_t* fa)
 					theRect->w += theRect->l - fa->light_s;
 				theRect->l = fa->light_s;
 			}
-			auto smax = (fa->extents[0] >> 4) + 1;
-			auto tmax = (fa->extents[1] >> 4) + 1;
+			const auto smax = (fa->extents[0] >> 4) + 1;
+			const auto tmax = (fa->extents[1] >> 4) + 1;
 			if (theRect->w + theRect->l < fa->light_s + smax)
 				theRect->w = fa->light_s - theRect->l + smax;
 			if (theRect->h + theRect->t < fa->light_t + tmax)
@@ -782,7 +782,7 @@ void R_DrawWaterSurfaces()
 	{
 		for (auto i = 0; i < cl.worldmodel->numtextures; i++)
 		{
-			auto t = cl.worldmodel->textures[i];
+			const auto t = cl.worldmodel->textures[i];
 			if (!t)
 				continue;
 			s = t->texturechain;
@@ -833,7 +833,7 @@ void DrawTextureChains()
 
 	for (auto i = 0; i < cl.worldmodel->numtextures; i++)
 	{
-		auto t = cl.worldmodel->textures[i];
+		const auto t = cl.worldmodel->textures[i];
 		if (!t)
 			continue;
 		auto s = t->texturechain;
@@ -868,7 +868,6 @@ void R_DrawBrushModel(entity_t* e)
 	vec3_t    mins;
 	vec3_t    maxs;
 	int       i;
-	mplane_t* pplane;
 	model_t*  clmodel;
 	qboolean  rotated;
 
@@ -940,9 +939,9 @@ void R_DrawBrushModel(entity_t* e)
 	for (i = 0; i < clmodel->nummodelsurfaces; i++, psurf++)
 	{
 		// find which side of the node we are on
-		pplane = psurf->plane;
+		auto pplane = psurf->plane;
 
-		auto dot = DotProduct (modelorg, pplane->normal) - pplane->dist;
+		const auto dot = DotProduct (modelorg, pplane->normal) - pplane->dist;
 
 		// draw the polygon
 		if (psurf->flags & SURF_PLANEBACK && dot < -BACKFACE_EPSILON ||
@@ -1234,7 +1233,7 @@ void BuildSurfaceDisplayList(msurface_t* fa)
 	medge_t* r_pedge;
 	float*   vec;
 
-	auto pedges    = currentmodel->edges;
+	const auto pedges    = currentmodel->edges;
 	auto lnumverts = fa->numedges;
 	auto poly      = static_cast<glpoly_t *>(Hunk_Alloc(sizeof(glpoly_t) + (lnumverts - 4) * VERTEXSIZE * sizeof(float)));
 
@@ -1245,7 +1244,7 @@ void BuildSurfaceDisplayList(msurface_t* fa)
 
 	for (i = 0; i < lnumverts; i++)
 	{
-		auto lindex = currentmodel->surfedges[fa->firstedge + i];
+		const auto lindex = currentmodel->surfedges[fa->firstedge + i];
 
 		if (lindex > 0)
 		{
@@ -1340,8 +1339,8 @@ void GL_CreateSurfaceLightmap(msurface_t* surf)
 	if (surf->flags & (SURF_DRAWSKY | SURF_DRAWTURB))
 		return;
 
-	auto smax = (surf->extents[0] >> 4) + 1;
-	auto tmax = (surf->extents[1] >> 4) + 1;
+	const auto smax = (surf->extents[0] >> 4) + 1;
+	const auto tmax = (surf->extents[1] >> 4) + 1;
 
 	surf->lightmaptexturenum = AllocBlock(smax, tmax, &surf->light_s, &surf->light_t);
 	auto base                = lightmaps + surf->lightmaptexturenum * lightmap_bytes * BLOCK_WIDTH * BLOCK_HEIGHT;

@@ -256,7 +256,7 @@ CL_AllocDlight
 
 ===============
 */
-dlight_t* CL_AllocDlight(int key)
+dlight_t* CL_AllocDlight(const int key)
 {
 	int       i;
 	dlight_t* dl;
@@ -303,10 +303,10 @@ CL_DecayLights
 */
 void CL_DecayLights()
 {
-	float time = cl.time - cl.oldtime;
+	const float time = cl.time - cl.oldtime;
+	auto        dl   = cl_dlights;
 
-	auto      dl = cl_dlights;
-	for (auto i  = 0; i < MAX_DLIGHTS; i++, dl++)
+	for (auto i = 0; i < MAX_DLIGHTS; i++, dl++)
 	{
 		if (dl->die < cl.time || !dl->radius)
 			continue;
@@ -386,7 +386,7 @@ void CL_RelinkEntities()
 	dlight_t* dl;
 
 	// determine partial update time	
-	auto frac = CL_LerpPoint();
+	const auto frac = CL_LerpPoint();
 
 	cl_numvisedicts = 0;
 
@@ -411,7 +411,7 @@ void CL_RelinkEntities()
 		}
 	}
 
-	auto bobjrotate = anglemod(100 * cl.time);
+	const auto bobjrotate = anglemod(100 * cl.time);
 
 	// start on the entity after the world
 	for (i = 1, ent = cl_entities + 1; i < cl.num_entities; i++, ent++)

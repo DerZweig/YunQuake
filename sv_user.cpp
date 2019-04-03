@@ -40,9 +40,9 @@ void SV_SetIdealPitch()
 	if (!(static_cast<int>(sv_player->v.flags) & FL_ONGROUND))
 		return;
 
-	float angleval = sv_player->v.angles[YAW] * M_PI * 2 / 360;
-	auto  sinval   = sin(angleval);
-	auto  cosval   = cos(angleval);
+	const float angleval = sv_player->v.angles[YAW] * M_PI * 2 / 360;
+	const auto  sinval   = sin(angleval);
+	const auto  cosval   = cos(angleval);
 
 	for (i = 0; i < MAX_FORWARD; i++)
 	{
@@ -54,7 +54,7 @@ void SV_SetIdealPitch()
 		bottom[1] = top[1];
 		bottom[2] = top[2] - 160;
 
-		auto tr = SV_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
+		const auto tr = SV_Move(top, vec3_origin, vec3_origin, bottom, 1, sv_player);
 		if (tr.allsolid)
 			return; // looking at a wall, leave ideal the way is was
 
@@ -68,7 +68,7 @@ void SV_SetIdealPitch()
 	auto      steps = 0;
 	for (auto j     = 1; j < i; j++)
 	{
-		int step = z[j] - z[j - 1];
+		const int step = z[j] - z[j - 1];
 		if (step > -ON_EPSILON && step < ON_EPSILON)
 			continue;
 
@@ -103,7 +103,7 @@ void SV_UserFriction()
 	vec3_t stop;
 	float  friction;
 
-	auto vel = velocity;
+	const auto vel = velocity;
 
 	auto speed = sqrt(vel[0] * vel[0] + vel[1] * vel[1]);
 	if (!speed)
@@ -115,7 +115,7 @@ void SV_UserFriction()
 	start[2] = origin[2] + sv_player->v.mins[2];
 	stop[2]  = start[2] - 34;
 
-	auto trace = SV_Move(start, vec3_origin, vec3_origin, stop, qtrue, sv_player);
+	const auto trace = SV_Move(start, vec3_origin, vec3_origin, stop, qtrue, sv_player);
 
 	if (trace.fraction == 1.0)
 		friction = sv_friction.value * sv_edgefriction.value;
@@ -123,8 +123,8 @@ void SV_UserFriction()
 		friction = sv_friction.value;
 
 	// apply friction	
-	auto  control  = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
-	float newspeed = speed - host_frametime * control * friction;
+	const auto control  = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
+	float      newspeed = speed - host_frametime * control * friction;
 
 	if (newspeed < 0)
 		newspeed = 0;
@@ -145,8 +145,8 @@ cvar_t sv_accelerate = {"sv_accelerate", "10"};
 
 void SV_Accelerate()
 {
-	auto currentspeed = DotProduct (velocity, wishdir);
-	auto addspeed     = wishspeed - currentspeed;
+	const auto currentspeed = DotProduct (velocity, wishdir);
+	const auto addspeed     = wishspeed - currentspeed;
 	if (addspeed <= 0)
 		return;
 	float accelspeed = sv_accelerate.value * host_frametime * wishspeed;
@@ -161,9 +161,10 @@ void SV_AirAccelerate(vec3_t wishveloc)
 {
 	auto wishspd = VectorNormalize(wishveloc);
 	if (wishspd > 30)
-		wishspd       = 30;
-	auto currentspeed = DotProduct (velocity, wishveloc);
-	auto addspeed     = wishspd - currentspeed;
+		wishspd = 30;
+
+	const auto currentspeed = DotProduct (velocity, wishveloc);
+	const auto addspeed     = wishspd - currentspeed;
 	if (addspeed <= 0)
 		return;
 	//	accelspeed = sv_accelerate.value * host_frametime;
@@ -222,7 +223,7 @@ void SV_WaterMove()
 	//
 	// water friction
 	//
-	auto speed = Length(velocity);
+	const auto speed = Length(velocity);
 	if (speed)
 	{
 		newspeed = speed - host_frametime * speed * sv_friction.value;
@@ -239,7 +240,7 @@ void SV_WaterMove()
 	if (!wishspeed)
 		return;
 
-	auto addspeed = wishspeed - newspeed;
+	const auto addspeed = wishspeed - newspeed;
 	if (addspeed <= 0)
 		return;
 
@@ -276,8 +277,8 @@ void SV_AirMove()
 
 	AngleVectors(sv_player->v.angles, forward, right, up);
 
-	auto fmove = cmd.forwardmove;
-	auto smove = cmd.sidemove;
+	auto       fmove = cmd.forwardmove;
+	const auto smove = cmd.sidemove;
 
 	// hack to not let you back into teleporter
 	if (sv.time < sv_player->v.teleport_time && fmove < 0)
@@ -404,7 +405,7 @@ void SV_ReadClientMove(usercmd_t* move)
 	move->upmove      = MSG_ReadShort();
 
 	// read buttons
-	auto bits                     = MSG_ReadByte();
+	const auto bits               = MSG_ReadByte();
 	host_client->edict->v.button0 = bits & 1;
 	host_client->edict->v.button2 = (bits & 2) >> 1;
 
@@ -449,7 +450,7 @@ qboolean SV_ReadClientMessage()
 				return qfalse;
 			}
 
-			auto cmd = MSG_ReadChar();
+			const auto cmd = MSG_ReadChar();
 
 			switch (cmd)
 			{
@@ -466,7 +467,7 @@ qboolean SV_ReadClientMessage()
 
 			case clc_stringcmd:
 				{
-					auto s = MSG_ReadString();
+					const auto s = MSG_ReadString();
 					if (host_client->privileged)
 						ret = 2;
 					else

@@ -22,11 +22,23 @@ state bit 2 is edge triggered on the down to up transition
 */
 
 
-kbutton_t in_mlook,  in_klook;
-kbutton_t in_left,   in_right,    in_forward,  in_back;
-kbutton_t in_lookup, in_lookdown, in_moveleft, in_moveright;
-kbutton_t in_strafe, in_speed,    in_use,      in_jump, in_attack;
-kbutton_t in_up,     in_down;
+kbutton_t in_mlook;
+kbutton_t in_klook;
+kbutton_t in_left;
+kbutton_t in_right;
+kbutton_t in_forward;
+kbutton_t in_back;
+kbutton_t in_lookup;
+kbutton_t in_lookdown;
+kbutton_t in_moveleft;
+kbutton_t in_moveright;
+kbutton_t in_strafe;
+kbutton_t in_speed;
+kbutton_t in_use;
+kbutton_t in_jump;
+kbutton_t in_attack;
+kbutton_t in_up;
+kbutton_t in_down;
 
 int in_impulse;
 
@@ -35,7 +47,7 @@ void KeyDown(kbutton_t* b)
 {
 	int k;
 
-	auto c = Cmd_Argv(1);
+	const auto c = Cmd_Argv(1);
 	if (c[0])
 		k = atoi(c);
 	else
@@ -63,7 +75,7 @@ void KeyUp(kbutton_t* b)
 {
 	int k;
 
-	auto c = Cmd_Argv(1);
+	const auto c = Cmd_Argv(1);
 	if (c[0])
 		k = atoi(c);
 	else
@@ -148,10 +160,10 @@ Returns 0.25 if a key was pressed and released during the frame,
 */
 float CL_KeyState(kbutton_t* key)
 {
-	bool  impulsedown = key->state & 2;
-	bool  impulseup   = key->state & 4;
-	bool  down        = key->state & 1;
-	float val         = 0;
+	const bool impulsedown = key->state & 2;
+	const bool impulseup   = key->state & 4;
+	const bool down        = key->state & 1;
+	float      val         = 0;
 
 	if (impulsedown && !impulseup)
 		if (down)
@@ -224,8 +236,8 @@ void CL_AdjustAngles()
 		cl.viewangles[PITCH] += speed * cl_pitchspeed.value * CL_KeyState(&in_back);
 	}
 
-	auto up   = CL_KeyState(&in_lookup);
-	auto down = CL_KeyState(&in_lookdown);
+	const auto up   = CL_KeyState(&in_lookup);
+	const auto down = CL_KeyState(&in_lookdown);
 
 	cl.viewangles[PITCH] -= speed * cl_pitchspeed.value * up;
 	cl.viewangles[PITCH] += speed * cl_pitchspeed.value * down;

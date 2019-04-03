@@ -11,10 +11,14 @@ line of sight checks trace->crosscontent, but bullets don't
 
 struct moveclip_t
 {
-	vec3_t   boxmins, boxmaxs; // enclose the test object along entire move
-	float *  mins, *  maxs; // size of the moving object
-	vec3_t   mins2,   maxs2; // size when clipping against mosnters
-	float *  start, * end;
+	vec3_t   boxmins;
+	vec3_t   boxmaxs;
+	float*   mins;
+	float*   maxs;
+	vec3_t   mins2;
+	vec3_t   maxs2;
+	float*   start;
+	float*   end;
 	trace_t  trace;
 	int      type;
 	edict_t* passedict;
@@ -55,7 +59,7 @@ void SV_InitBoxHull()
 	{
 		box_clipnodes[i].planenum = i;
 
-		auto side = i & 1;
+		const auto side = i & 1;
 
 		box_clipnodes[i].children[side] = CONTENTS_EMPTY;
 		if (i != 5)
@@ -269,8 +273,9 @@ void SV_TouchLinks(edict_t* ent, areanode_t* node)
 			|| ent->v.absmax[1] < touch->v.absmin[1]
 			|| ent->v.absmax[2] < touch->v.absmin[2])
 			continue;
-		auto old_self  = pr_global_struct->self;
-		auto old_other = pr_global_struct->other;
+
+		const auto old_self  = pr_global_struct->self;
+		const auto old_other = pr_global_struct->other;
 
 		pr_global_struct->self  = EDICT_TO_PROG(touch);
 		pr_global_struct->other = EDICT_TO_PROG(ent);
@@ -300,8 +305,6 @@ SV_FindTouchedLeafs
 */
 void SV_FindTouchedLeafs(edict_t* ent, mnode_t* node)
 {
-	mplane_t* splitplane;
-
 	if (node->contents == CONTENTS_SOLID)
 		return;
 
@@ -312,8 +315,8 @@ void SV_FindTouchedLeafs(edict_t* ent, mnode_t* node)
 		if (ent->num_leafs == MAX_ENT_LEAFS)
 			return;
 
-		auto leaf    = reinterpret_cast<mleaf_t *>(node);
-		auto leafnum = leaf - sv.worldmodel->leafs - 1;
+		const auto leaf    = reinterpret_cast<mleaf_t *>(node);
+		const auto leafnum = leaf - sv.worldmodel->leafs - 1;
 
 		ent->leafnums[ent->num_leafs] = leafnum;
 		ent->num_leafs++;
@@ -322,8 +325,8 @@ void SV_FindTouchedLeafs(edict_t* ent, mnode_t* node)
 
 	// NODE_MIXED
 
-	splitplane = node->plane;
-	auto sides = BOX_ON_PLANE_SIDE(ent->v.absmin, ent->v.absmax, splitplane);
+	const auto splitplane = node->plane;
+	const auto sides      = BOX_ON_PLANE_SIDE(ent->v.absmin, ent->v.absmax, splitplane);
 
 	// recurse down the contacted sides
 	if (sides & 1)
@@ -485,7 +488,7 @@ This could be a lot more efficient...
 */
 edict_t* SV_TestEntityPosition(edict_t* ent)
 {
-	auto trace = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, ent->v.origin, 0, ent);
+	const auto trace = SV_Move(ent->v.origin, ent->v.mins, ent->v.maxs, ent->v.origin, 0, ent);
 
 	if (trace.startsolid)
 		return sv.edicts;
@@ -575,7 +578,7 @@ qboolean SV_RecursiveHullCheck(hull_t* hull, int num, float p1f, float p2f, vec3
 	for (i     = 0; i < 3; i++)
 		mid[i] = p1[i] + frac * (p2[i] - p1[i]);
 
-	int side = t1 < 0;
+	const int side = t1 < 0;
 
 	// move up to the node
 	if (!SV_RecursiveHullCheck(hull, node->children[side], p1f, midf, p1, mid, trace))
@@ -658,7 +661,7 @@ trace_t SV_ClipMoveToEntity(edict_t* ent, vec3_t start, vec3_t mins, vec3_t maxs
 	VectorCopy (end, trace.endpos);
 
 	// get the clipping hull
-	auto hull = SV_HullForEntity(ent, mins, maxs, offset);
+	const auto hull = SV_HullForEntity(ent, mins, maxs, offset);
 
 	VectorSubtract (start, offset, start_l);
 	VectorSubtract (end, offset, end_l);

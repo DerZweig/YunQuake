@@ -306,8 +306,8 @@ int Sbar_itoa(int num, char* buf)
 	do
 	{
 		pow10 /= 10;
-		auto dig = num / pow10;
-		*str++   = '0' + dig;
+		const auto dig = num / pow10;
+		*str++         = '0' + dig;
 		num -= dig * pow10;
 	}
 	while (pow10 != 1);
@@ -328,8 +328,8 @@ void Sbar_DrawNum(int x, int y, int num, int digits, int color)
 	char str[12];
 	int  frame;
 
-	auto l   = Sbar_itoa(num, str);
-	auto ptr = str;
+	const auto l   = Sbar_itoa(num, str);
+	auto       ptr = str;
 	if (l > digits)
 		ptr += l - digits;
 	if (l < digits)
@@ -382,7 +382,7 @@ void Sbar_SortFrags()
 		for (auto j = 0; j < scoreboardlines - 1 - i; j++)
 			if (cl.scores[fragsort[j]].frags < cl.scores[fragsort[j + 1]].frags)
 			{
-				auto k          = fragsort[j];
+				const auto k    = fragsort[j];
 				fragsort[j]     = fragsort[j + 1];
 				fragsort[j + 1] = k;
 			}
@@ -407,12 +407,12 @@ void Sbar_UpdateScoreboard()
 
 	for (auto i = 0; i < scoreboardlines; i++)
 	{
-		auto k = fragsort[i];
-		auto s = &cl.scores[k];
+		const auto k = fragsort[i];
+		const auto s = &cl.scores[k];
 		sprintf(&scoreboardtext[i][1], "%3i %s", s->frags, s->name);
 
-		auto top            = s->colors & 0xf0;
-		auto bottom         = (s->colors & 15) << 4;
+		const auto top      = s->colors & 0xf0;
+		const auto bottom   = (s->colors & 15) << 4;
 		scoreboardtop[i]    = Sbar_ColorForMap(top);
 		scoreboardbottom[i] = Sbar_ColorForMap(bottom);
 	}
@@ -435,15 +435,15 @@ void Sbar_SoloScoreboard()
 	Sbar_DrawString(8, 12, str);
 
 	// time
-	int  minutes = cl.time / 60;
-	int  seconds = cl.time - 60 * minutes;
-	auto tens    = seconds / 10;
-	auto units   = seconds - 10 * tens;
+	const int  minutes = cl.time / 60;
+	const int  seconds = cl.time - 60 * minutes;
+	const auto tens    = seconds / 10;
+	const auto units   = seconds - 10 * tens;
 	sprintf(str, "Time :%3i:%i%i", minutes, tens, units);
 	Sbar_DrawString(184, 4, str);
 
 	// draw level name
-	int l = strlen(cl.levelname);
+	const int l = strlen(cl.levelname);
 	Sbar_DrawString(232 - l * 4, 12, cl.levelname);
 }
 
@@ -698,19 +698,19 @@ void Sbar_DrawFrags()
 	Sbar_SortFrags();
 
 	// draw the text
-	auto l = scoreboardlines <= 4 ? scoreboardlines : 4;
+	const auto l = scoreboardlines <= 4 ? scoreboardlines : 4;
 
 	auto x = 23;
 	if (cl.gametype == GAME_DEATHMATCH)
 		xofs = 0;
 	else
-		xofs = vid.width - 320 >> 1;
-	int y    = vid.height - SBAR_HEIGHT - 23;
+		xofs    = vid.width - 320 >> 1;
+	const int y = vid.height - SBAR_HEIGHT - 23;
 
 	for (auto i = 0; i < l; i++)
 	{
-		auto k = fragsort[i];
-		auto s = &cl.scores[k];
+		const auto k = fragsort[i];
+		auto       s = &cl.scores[k];
 		if (!s->name[0])
 			continue;
 
@@ -724,7 +724,7 @@ void Sbar_DrawFrags()
 		Draw_Fill(xofs + x * 8 + 10, y + 4, 28, 3, bottom);
 
 		// draw number
-		auto f = s->frags;
+		const auto f = s->frags;
 		sprintf(num, "%3i", f);
 
 		Sbar_DrawCharacter((x + 1) * 8, -24, num[0]);
@@ -762,7 +762,7 @@ void Sbar_DrawFace()
 		int  xofs;
 		char num[12];
 
-		auto s = &cl.scores[cl.viewentity - 1];
+		const auto s = &cl.scores[cl.viewentity - 1];
 		// draw background
 		auto top    = s->colors & 0xf0;
 		auto bottom = (s->colors & 15) << 4;
@@ -976,8 +976,8 @@ void Sbar_IntermissionNumber(int x, int y, int num, int digits, int color)
 	char str[12];
 	int  frame;
 
-	auto l   = Sbar_itoa(num, str);
-	auto ptr = str;
+	const auto l   = Sbar_itoa(num, str);
+	auto       ptr = str;
 	if (l > digits)
 		ptr += l - digits;
 	if (l < digits)
@@ -1009,21 +1009,21 @@ void Sbar_DeathmatchOverlay()
 	scr_copyeverything = 1;
 	scr_fullupdate     = 0;
 
-	auto pic = Draw_CachePic("gfx/ranking.lmp");
+	const auto pic = Draw_CachePic("gfx/ranking.lmp");
 	M_DrawPic((320 - pic->width) / 2, 8, pic);
 
 	// scores
 	Sbar_SortFrags();
 
 	// draw the text
-	auto l = scoreboardlines;
+	const auto l = scoreboardlines;
 
-	int       x = 80 + (vid.width - 320 >> 1);
+	const int x = 80 + (vid.width - 320 >> 1);
 	auto      y = 40;
 	for (auto i = 0; i < l; i++)
 	{
-		auto k = fragsort[i];
-		auto s = &cl.scores[k];
+		const auto k = fragsort[i];
+		auto       s = &cl.scores[k];
 		if (!s->name[0])
 			continue;
 
@@ -1037,7 +1037,7 @@ void Sbar_DeathmatchOverlay()
 		Draw_Fill(x, y + 4, 40, 4, bottom);
 
 		// draw number
-		auto f = s->frags;
+		const auto f = s->frags;
 		sprintf(num, "%3i", f);
 
 		Draw_Character(x + 8, y, num[0]);
@@ -1076,8 +1076,8 @@ void Sbar_MiniDeathmatchOverlay()
 	Sbar_SortFrags();
 
 	// draw the text
-	int  y        = vid.height - sb_lines;
-	auto numlines = sb_lines / 8;
+	int        y        = vid.height - sb_lines;
+	const auto numlines = sb_lines / 8;
 	if (numlines < 3)
 		return;
 
@@ -1096,11 +1096,11 @@ void Sbar_MiniDeathmatchOverlay()
 	if (i < 0)
 		i = 0;
 
-	auto x = 324;
+	const auto x = 324;
 	for (/* */; i < scoreboardlines && y < vid.height - 8; i++)
 	{
-		auto k = fragsort[i];
-		auto s = &cl.scores[k];
+		const auto k = fragsort[i];
+		auto       s = &cl.scores[k];
 		if (!s->name[0])
 			continue;
 
@@ -1114,7 +1114,7 @@ void Sbar_MiniDeathmatchOverlay()
 		Draw_Fill(x, y + 4, 40, 4, bottom);
 
 		// draw number
-		auto f = s->frags;
+		const auto f = s->frags;
 		sprintf(num, "%3i", f);
 
 		Draw_Character(x + 8, y, num[0]);
@@ -1157,9 +1157,9 @@ void Sbar_IntermissionOverlay()
 	Draw_TransPic(0, 56, pic);
 
 	// time
-	auto dig = cl.completed_time / 60;
+	const auto dig = cl.completed_time / 60;
 	Sbar_IntermissionNumber(160, 64, dig, 3, 0);
-	auto num = cl.completed_time - dig * 60;
+	const auto num = cl.completed_time - dig * 60;
 	Draw_TransPic(234, 64, sb_colon);
 	Draw_TransPic(246, 64, sb_nums[0][num / 10]);
 	Draw_TransPic(266, 64, sb_nums[0][num % 10]);
@@ -1183,6 +1183,6 @@ Sbar_FinaleOverlay
 void Sbar_FinaleOverlay()
 {
 	scr_copyeverything = 1;
-	auto pic           = Draw_CachePic("gfx/finale.lmp");
+	const auto pic     = Draw_CachePic("gfx/finale.lmp");
 	Draw_TransPic((vid.width - pic->width) / 2, 16, pic);
 }

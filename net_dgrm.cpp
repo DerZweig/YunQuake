@@ -74,7 +74,7 @@ int Datagram_SendMessage(qsocket_t* sock, sizebuf_t* data)
 		eom     = 0;
 	}
 
-	auto packetLen = NET_HEADERSIZE + dataLen;
+	const auto packetLen = NET_HEADERSIZE + dataLen;
 
 	packetBuffer.length   = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(sock->sendSequence++);
@@ -106,7 +106,7 @@ int SendMessageNext(qsocket_t* sock)
 		dataLen = MAX_DATAGRAM;
 		eom     = 0;
 	}
-	auto packetLen = NET_HEADERSIZE + dataLen;
+	const auto packetLen = NET_HEADERSIZE + dataLen;
 
 	packetBuffer.length   = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(sock->sendSequence++);
@@ -138,7 +138,7 @@ int ReSendMessage(qsocket_t* sock)
 		dataLen = MAX_DATAGRAM;
 		eom     = 0;
 	}
-	auto packetLen = NET_HEADERSIZE + dataLen;
+	const auto packetLen = NET_HEADERSIZE + dataLen;
 
 	packetBuffer.length   = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(sock->sendSequence - 1);
@@ -180,7 +180,7 @@ int Datagram_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data)
 		Sys_Error("Datagram_SendUnreliableMessage: message too big %u\n", data->cursize);
 #endif
 
-	int packetLen = NET_HEADERSIZE + data->cursize;
+	const int packetLen = NET_HEADERSIZE + data->cursize;
 
 	packetBuffer.length   = BigLong(packetLen | NETFLAG_UNRELIABLE);
 	packetBuffer.sequence = BigLong(sock->unreliableSendSequence++);
@@ -236,13 +236,13 @@ int Datagram_GetMessage(qsocket_t* sock)
 		}
 
 		length     = BigLong(packetBuffer.length);
-		auto flags = length & ~NETFLAG_LENGTH_MASK;
+		const auto flags = length & ~NETFLAG_LENGTH_MASK;
 		length &= NETFLAG_LENGTH_MASK;
 
 		if (flags & NETFLAG_CTL)
 			continue;
 
-		unsigned int sequence = BigLong(packetBuffer.sequence);
+		const unsigned int sequence = BigLong(packetBuffer.sequence);
 		packetsReceived++;
 
 		if (flags & NETFLAG_UNRELIABLE)
@@ -255,7 +255,7 @@ int Datagram_GetMessage(qsocket_t* sock)
 			}
 			if (sequence != sock->unreliableReceiveSequence)
 			{
-				auto count = sequence - sock->unreliableReceiveSequence;
+				const auto count = sequence - sock->unreliableReceiveSequence;
 				droppedDatagrams += count;
 				Con_DPrintf("Dropped %u datagram(s)\n", count);
 			}
@@ -406,14 +406,14 @@ static void Test_Poll()
 
 	while (true)
 	{
-		auto len = dfunc.Read(testSocket, net_message.data, net_message.maxsize, &clientaddr);
+		const auto len = dfunc.Read(testSocket, net_message.data, net_message.maxsize, &clientaddr);
 		if (len < sizeof(int))
 			break;
 
 		net_message.cursize = len;
 
 		MSG_BeginReading();
-		auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
+		const auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
 		MSG_ReadLong();
 		if (control == -1)
 			break;
@@ -427,9 +427,9 @@ static void Test_Poll()
 
 		MSG_ReadByte(); //playerNumber
 		Q_strcpy(name, MSG_ReadString());
-		auto colors      = MSG_ReadLong();
-		auto frags       = MSG_ReadLong();
-		auto connectTime = MSG_ReadLong();
+		const auto colors      = MSG_ReadLong();
+		const auto frags       = MSG_ReadLong();
+		const auto connectTime = MSG_ReadLong();
 		Q_strcpy(address, MSG_ReadString());
 
 		Con_Printf("%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
@@ -456,7 +456,7 @@ static void Test_f()
 	if (testInProgress)
 		return;
 
-	auto host = Cmd_Argv(1);
+	const auto host = Cmd_Argv(1);
 
 	if (host && hostCacheCount)
 	{
@@ -526,14 +526,14 @@ static void Test2_Poll()
 	net_landriverlevel = test2Driver;
 	name[0]            = 0;
 
-	auto len = dfunc.Read(test2Socket, net_message.data, net_message.maxsize, &clientaddr);
+	const auto len = dfunc.Read(test2Socket, net_message.data, net_message.maxsize, &clientaddr);
 	if (len < sizeof(int))
 		goto Reschedule;
 
 	net_message.cursize = len;
 
 	MSG_BeginReading();
-	auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
+	const auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
 	MSG_ReadLong();
 	if (control == -1)
 		goto Error;
@@ -580,7 +580,7 @@ static void Test2_f()
 	if (test2InProgress)
 		return;
 
-	auto host = Cmd_Argv(1);
+	const auto host = Cmd_Argv(1);
 
 	if (host && hostCacheCount)
 	{
@@ -639,7 +639,7 @@ int Datagram_Init()
 
 	for (auto i = 0; i < net_numlandrivers; i++)
 	{
-		auto csock = net_landrivers[i].Init();
+		const auto csock = net_landrivers[i].Init();
 		if (csock == -1)
 			continue;
 		net_landrivers[i].initialized = qtrue;
@@ -688,19 +688,19 @@ static qsocket_t* _Datagram_CheckNewConnections()
 	struct qsockaddr clientaddr;
 	struct qsockaddr newaddr;
 
-	auto acceptsock = dfunc.CheckNewConnections();
+	const auto acceptsock = dfunc.CheckNewConnections();
 	if (acceptsock == -1)
 		return nullptr;
 
 	SZ_Clear(&net_message);
 
-	auto len = dfunc.Read(acceptsock, net_message.data, net_message.maxsize, &clientaddr);
+	const auto len = dfunc.Read(acceptsock, net_message.data, net_message.maxsize, &clientaddr);
 	if (len < sizeof(int))
 		return nullptr;
 	net_message.cursize = len;
 
 	MSG_BeginReading();
-	auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
+	const auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
 	MSG_ReadLong();
 	if (control == -1)
 		return nullptr;
@@ -709,7 +709,7 @@ static qsocket_t* _Datagram_CheckNewConnections()
 	if ((control & NETFLAG_LENGTH_MASK) != len)
 		return nullptr;
 
-	auto command = MSG_ReadByte();
+	const auto command = MSG_ReadByte();
 	if (command == CCREQ_SERVER_INFO)
 	{
 		if (Q_strcmp(MSG_ReadString(), "QUAKE") != 0)
@@ -737,7 +737,7 @@ static qsocket_t* _Datagram_CheckNewConnections()
 		int       clientNumber;
 		client_t* client;
 
-		auto playerNumber = MSG_ReadByte();
+		const auto playerNumber = MSG_ReadByte();
 		auto activeNumber = -1;
 		for (clientNumber = 0, client = svs.clients; clientNumber < svs.maxclients; clientNumber++, client++)
 		{
@@ -773,7 +773,7 @@ static qsocket_t* _Datagram_CheckNewConnections()
 		cvar_t* var;
 
 		// find the search start location
-		auto prevCvarName = MSG_ReadString();
+		const auto prevCvarName = MSG_ReadString();
 		if (*prevCvarName)
 		{
 			var = Cvar_FindVar(prevCvarName);
@@ -835,7 +835,7 @@ static qsocket_t* _Datagram_CheckNewConnections()
 	{
 		if (s->driver != net_driverlevel)
 			continue;
-		auto ret = dfunc.AddrCompare(&clientaddr, &s->addr);
+		const auto ret = dfunc.AddrCompare(&clientaddr, &s->addr);
 		if (ret >= 0)
 		{
 			// is this a duplicate connection reqeust?
@@ -877,7 +877,7 @@ static qsocket_t* _Datagram_CheckNewConnections()
 	}
 
 	// allocate a network socket
-	auto newsock = dfunc.OpenSocket(0);
+	const auto newsock = dfunc.OpenSocket(0);
 	if (newsock == -1)
 	{
 		NET_FreeQSocket(sock);
@@ -961,7 +961,7 @@ static void _Datagram_SearchForHosts(qboolean xmit)
 			continue;
 
 		MSG_BeginReading();
-		auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
+		const auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
 		MSG_ReadLong();
 		if (control == -1)
 			continue;
@@ -1045,7 +1045,7 @@ static qsocket_t* _Datagram_Connect(char* host)
 	if (dfunc.GetAddrFromName(host, &sendaddr) == -1)
 		return nullptr;
 
-	auto newsock = dfunc.OpenSocket(0);
+	const auto newsock = dfunc.OpenSocket(0);
 	if (newsock == -1)
 		return nullptr;
 
@@ -1103,7 +1103,7 @@ static qsocket_t* _Datagram_Connect(char* host)
 				net_message.cursize = ret;
 				MSG_BeginReading();
 
-				auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
+				const auto control = BigLong(*reinterpret_cast<int *>(net_message.data));
 				MSG_ReadLong();
 				if (control == -1)
 				{

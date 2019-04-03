@@ -24,7 +24,7 @@ R_InitParticles
 */
 void R_InitParticles()
 {
-	auto i = COM_CheckParm("-particles");
+	const auto i = COM_CheckParm("-particles");
 
 	if (i)
 	{
@@ -60,7 +60,7 @@ void R_EntityParticles(entity_t* ent)
 	int    i;
 	vec3_t forward;
 
-	float dist = 64;
+	const float dist = 64;
 
 	if (!avelocities[0][0])
 	{
@@ -71,12 +71,12 @@ void R_EntityParticles(entity_t* ent)
 
 	for (i = 0; i < NUMVERTEXNORMALS; i++)
 	{
-		float angle = cl.time * avelocities[i][0];
-		auto  sy    = sin(angle);
-		auto  cy    = cos(angle);
-		angle       = cl.time * avelocities[i][1];
-		auto sp     = sin(angle);
-		auto cp     = cos(angle);
+		const float angle1 = cl.time * avelocities[i][0];
+		const auto  sy     = sin(angle1);
+		const auto  cy     = cos(angle1);
+		const float angle2 = cl.time * avelocities[i][1];
+		const auto  sp     = sin(angle2);
+		const auto  cp     = cos(angle2);
 
 		forward[0] = cp * cy;
 		forward[1] = cp * sy;
@@ -130,12 +130,13 @@ void R_ParseParticleEffect()
 	int    i;
 	int    count;
 
-	for (i        = 0; i < 3; i++)
-		org[i]    = MSG_ReadCoord();
-	for (i        = 0; i < 3; i++)
-		dir[i]    = MSG_ReadChar() * (1.0 / 16);
-	auto msgcount = MSG_ReadByte();
-	auto color    = MSG_ReadByte();
+	for (i     = 0; i < 3; i++)
+		org[i] = MSG_ReadCoord();
+	for (i     = 0; i < 3; i++)
+		dir[i] = MSG_ReadChar() * (1.0 / 16);
+
+	const auto msgcount = MSG_ReadByte();
+	const auto color    = MSG_ReadByte();
 
 	if (msgcount == 255)
 		count = 1024;
@@ -357,7 +358,7 @@ void R_LavaSplash(vec3_t org)
 				p->org[2] = org[2] + (rand() & 63);
 
 				VectorNormalize(dir);
-				float vel = 50 + (rand() & 63);
+				const float vel = 50 + (rand() & 63);
 				VectorScale(dir, vel, p->vel);
 			}
 }
@@ -396,7 +397,7 @@ void R_TeleportSplash(vec3_t org)
 				p->org[2] = org[2] + k + (rand() & 3);
 
 				VectorNormalize(dir);
-				float vel = 50 + (rand() & 63);
+				const float vel = 50 + (rand() & 63);
 				VectorScale(dir, vel, p->vel);
 			}
 }
@@ -526,12 +527,12 @@ void R_DrawParticles()
 
 	VectorScale(vup, 1.5, up);
 	VectorScale(vright, 1.5, right);
-	float frametime = cl.time - cl.oldtime;
-	auto  time3     = frametime * 15;
-	auto  time2     = frametime * 10; // 15;
-	auto  time1     = frametime * 5;
-	float grav      = frametime * sv_gravity.value * 0.05;
-	auto  dvel      = 4 * frametime;
+	const float frametime = cl.time - cl.oldtime;
+	const auto  time3     = frametime * 15;
+	const auto  time2     = frametime * 10; // 15;
+	const auto  time1     = frametime * 5;
+	const float grav      = frametime * sv_gravity.value * 0.05;
+	const auto  dvel      = 4 * frametime;
 
 	while (true)
 	{

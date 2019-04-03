@@ -48,7 +48,7 @@ void R_RemoveEfrags(entity_t* ent)
 			prev = &walk->leafnext;
 		}
 
-		auto old = ef;
+		const auto old = ef;
 		ef       = ef->entnext;
 
 		// put it on the free list
@@ -80,7 +80,7 @@ void R_SplitEntityOnNode(mnode_t* node)
 		if (!r_pefragtopnode)
 			r_pefragtopnode = node;
 
-		auto leaf = reinterpret_cast<mleaf_t *>(node);
+		const auto leaf = reinterpret_cast<mleaf_t *>(node);
 
 		// grab an efrag off the free list
 		auto ef = cl.free_efrags;
@@ -109,7 +109,7 @@ void R_SplitEntityOnNode(mnode_t* node)
 	// NODE_MIXED
 
 	splitplane = node->plane;
-	int sides  = BOX_ON_PLANE_SIDE(r_emins, r_emaxs, splitplane);
+	const int sides  = BOX_ON_PLANE_SIDE(r_emins, r_emaxs, splitplane);
 
 	if (sides == 3)
 	{
@@ -171,7 +171,7 @@ void R_StoreEfrags(efrag_t** ppefrag)
 	while ((pefrag = *ppefrag) != nullptr)
 	{
 		auto pent    = pefrag->entity;
-		auto clmodel = pent->model;
+		const auto clmodel = pent->model;
 
 		switch (clmodel->type)
 		{

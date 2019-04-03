@@ -35,11 +35,12 @@ CL_ParseBeam
 */
 void CL_ParseBeam(model_t* m)
 {
-	vec3_t  start, end;
+	vec3_t  start;
+	vec3_t  end;
 	beam_t* b;
 	int     i;
 
-	auto ent = MSG_ReadShort();
+	const auto ent = MSG_ReadShort();
 
 	start[0] = MSG_ReadCoord();
 	start[1] = MSG_ReadCoord();
@@ -88,7 +89,7 @@ void CL_ParseTEnt()
 	dlight_t* dl;
 	int       rnd;
 
-	auto type = MSG_ReadByte();
+	const auto type = MSG_ReadByte();
 	switch (type)
 	{
 	case TE_WIZSPIKE: // spike hitting wall
@@ -212,11 +213,12 @@ void CL_ParseTEnt()
 
 	case TE_EXPLOSION2: // color mapped explosion
 		{
-			pos[0]           = MSG_ReadCoord();
-			pos[1]           = MSG_ReadCoord();
-			pos[2]           = MSG_ReadCoord();
-			auto colorStart  = MSG_ReadByte();
-			auto colorLength = MSG_ReadByte();
+			pos[0]                 = MSG_ReadCoord();
+			pos[1]                 = MSG_ReadCoord();
+			pos[2]                 = MSG_ReadCoord();
+			const auto colorStart  = MSG_ReadByte();
+			const auto colorLength = MSG_ReadByte();
+
 			R_ParticleExplosion2(pos, colorStart, colorLength);
 			dl = CL_AllocDlight(0);
 			VectorCopy(pos, dl->origin);
@@ -262,11 +264,12 @@ CL_UpdateTEnts
 */
 void CL_UpdateTEnts()
 {
-	int       i;
-	beam_t*   b;
-	vec3_t    dist, org;
-	entity_t* ent;
-	float     yaw, pitch;
+	int     i;
+	beam_t* b;
+	vec3_t  dist;
+	vec3_t  org;
+	float   yaw;
+	float   pitch;
 
 	num_temp_entities = 0;
 
@@ -299,7 +302,7 @@ void CL_UpdateTEnts()
 			if (yaw < 0)
 				yaw += 360;
 
-			auto forward = sqrt(dist[0] * dist[0] + dist[1] * dist[1]);
+			const auto forward = sqrt(dist[0] * dist[0] + dist[1] * dist[1]);
 			pitch        = static_cast<int>(atan2(dist[2], forward) * 180 / M_PI);
 			if (pitch < 0)
 				pitch += 360;
@@ -310,7 +313,7 @@ void CL_UpdateTEnts()
 		auto d = VectorNormalize(dist);
 		while (d > 0)
 		{
-			ent = CL_NewTempEntity();
+			auto ent = CL_NewTempEntity();
 			if (!ent)
 				return;
 			VectorCopy (org, ent->origin);

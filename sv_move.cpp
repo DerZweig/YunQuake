@@ -2,21 +2,17 @@
 
 #define	STEPSIZE	18
 
-/*
-=============
-SV_CheckBottom
-
-Returns qfalse if any part of the bottom of the entity is off an edge that
-is not a staircase.
-
-=============
-*/
-int c_yes, c_no;
+int c_yes;
+int c_no;
 
 qboolean SV_CheckBottom(edict_t* ent)
 {
-	vec3_t mins, maxs, start, stop;
-	int    x,    y;
+	vec3_t mins;
+	vec3_t maxs;
+	vec3_t start;
+	vec3_t stop;
+	int    x;
+	int    y;
 	float  bottom;
 
 	VectorAdd (ent->v.origin, ent->v.mins, mins);
@@ -53,7 +49,7 @@ realcheck:
 
 	if (trace.fraction == 1.0)
 		return qfalse;
-	auto mid = bottom = trace.endpos[2];
+	const auto mid = bottom = trace.endpos[2];
 
 	// the corners must be within 16 of the midpoint	
 	for (x     = 0; x <= 1; x++)
@@ -101,10 +97,10 @@ qboolean SV_movestep(edict_t* ent, vec3_t move, qboolean relink)
 		for (auto i = 0; i < 2; i++)
 		{
 			VectorAdd (ent->v.origin, move, neworg);
-			auto enemy = PROG_TO_EDICT(ent->v.enemy);
+			const auto enemy = PROG_TO_EDICT(ent->v.enemy);
 			if (i == 0 && enemy != sv.edicts)
 			{
-				auto dz = ent->v.origin[2] - PROG_TO_EDICT(ent->v.enemy)->v.origin[2];
+				const auto dz = ent->v.origin[2] - PROG_TO_EDICT(ent->v.enemy)->v.origin[2];
 				if (dz > 40)
 					neworg[2] -= 8;
 				if (dz < 30)
@@ -222,7 +218,7 @@ qboolean SV_StepDirection(edict_t* ent, float yaw, float dist)
 	VectorCopy (ent->v.origin, oldorigin);
 	if (SV_movestep(ent, move, qfalse))
 	{
-		auto delta = ent->v.angles[YAW] - ent->v.ideal_yaw;
+		const auto delta = ent->v.angles[YAW] - ent->v.ideal_yaw;
 		if (delta > 45 && delta < 315)
 		{
 			// not turned far enough, so don't take the step
@@ -263,11 +259,11 @@ void SV_NewChaseDir(edict_t* actor, edict_t* enemy, float dist)
 	float d[3];
 	float tdir;
 
-	auto olddir     = anglemod(static_cast<int>(actor->v.ideal_yaw / 45) * 45);
-	auto turnaround = anglemod(olddir - 180);
+	const auto olddir     = anglemod(static_cast<int>(actor->v.ideal_yaw / 45) * 45);
+	const auto turnaround = anglemod(olddir - 180);
 
-	auto deltax = enemy->v.origin[0] - actor->v.origin[0];
-	auto deltay = enemy->v.origin[1] - actor->v.origin[1];
+	const auto deltax = enemy->v.origin[0] - actor->v.origin[0];
+	const auto deltay = enemy->v.origin[1] - actor->v.origin[1];
 
 	if (deltax > 10)
 		d[1] = 0;
@@ -366,9 +362,9 @@ SV_MoveToGoal
 */
 void SV_MoveToGoal()
 {
-	auto ent  = PROG_TO_EDICT(pr_global_struct->self);
-	auto goal = PROG_TO_EDICT(ent->v.goalentity);
-	auto dist = G_FLOAT(OFS_PARM0);
+	const auto ent  = PROG_TO_EDICT(pr_global_struct->self);
+	const auto goal = PROG_TO_EDICT(ent->v.goalentity);
+	const auto dist = G_FLOAT(OFS_PARM0);
 
 	if (!(static_cast<int>(ent->v.flags) & (FL_ONGROUND | FL_FLY | FL_SWIM)))
 	{

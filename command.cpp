@@ -64,7 +64,7 @@ Adds command text at the end of the buffer
 */
 void Cbuf_AddText(char* text)
 {
-	auto l = Q_strlen(text);
+	const auto l = Q_strlen(text);
 
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
@@ -90,7 +90,7 @@ void Cbuf_InsertText(char* text)
 	char* temp;
 
 	// copy off any commands still remaining in the exec buffer
-	auto templen = cmd_text.cursize;
+	const auto templen = cmd_text.cursize;
 	if (templen)
 	{
 		temp = static_cast<char*>(Z_Malloc(templen));
@@ -124,7 +124,7 @@ void Cbuf_Execute()
 	while (cmd_text.cursize)
 	{
 		// find a \n or ; line break
-		auto text = reinterpret_cast<char *>(cmd_text.data);
+		const auto text = reinterpret_cast<char *>(cmd_text.data);
 
 		auto quotes = 0;
 		for (i      = 0; i < cmd_text.cursize; i++)
@@ -206,9 +206,9 @@ void Cmd_StuffCmds_f()
 	if (!s)
 		return;
 
-	auto text = static_cast<char*>(Z_Malloc(s + 1));
-	text[0]   = 0;
-	for (i    = 1; i < com_argc; i++)
+	const auto text = static_cast<char*>(Z_Malloc(s + 1));
+	text[0]         = 0;
+	for (i          = 1; i < com_argc; i++)
 	{
 		if (!com_argv[i])
 			continue; // NEXTSTEP nulls out -NXHost
@@ -218,8 +218,8 @@ void Cmd_StuffCmds_f()
 	}
 
 	// pull out the commands
-	auto build = static_cast<char*>(Z_Malloc(s + 1));
-	build[0]   = 0;
+	const auto build = static_cast<char*>(Z_Malloc(s + 1));
+	build[0]         = 0;
 
 	for (i = 0; i < s - 1; i++)
 	{
@@ -233,8 +233,8 @@ void Cmd_StuffCmds_f()
 				++j;
 			}
 
-			auto c  = text[j];
-			text[j] = 0;
+			const auto c = text[j];
+			text[j]      = 0;
 
 			Q_strcat(build, text + i);
 			Q_strcat(build, "\n");
@@ -264,8 +264,8 @@ void Cmd_Exec_f()
 		return;
 	}
 
-	auto mark = Hunk_LowMark();
-	auto f    = reinterpret_cast<char *>(COM_LoadHunkFile(Cmd_Argv(1)));
+	const auto mark = Hunk_LowMark();
+	const auto f    = reinterpret_cast<char *>(COM_LoadHunkFile(Cmd_Argv(1)));
 	if (!f)
 	{
 		Con_Printf("couldn't exec %s\n", Cmd_Argv(1));
@@ -288,7 +288,10 @@ Just prints the rest of the line to the console
 void Cmd_Echo_f()
 {
 	for (auto i = 1; i < Cmd_Argc(); i++)
+	{
 		Con_Printf("%s ", Cmd_Argv(i));
+	}
+
 	Con_Printf("\n");
 }
 
@@ -302,7 +305,7 @@ Creates a new command that executes a command string (possibly ; seperated)
 
 char* CopyString(char* in)
 {
-	auto out = static_cast<char*>(Z_Malloc(strlen(in) + 1));
+	const auto out = static_cast<char*>(Z_Malloc(strlen(in) + 1));
 	strcpy(out, in);
 	return out;
 }
@@ -320,7 +323,7 @@ void Cmd_Alias_f()
 		return;
 	}
 
-	auto s = Cmd_Argv(1);
+	const auto s = Cmd_Argv(1);
 	if (strlen(s) >= MAX_ALIAS_NAME)
 	{
 		Con_Printf("Alias name is too long\n");
@@ -346,9 +349,9 @@ void Cmd_Alias_f()
 	strcpy(a->name, s);
 
 	// copy the rest of the command line
-	cmd[0]      = 0; // start out with a null string
-	auto      c = Cmd_Argc();
-	for (auto i = 2; i < c; i++)
+	cmd[0]       = 0; // start out with a null string
+	const auto c = Cmd_Argc();
+	for (auto  i = 2; i < c; i++)
 	{
 		strcat(cmd, Cmd_Argv(i));
 		if (i != c)
@@ -420,7 +423,7 @@ int Cmd_Argc()
 Cmd_Argv
 ============
 */
-char* Cmd_Argv(int arg)
+char* Cmd_Argv(const int arg)
 {
 	if (static_cast<unsigned>(arg) >= cmd_argc)
 		return cmd_null_string;
@@ -493,7 +496,7 @@ void Cmd_TokenizeString(char* text)
 Cmd_AddCommand
 ============
 */
-void Cmd_AddCommand(char* cmd_name, xcommand_t function)
+void Cmd_AddCommand(char* cmd_name, const xcommand_t function)
 {
 	cmd_function_t* cmd;
 
@@ -548,7 +551,7 @@ Cmd_CompleteCommand
 */
 char* Cmd_CompleteCommand(char* partial)
 {
-	auto len = Q_strlen(partial);
+	const auto len = Q_strlen(partial);
 
 	if (!len)
 		return nullptr;
@@ -569,7 +572,7 @@ A complete command line has been parsed, so try to execute it
 FIXME: lookupnoadd the token to speed search?
 ============
 */
-void Cmd_ExecuteString(char* text, cmd_source_t src)
+void Cmd_ExecuteString(char* text, const cmd_source_t src)
 {
 	cmd_source = src;
 	Cmd_TokenizeString(text);

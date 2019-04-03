@@ -171,7 +171,7 @@ void PR_StackTrace()
 	pr_stack[pr_depth].f = pr_xfunction;
 	for (auto i          = pr_depth; i >= 0; i--)
 	{
-		auto f = pr_stack[i].f;
+		const auto f = pr_stack[i].f;
 
 		if (!f)
 		{
@@ -200,7 +200,7 @@ void PR_Profile_f()
 		best        = nullptr;
 		for (auto i = 0; i < progs->numfunctions; i++)
 		{
-			auto f = &pr_functions[i];
+			const auto f = &pr_functions[i];
 			if (f->profile > max)
 			{
 				max  = f->profile;
@@ -270,7 +270,7 @@ int PR_EnterFunction(dfunction_t* f)
 		PR_RunError("stack overflow");
 
 	// save off any locals that the new function steps on
-	auto c = f->locals;
+	const auto c = f->locals;
 	if (localstack_used + c > LOCALSTACK_SIZE)
 		PR_RunError("PR_ExecuteProgram: locals stack overflow\n");
 
@@ -304,7 +304,7 @@ int PR_LeaveFunction()
 		Sys_Error("prog stack underflow");
 
 	// restore locals from the stack
-	auto c = pr_xfunction->locals;
+	const auto c = pr_xfunction->locals;
 	localstack_used -= c;
 	if (localstack_used < 0)
 		PR_RunError("PR_ExecuteProgram: locals stack underflow\n");
@@ -337,13 +337,13 @@ void PR_ExecuteProgram(func_t fnum)
 		Host_Error("PR_ExecuteProgram: nullptr function");
 	}
 
-	auto f = &pr_functions[fnum];
+	const auto f = &pr_functions[fnum];
 
 	auto runaway = 100000;
 	pr_trace     = qfalse;
 
 	// make a stack frame
-	auto exitdepth = pr_depth;
+	const auto exitdepth = pr_depth;
 
 	auto s = PR_EnterFunction(f);
 
@@ -582,12 +582,12 @@ void PR_ExecuteProgram(func_t fnum)
 				if (!a->function)
 					PR_RunError("nullptr function");
 
-				auto newf = &pr_functions[a->function];
+				const auto newf = &pr_functions[a->function];
 
 				if (newf->first_statement < 0)
 				{
 					// negative statements are built in functions
-					auto i = -newf->first_statement;
+					const auto i = -newf->first_statement;
 					if (i >= pr_numbuiltins)
 						PR_RunError("Bad builtin call number");
 					pr_builtins[i]();

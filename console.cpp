@@ -145,11 +145,11 @@ void Con_CheckResize()
 	}
 	else
 	{
-		auto oldwidth      = con_linewidth;
-		con_linewidth      = width;
-		auto oldtotallines = con_totallines;
-		con_totallines     = CON_TEXTSIZE / con_linewidth;
-		auto numlines      = oldtotallines;
+		const auto oldwidth      = con_linewidth;
+		con_linewidth            = width;
+		const auto oldtotallines = con_totallines;
+		con_totallines           = CON_TEXTSIZE / con_linewidth;
+		auto numlines            = oldtotallines;
 
 		if (con_totallines < numlines)
 			numlines = con_totallines;
@@ -308,7 +308,7 @@ void Con_Print(char* txt)
 			break;
 
 		default: // display character and advance
-			auto y                              = con_current % con_totallines;
+			const auto y                        = con_current % con_totallines;
 			con_text[y * con_linewidth + con_x] = c | mask;
 			con_x++;
 			if (con_x >= con_linewidth)
@@ -332,7 +332,7 @@ void Con_DebugLog(char* file, char* fmt, ...)
 	va_start(argptr, fmt);
 	vsprintf(data, fmt, argptr);
 	va_end(argptr);
-	auto fd = Sys_FileOpenAppend(file);
+	const auto fd = Sys_FileOpenAppend(file);
 	Sys_FileWrite(fd, data, strlen(data));
 	Sys_FileClose(fd);
 }
@@ -426,7 +426,7 @@ void Con_SafePrintf(char* fmt, ...)
 	vsprintf(msg, fmt, argptr);
 	va_end (argptr);
 
-	int temp                 = scr_disabled_for_loading;
+	const int temp           = scr_disabled_for_loading;
 	scr_disabled_for_loading = qtrue;
 	Con_Printf("%s", msg);
 	scr_disabled_for_loading = temp;
@@ -501,7 +501,7 @@ void Con_DrawNotify()
 		time = realtime - time;
 		if (time > con_notifytime.value)
 			continue;
-		auto text = con_text + i % con_totallines * con_linewidth;
+		const auto text = con_text + i % con_totallines * con_linewidth;
 
 		clearnotify = 0;
 		scr_copytop = 1;
@@ -553,15 +553,15 @@ void Con_DrawConsole(int lines, qboolean drawinput)
 	// draw the text
 	con_vislines = lines;
 
-	auto rows = lines - 16 >> 3; // rows of text to draw
-	auto y    = lines - 16 - (rows << 3); // may start slightly negative
+	const auto rows = lines - 16 >> 3; // rows of text to draw
+	auto       y    = lines - 16 - (rows << 3); // may start slightly negative
 
 	for (auto i = con_current - rows + 1; i <= con_current; i++, y += 8)
 	{
 		auto j = i - con_backscroll;
 		if (j < 0)
-			j     = 0;
-		auto text = con_text + j % con_totallines * con_linewidth;
+			j           = 0;
+		const auto text = con_text + j % con_totallines * con_linewidth;
 
 		for (auto x = 0; x < con_linewidth; x++)
 			Draw_Character(x + 1 << 3, y, text[x]);
@@ -593,10 +593,10 @@ void Con_NotifyBox(char* text)
 
 	do
 	{
-		auto t1 = Sys_FloatTime();
+		const auto t1 = Sys_FloatTime();
 		SCR_UpdateScreen();
 		Sys_SendKeyEvents();
-		auto t2 = Sys_FloatTime();
+		const auto t2 = Sys_FloatTime();
 		realtime += t2 - t1; // make the cursor blink
 	}
 	while (key_count < 0);

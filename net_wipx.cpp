@@ -34,7 +34,7 @@ int WIPX_Init()
 
 	if (winsock_initialized == 0)
 	{
-		auto r = pWSAStartup(MAKEWORD(1, 1), &winsockdata);
+		const auto r = pWSAStartup(MAKEWORD(1, 1), &winsockdata);
 
 		if (r)
 		{
@@ -171,8 +171,8 @@ ErrorReturn:
 
 int WIPX_CloseSocket(int handle)
 {
-	auto socket       = ipxsocket[handle];
-	auto ret          = pclosesocket(socket);
+	const auto socket       = ipxsocket[handle];
+	const auto ret          = pclosesocket(socket);
 	ipxsocket[handle] = 0;
 	return ret;
 }
@@ -208,12 +208,12 @@ static byte packetBuffer[NET_DATAGRAMSIZE + 4];
 int WIPX_Read(int handle, byte* buf, int len, qsockaddr* addr)
 {
 	int  addrlen = sizeof(struct qsockaddr);
-	auto socket  = ipxsocket[handle];
+	const auto socket  = ipxsocket[handle];
 	auto ret     = precvfrom(socket, reinterpret_cast<char*>(packetBuffer), len + 4, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
 
 	if (ret == -1)
 	{
-		auto errnum = pWSAGetLastError();
+		const auto errnum = pWSAGetLastError();
 
 		if (errnum == WSAEWOULDBLOCK || errnum == WSAECONNREFUSED)
 			return 0;
@@ -240,7 +240,7 @@ int WIPX_Broadcast(int handle, byte* buf, int len)
 
 int WIPX_Write(int handle, byte* buf, int len, qsockaddr* addr)
 {
-	auto socket = ipxsocket[handle];
+	const auto socket = ipxsocket[handle];
 
 	// build packet with sequence number
 	*reinterpret_cast<int *>(&packetBuffer[0]) = sequence[handle];
@@ -248,7 +248,7 @@ int WIPX_Write(int handle, byte* buf, int len, qsockaddr* addr)
 	memcpy(&packetBuffer[4], buf, len);
 	len += 4;
 
-	auto ret = psendto(socket, reinterpret_cast<const char*>(packetBuffer), len, 0, reinterpret_cast<sockaddr *>(addr), sizeof(struct qsockaddr));
+	const auto ret = psendto(socket, reinterpret_cast<const char*>(packetBuffer), len, 0, reinterpret_cast<sockaddr *>(addr), sizeof(struct qsockaddr));
 	if (ret == -1)
 		if (pWSAGetLastError() == WSAEWOULDBLOCK)
 			return 0;
@@ -318,7 +318,7 @@ int WIPX_StringToAddr(char* string, qsockaddr* addr)
 
 int WIPX_GetSocketAddr(int handle, qsockaddr* addr)
 {
-	auto socket  = ipxsocket[handle];
+	const auto socket  = ipxsocket[handle];
 	int  addrlen = sizeof(struct qsockaddr);
 
 	Q_memset(addr, 0, sizeof(struct qsockaddr));
@@ -344,7 +344,7 @@ int WIPX_GetAddrFromName(char* name, qsockaddr* addr)
 {
 	char buf[32];
 
-	auto n = Q_strlen(name);
+	const auto n = Q_strlen(name);
 
 	if (n == 12)
 	{

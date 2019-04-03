@@ -117,8 +117,8 @@ int FanLength(int starttri, int startv)
 	striptris[0] = starttri;
 	stripcount   = 1;
 
-	auto m1 = last->vertindex[(startv + 0) % 3];
-	auto m2 = last->vertindex[(startv + 2) % 3];
+	const auto m1 = last->vertindex[(startv + 0) % 3];
+	auto       m2 = last->vertindex[(startv + 2) % 3];
 
 
 	// look for a matching triangle
@@ -224,7 +224,7 @@ void BuildTris()
 		for (j = 0; j < bestlen + 2; j++)
 		{
 			// emit a vertex into the reorder buffer
-			auto k                  = bestverts[j];
+			const auto k            = bestverts[j];
 			vertexorder[numorder++] = k;
 
 			// emit s/t coords into the commands stream
@@ -308,7 +308,7 @@ void GL_MakeAliasModelDisplayLists(model_t* m, aliashdr_t* hdr)
 
 	paliashdr->poseverts = numorder;
 
-	auto cmds           = static_cast<int*>(Hunk_Alloc(numcommands * 4));
+	const auto cmds     = static_cast<int*>(Hunk_Alloc(numcommands * 4));
 	paliashdr->commands = reinterpret_cast<byte *>(cmds) - reinterpret_cast<byte *>(paliashdr);
 	memcpy(cmds, commands, numcommands * 4);
 

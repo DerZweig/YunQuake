@@ -36,7 +36,7 @@ Caches the data if needed
 */
 void* Mod_Extradata(model_t* mod)
 {
-	auto r = Cache_Check(&mod->cache);
+	const auto r = Cache_Check(&mod->cache);
 	if (r)
 		return r;
 
@@ -54,8 +54,6 @@ Mod_PointInLeaf
 */
 mleaf_t* Mod_PointInLeaf(vec3_t p, model_t* model)
 {
-	mplane_t* plane;
-
 	if (!model || !model->nodes)
 		Sys_Error("Mod_PointInLeaf: bad model");
 
@@ -64,8 +62,8 @@ mleaf_t* Mod_PointInLeaf(vec3_t p, model_t* model)
 	{
 		if (node->contents < 0)
 			return reinterpret_cast<mleaf_t *>(node);
-		plane  = node->plane;
-		auto d = DotProduct (p,plane->normal) - plane->dist;
+		auto       plane = node->plane;
+		const auto d     = DotProduct (p,plane->normal) - plane->dist;
 		if (d > 0)
 			node = node->children[0];
 		else
@@ -205,7 +203,7 @@ model_t* Mod_LoadModel(model_t* mod, qboolean crash)
 	{
 		if (mod->type == modtype_t::mod_alias)
 		{
-			auto d = Cache_Check(&mod->cache);
+			const auto d = Cache_Check(&mod->cache);
 			if (d)
 				return mod;
 		}
@@ -223,7 +221,7 @@ model_t* Mod_LoadModel(model_t* mod, qboolean crash)
 	//
 	// load the file
 	//
-	auto buf = reinterpret_cast<unsigned *>(COM_LoadStackFile(mod->name, stackbuf, sizeof stackbuf));
+	const auto buf = reinterpret_cast<unsigned *>(COM_LoadStackFile(mod->name, stackbuf, sizeof stackbuf));
 	if (!buf)
 	{
 		if (crash)
@@ -272,7 +270,7 @@ Loads in a model for the given name
 */
 model_t* Mod_ForName(char* name, qboolean crash)
 {
-	auto mod = Mod_FindName(name);
+	const auto mod = Mod_FindName(name);
 	return Mod_LoadModel(mod, crash);
 }
 
@@ -327,7 +325,7 @@ void Mod_LoadTextures(lump_t* l)
 
 		if (mt->width & 15 || mt->height & 15)
 			Sys_Error("Texture %s is not 16 aligned", mt->name);
-		int pixels             = mt->width * mt->height / 64 * 85;
+		const int pixels       = mt->width * mt->height / 64 * 85;
 		tx                     = static_cast<texture_t*>(Hunk_AllocName(sizeof(texture_t) + pixels, loadname));
 		loadmodel->textures[i] = tx;
 
@@ -506,8 +504,8 @@ void Mod_LoadVertexes(lump_t* l)
 	if (l->filelen % sizeof(dvertex_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(dvertex_t);
-	auto out   = static_cast<mvertex_t *>(Hunk_AllocName(count * sizeof(mvertex_t), loadname));
+	const int count = l->filelen / sizeof(dvertex_t);
+	auto      out   = static_cast<mvertex_t *>(Hunk_AllocName(count * sizeof(mvertex_t), loadname));
 
 	loadmodel->vertexes    = out;
 	loadmodel->numvertexes = count;
@@ -533,8 +531,8 @@ void Mod_LoadSubmodels(lump_t* l)
 	if (l->filelen % sizeof(dmodel_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(dmodel_t);
-	auto out   = static_cast<dmodel_t*>(Hunk_AllocName(count * sizeof(dmodel_t), loadname));
+	const int count = l->filelen / sizeof(dmodel_t);
+	auto      out   = static_cast<dmodel_t*>(Hunk_AllocName(count * sizeof(dmodel_t), loadname));
 
 	loadmodel->submodels    = out;
 	loadmodel->numsubmodels = count;
@@ -567,8 +565,8 @@ void Mod_LoadEdges(lump_t* l)
 	if (l->filelen % sizeof(dedge_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(dedge_t);
-	auto out   = static_cast<medge_t*>(Hunk_AllocName((count + 1) * sizeof(medge_t), loadname));
+	const int count = l->filelen / sizeof(dedge_t);
+	auto      out   = static_cast<medge_t*>(Hunk_AllocName((count + 1) * sizeof(medge_t), loadname));
 
 	loadmodel->edges    = out;
 	loadmodel->numedges = count;
@@ -591,8 +589,8 @@ void Mod_LoadTexinfo(lump_t* l)
 	if (l->filelen % sizeof(texinfo_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(texinfo_t);
-	auto out   = static_cast<mtexinfo_t*>(Hunk_AllocName(count * sizeof(mtexinfo_t), loadname));
+	const int count = l->filelen / sizeof(texinfo_t);
+	auto      out   = static_cast<mtexinfo_t*>(Hunk_AllocName(count * sizeof(mtexinfo_t), loadname));
 
 	loadmodel->texinfo    = out;
 	loadmodel->numtexinfo = count;
@@ -601,8 +599,8 @@ void Mod_LoadTexinfo(lump_t* l)
 	{
 		for (auto j         = 0; j < 8; j++)
 			out->vecs[0][j] = LittleFloat(in->vecs[0][j]);
-		auto len1           = Length(out->vecs[0]);
-		auto len2           = Length(out->vecs[1]);
+		auto       len1     = Length(out->vecs[0]);
+		const auto len2     = Length(out->vecs[1]);
 		len1                = (len1 + len2) / 2;
 		if (len1 < 0.32)
 			out->mipadjust = 4;
@@ -613,8 +611,8 @@ void Mod_LoadTexinfo(lump_t* l)
 		else
 			out->mipadjust = 1;
 
-		auto miptex = LittleLong(in->miptex);
-		out->flags  = LittleLong(in->flags);
+		const auto miptex = LittleLong(in->miptex);
+		out->flags        = LittleLong(in->flags);
 
 		if (!loadmodel->textures)
 		{
@@ -656,7 +654,7 @@ void CalcSurfaceExtents(msurface_t* s)
 
 	for (i = 0; i < s->numedges; i++)
 	{
-		auto e = loadmodel->surfedges[s->firstedge + i];
+		const auto e = loadmodel->surfedges[s->firstedge + i];
 		if (e >= 0)
 			v = &loadmodel->vertexes[loadmodel->edges[e].v[0]];
 		else
@@ -664,7 +662,7 @@ void CalcSurfaceExtents(msurface_t* s)
 
 		for (auto j = 0; j < 2; j++)
 		{
-			auto val = v->position[0] * tex->vecs[j][0] +
+			const auto val = v->position[0] * tex->vecs[j][0] +
 				v->position[1] * tex->vecs[j][1] +
 				v->position[2] * tex->vecs[j][2] +
 				tex->vecs[j][3];
@@ -701,8 +699,8 @@ void Mod_LoadFaces(lump_t* l)
 	if (l->filelen % sizeof(dface_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(dface_t);
-	auto out   = static_cast<msurface_t*>(Hunk_AllocName(count * sizeof(msurface_t), loadname));
+	const int count = l->filelen / sizeof(dface_t);
+	auto      out   = static_cast<msurface_t*>(Hunk_AllocName(count * sizeof(msurface_t), loadname));
 
 	loadmodel->surfaces    = out;
 	loadmodel->numsurfaces = count;
@@ -713,8 +711,8 @@ void Mod_LoadFaces(lump_t* l)
 		out->numedges  = LittleShort(in->numedges);
 		out->flags     = 0;
 
-		int planenum = LittleShort(in->planenum);
-		int side     = LittleShort(in->side);
+		const int planenum = LittleShort(in->planenum);
+		const int side     = LittleShort(in->side);
 		if (side)
 			out->flags |= SURF_PLANEBACK;
 
@@ -783,8 +781,8 @@ void Mod_LoadNodes(lump_t* l)
 	if (l->filelen % sizeof(dnode_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(dnode_t);
-	auto out   = static_cast<mnode_t*>(Hunk_AllocName(count * sizeof(mnode_t), loadname));
+	const int count = l->filelen / sizeof(dnode_t);
+	auto      out   = static_cast<mnode_t*>(Hunk_AllocName(count * sizeof(mnode_t), loadname));
 
 	loadmodel->nodes    = out;
 	loadmodel->numnodes = count;
@@ -829,8 +827,8 @@ void Mod_LoadLeafs(lump_t* l)
 	if (l->filelen % sizeof(dleaf_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof*in;
-	auto out   = static_cast<mleaf_t*>(Hunk_AllocName(count * sizeof(mleaf_t), loadname));
+	const int count = l->filelen / sizeof*in;
+	auto      out   = static_cast<mleaf_t*>(Hunk_AllocName(count * sizeof(mleaf_t), loadname));
 
 	loadmodel->leafs    = out;
 	loadmodel->numleafs = count;
@@ -879,8 +877,8 @@ void Mod_LoadClipnodes(lump_t* l)
 	auto in = reinterpret_cast<dclipnode_t *>(mod_base + l->fileofs);
 	if (l->filelen % sizeof(dclipnode_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
-	int  count = l->filelen / sizeof*in;
-	auto out   = static_cast<dclipnode_t*>(Hunk_AllocName(count * sizeof(dclipnode_t), loadname));
+	const int count = l->filelen / sizeof*in;
+	auto      out   = static_cast<dclipnode_t*>(Hunk_AllocName(count * sizeof(dclipnode_t), loadname));
 
 	loadmodel->clipnodes    = out;
 	loadmodel->numclipnodes = count;
@@ -926,10 +924,10 @@ Deplicate the drawing hull structure as a clipping hull
 */
 void Mod_MakeHull0()
 {
-	auto hull  = &loadmodel->hulls[0];
-	auto in    = loadmodel->nodes;
-	auto count = loadmodel->numnodes;
-	auto out   = static_cast<dclipnode_t*>(Hunk_AllocName(count * sizeof(dclipnode_t), loadname));
+	const auto hull  = &loadmodel->hulls[0];
+	auto       in    = loadmodel->nodes;
+	const auto count = loadmodel->numnodes;
+	auto       out   = static_cast<dclipnode_t*>(Hunk_AllocName(count * sizeof(dclipnode_t), loadname));
 
 	hull->clipnodes     = out;
 	hull->firstclipnode = 0;
@@ -941,7 +939,7 @@ void Mod_MakeHull0()
 		out->planenum = in->plane - loadmodel->planes;
 		for (auto j   = 0; j < 2; j++)
 		{
-			auto child = in->children[j];
+			const auto child = in->children[j];
 			if (child->contents < 0)
 				out->children[j] = child->contents;
 			else
@@ -957,19 +955,19 @@ Mod_LoadMarksurfaces
 */
 void Mod_LoadMarksurfaces(lump_t* l)
 {
-	auto in = reinterpret_cast<short *>(mod_base + l->fileofs);
+	const auto in = reinterpret_cast<short *>(mod_base + l->fileofs);
 	if (l->filelen % sizeof(short))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(short);
-	auto out   = static_cast<msurface_t **>(Hunk_AllocName(count * sizeof(msurface_t*), loadname));
+	const int  count = l->filelen / sizeof(short);
+	const auto out   = static_cast<msurface_t **>(Hunk_AllocName(count * sizeof(msurface_t*), loadname));
 
 	loadmodel->marksurfaces    = out;
 	loadmodel->nummarksurfaces = count;
 
 	for (auto i = 0; i < count; i++)
 	{
-		int j = LittleShort(in[i]);
+		const int j = LittleShort(in[i]);
 		if (j >= loadmodel->numsurfaces)
 			Sys_Error("Mod_ParseMarksurfaces: bad surface number");
 		out[i] = loadmodel->surfaces + j;
@@ -983,12 +981,12 @@ Mod_LoadSurfedges
 */
 void Mod_LoadSurfedges(lump_t* l)
 {
-	auto in = reinterpret_cast<int *>(mod_base + l->fileofs);
+	const auto in = reinterpret_cast<int *>(mod_base + l->fileofs);
 	if (l->filelen % sizeof(int))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(int);
-	auto out   = static_cast<int*>(Hunk_AllocName(count * sizeof(int), loadname));
+	const int  count = l->filelen / sizeof(int);
+	const auto out   = static_cast<int*>(Hunk_AllocName(count * sizeof(int), loadname));
 
 	loadmodel->surfedges    = out;
 	loadmodel->numsurfedges = count;
@@ -1009,8 +1007,8 @@ void Mod_LoadPlanes(lump_t* l)
 	if (l->filelen % sizeof(dplane_t))
 		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadmodel->name);
 
-	int  count = l->filelen / sizeof(dplane_t);
-	auto out   = static_cast<mplane_t*>(Hunk_AllocName(count * 2 * sizeof(mplane_t), loadname));
+	const int count = l->filelen / sizeof(dplane_t);
+	auto      out   = static_cast<mplane_t*>(Hunk_AllocName(count * 2 * sizeof(mplane_t), loadname));
 
 	loadmodel->planes    = out;
 	loadmodel->numplanes = count;
@@ -1197,7 +1195,7 @@ void* Mod_LoadAliasGroup(void* pin, maliasframedesc_t* frame)
 
 	auto pingroup = static_cast<daliasgroup_t *>(pin);
 
-	auto numframes = LittleLong(pingroup->numframes);
+	const auto numframes = LittleLong(pingroup->numframes);
 
 	frame->firstpose = posenum;
 	frame->numposes  = numframes;
@@ -1262,7 +1260,7 @@ extern unsigned d_8to24table[];
 
 void Mod_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 {
-	auto        fillcolor = *skin; // assume this is the pixel to fill
+	const auto  fillcolor = *skin; // assume this is the pixel to fill
 	floodfill_t fifo[FLOODFILL_FIFO_SIZE];
 	auto        inpt        = 0;
 	auto        outpt       = 0;
@@ -1292,9 +1290,10 @@ void Mod_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 
 	while (outpt != inpt)
 	{
-		int  x   = fifo[outpt].x, y = fifo[outpt].y;
-		auto fdc = filledcolor;
-		auto pos = &skin[x + skinwidth * y];
+		const int  x   = fifo[outpt].x;
+		const int  y   = fifo[outpt].y;
+		auto       fdc = filledcolor;
+		const auto pos = &skin[x + skinwidth * y];
 
 		outpt = outpt + 1 & FLOODFILL_FIFO_MASK;
 
@@ -1321,12 +1320,12 @@ void* Mod_LoadAllSkins(int numskins, daliasskintype_t* pskintype)
 	char  name[32];
 	byte* texels;
 
-	auto skin = reinterpret_cast<byte *>(pskintype + 1);
+	const auto skin = reinterpret_cast<byte *>(pskintype + 1);
 
 	if (numskins < 1 || numskins > MAX_SKINS)
 		Sys_Error("Mod_LoadAliasModel: Invalid # of skins: %d\n", numskins);
 
-	auto s = pheader->skinwidth * pheader->skinheight;
+	const auto s = pheader->skinwidth * pheader->skinheight;
 
 	for (auto i = 0; i < numskins; i++)
 	{
@@ -1342,7 +1341,7 @@ void* Mod_LoadAllSkins(int numskins, daliasskintype_t* pskintype)
 			//		}
 			sprintf(name, "%s_%i", loadmodel->name, i);
 
-			auto texnum = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, reinterpret_cast<byte *>(pskintype + 1), qtrue, qfalse);
+			const auto texnum = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, reinterpret_cast<byte *>(pskintype + 1), qtrue, qfalse);
 
 			pheader->gl_texturenum[i][0] = texnum;
 			pheader->gl_texturenum[i][1] = texnum;
@@ -1355,9 +1354,9 @@ void* Mod_LoadAllSkins(int numskins, daliasskintype_t* pskintype)
 		{
 			// animating skin group.  yuck.
 			pskintype++;
-			auto pinskingroup     = reinterpret_cast<daliasskingroup_t *>(pskintype);
-			auto groupskins       = LittleLong(pinskingroup->numskins);
-			auto pinskinintervals = reinterpret_cast<daliasskininterval_t *>(pinskingroup + 1);
+			const auto pinskingroup     = reinterpret_cast<daliasskingroup_t *>(pskintype);
+			const auto groupskins       = LittleLong(pinskingroup->numskins);
+			const auto pinskinintervals = reinterpret_cast<daliasskininterval_t *>(pinskingroup + 1);
 
 			pskintype = reinterpret_cast<daliasskintype_t *>(pinskinintervals + groupskins);
 
@@ -1374,7 +1373,7 @@ void* Mod_LoadAllSkins(int numskins, daliasskintype_t* pskintype)
 				pheader->gl_texturenum[i][j & 3] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, reinterpret_cast<byte *>(pskintype), qtrue, qfalse);
 				pskintype                        = reinterpret_cast<daliasskintype_t *>(reinterpret_cast<byte *>(pskintype) + s);
 			}
-			auto k = j;
+			const auto k = j;
 			for (/* */; j < 4; j++)
 				pheader->gl_texturenum[i][j & 3] =
 					pheader->gl_texturenum[i][j - k];
@@ -1395,9 +1394,9 @@ void Mod_LoadAliasModel(model_t* mod, void* buffer)
 {
 	int i;
 
-	auto start    = Hunk_LowMark();
-	auto pinmodel = static_cast<mdl_t *>(buffer);
-	auto version  = LittleLong(pinmodel->version);
+	const auto start    = Hunk_LowMark();
+	auto       pinmodel = static_cast<mdl_t *>(buffer);
+	const auto version  = LittleLong(pinmodel->version);
 
 	if (version != ALIAS_VERSION)
 		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, version, ALIAS_VERSION);
@@ -1406,7 +1405,7 @@ void Mod_LoadAliasModel(model_t* mod, void* buffer)
 	// allocate space for a working header, plus all the data except the frames,
 	// skin and group info
 	//
-	int size = sizeof(aliashdr_t) + (LittleLong(pinmodel->numframes) - 1) * sizeof pheader->frames[0];
+	const int size = sizeof(aliashdr_t) + (LittleLong(pinmodel->numframes) - 1) * sizeof pheader->frames[0];
 
 	pheader = static_cast<aliashdr_t*>(Hunk_AllocName(size, loadname));
 
@@ -1437,8 +1436,8 @@ void Mod_LoadAliasModel(model_t* mod, void* buffer)
 	if (pheader->numtris <= 0)
 		Sys_Error("model %s has no triangles", mod->name);
 
-	pheader->numframes = LittleLong(pinmodel->numframes);
-	auto numframes     = pheader->numframes;
+	pheader->numframes   = LittleLong(pinmodel->numframes);
+	const auto numframes = pheader->numframes;
 	if (numframes < 1)
 		Sys_Error("Mod_LoadAliasModel: Invalid # of frames: %d\n", numframes);
 
@@ -1463,7 +1462,7 @@ void Mod_LoadAliasModel(model_t* mod, void* buffer)
 	//
 	// load base s and t vertices
 	//
-	auto pinstverts = reinterpret_cast<stvert_t *>(pskintype);
+	const auto pinstverts = reinterpret_cast<stvert_t *>(pskintype);
 
 	for (i = 0; i < pheader->numverts; i++)
 	{
@@ -1475,7 +1474,7 @@ void Mod_LoadAliasModel(model_t* mod, void* buffer)
 	//
 	// load triangle lists
 	//
-	auto pintriangles = reinterpret_cast<dtriangle_t *>(&pinstverts[pheader->numverts]);
+	const auto pintriangles = reinterpret_cast<dtriangle_t *>(&pinstverts[pheader->numverts]);
 
 	for (i = 0; i < pheader->numtris; i++)
 	{
@@ -1495,7 +1494,7 @@ void Mod_LoadAliasModel(model_t* mod, void* buffer)
 
 	for (i = 0; i < numframes; i++)
 	{
-		auto frametype = static_cast<aliasframetype_t>(LittleLong(static_cast<int>(pframetype->type)));
+		const auto frametype = static_cast<aliasframetype_t>(LittleLong(static_cast<int>(pframetype->type)));
 
 		if (frametype == aliasframetype_t::ALIAS_SINGLE)
 		{
@@ -1523,8 +1522,8 @@ void Mod_LoadAliasModel(model_t* mod, void* buffer)
 	//
 	// move the complete, relocatable alias model to the cache
 	//	
-	auto end   = Hunk_LowMark();
-	auto total = end - start;
+	const auto end   = Hunk_LowMark();
+	const auto total = end - start;
 
 	Cache_Alloc(&mod->cache, total, loadname);
 	if (!mod->cache.data)
@@ -1548,11 +1547,11 @@ void* Mod_LoadSpriteFrame(void* pin, mspriteframe_t** ppframe, int framenum)
 
 	auto pinframe = static_cast<dspriteframe_t *>(pin);
 
-	auto width  = LittleLong(pinframe->width);
-	auto height = LittleLong(pinframe->height);
-	auto size   = width * height;
+	const auto width  = LittleLong(pinframe->width);
+	const auto height = LittleLong(pinframe->height);
+	const auto size   = width * height;
 
-	auto pspriteframe = static_cast<mspriteframe_t *>(Hunk_AllocName(sizeof(mspriteframe_t), loadname));
+	const auto pspriteframe = static_cast<mspriteframe_t *>(Hunk_AllocName(sizeof(mspriteframe_t), loadname));
 
 	Q_memset(pspriteframe, 0, sizeof(mspriteframe_t));
 
@@ -1584,9 +1583,9 @@ void* Mod_LoadSpriteGroup(void* pin, mspriteframe_t** ppframe, int framenum)
 {
 	int i;
 
-	auto pingroup     = static_cast<dspritegroup_t *>(pin);
-	auto numframes    = LittleLong(pingroup->numframes);
-	auto pspritegroup = static_cast<mspritegroup_t *>(Hunk_AllocName(sizeof(mspritegroup_t) + (numframes - 1) * sizeof(mspritegroup_t), loadname));
+	const auto pingroup     = static_cast<dspritegroup_t *>(pin);
+	const auto numframes    = LittleLong(pingroup->numframes);
+	auto       pspritegroup = static_cast<mspritegroup_t *>(Hunk_AllocName(sizeof(mspritegroup_t) + (numframes - 1) * sizeof(mspritegroup_t), loadname));
 
 	pspritegroup->numframes = numframes;
 	*ppframe                = reinterpret_cast<mspriteframe_t *>(pspritegroup);
@@ -1626,13 +1625,13 @@ void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 {
 	auto pin = static_cast<dsprite_t *>(buffer);
 
-	auto version = LittleLong(pin->version);
+	const auto version = LittleLong(pin->version);
 	if (version != SPRITE_VERSION)
 		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, version, SPRITE_VERSION);
 
-	auto numframes = LittleLong(pin->numframes);
+	const auto numframes = LittleLong(pin->numframes);
 
-	int size = sizeof(msprite_t) + (numframes - 1) * sizeof msprite_t::frames;
+	const int size = sizeof(msprite_t) + (numframes - 1) * sizeof msprite_t::frames;
 
 	auto psprite = static_cast<msprite_t*>(Hunk_AllocName(size, loadname));
 
@@ -1662,7 +1661,7 @@ void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 
 	for (auto i = 0; i < numframes; i++)
 	{
-		auto frametype          = static_cast<spriteframetype_t>(LittleLong(static_cast<int>(pframetype->type)));
+		const auto frametype    = static_cast<spriteframetype_t>(LittleLong(static_cast<int>(pframetype->type)));
 		psprite->frames[i].type = frametype;
 
 		if (frametype == spriteframetype_t::SPR_SINGLE)

@@ -202,7 +202,7 @@ void Host_Ping_f()
 	{
 		if (!client->active)
 			continue;
-		float     total = 0;
+		float      total = 0;
 		for (float ping_time : client->ping_times)
 			total += ping_time;
 		total /= NUM_PING_TIMES;
@@ -448,7 +448,7 @@ void Host_Savegame_f()
 	COM_DefaultExtension(name, ".sav");
 
 	Con_Printf("Saving game to %s...\n", name);
-	auto f = fopen(name, "w");
+	const auto f = fopen(name, "w");
 	if (!f)
 	{
 		Con_Printf("ERROR: couldn't open.\n");
@@ -521,7 +521,7 @@ void Host_Loadgame_f()
 	//	SCR_BeginLoadingPlaque ();
 
 	Con_Printf("Loading game from %s...\n", name);
-	auto f = fopen(name, "r");
+	const auto f = fopen(name, "r");
 	if (!f)
 	{
 		Con_Printf("ERROR: couldn't open.\n");
@@ -572,7 +572,7 @@ void Host_Loadgame_f()
 	{
 		for (i = 0; i < sizeof str - 1; i++)
 		{
-			auto r = fgetc(f);
+			const auto r = fgetc(f);
 			if (r == EOF || !r)
 				break;
 			str[i] = r;
@@ -584,8 +584,8 @@ void Host_Loadgame_f()
 		}
 		if (i == sizeof str - 1)
 			Sys_Error("Loadgame buffer overflow");
-		str[i]     = 0;
-		auto start = COM_Parse(str);
+		str[i]           = 0;
+		const auto start = COM_Parse(str);
 		if (!com_token[0])
 			break; // end of file
 		if (strcmp(com_token, "{"))
@@ -704,7 +704,7 @@ void Host_Say(qboolean teamonly)
 	if (Cmd_Argc() < 2)
 		return;
 
-	auto save = host_client;
+	const auto save = host_client;
 
 	auto p = Cmd_Args();
 	// remove quotes if present
@@ -788,8 +788,9 @@ void Host_Tell_f()
 	strcat(text, p);
 	strcat(text, "\n");
 
-	auto save = host_client;
-	for (j    = 0, client = svs.clients; j < svs.maxclients; j++, client++)
+	const auto save = host_client;
+
+	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
 		if (!client->active || !client->spawned)
 			continue;
@@ -835,7 +836,7 @@ void Host_Color_f()
 	if (bottom > 13)
 		bottom = 13;
 
-	auto playercolor = top * 16 + bottom;
+	const auto playercolor = top * 16 + bottom;
 
 	if (cmd_source == cmd_source_t::src_command)
 	{
@@ -1195,8 +1196,8 @@ void Host_Give_f()
 	if (pr_global_struct->deathmatch && !host_client->privileged)
 		return;
 
-	auto t = Cmd_Argv(1);
-	auto v = atoi(Cmd_Argv(2));
+	const auto t = Cmd_Argv(1);
+	const auto v = atoi(Cmd_Argv(2));
 
 	switch (t[0])
 	{
@@ -1340,7 +1341,7 @@ edict_t* FindViewthing()
 {
 	for (auto i = 0; i < sv.num_edicts; i++)
 	{
-		auto e = EDICT_NUM(i);
+		const auto e = EDICT_NUM(i);
 		if (!strcmp(pr_strings + e->v.classname, "viewthing"))
 			return e;
 	}
@@ -1355,11 +1356,11 @@ Host_Viewmodel_f
 */
 void Host_Viewmodel_f()
 {
-	auto e = FindViewthing();
+	const auto e = FindViewthing();
 	if (!e)
 		return;
 
-	auto m = Mod_ForName(Cmd_Argv(1), qfalse);
+	const auto m = Mod_ForName(Cmd_Argv(1), qfalse);
 	if (!m)
 	{
 		Con_Printf("Can't load %s\n", Cmd_Argv(1));
@@ -1377,10 +1378,10 @@ Host_Viewframe_f
 */
 void Host_Viewframe_f()
 {
-	auto e = FindViewthing();
+	const auto e = FindViewthing();
 	if (!e)
 		return;
-	auto m = cl.model_precache[static_cast<int>(e->v.modelindex)];
+	const auto m = cl.model_precache[static_cast<int>(e->v.modelindex)];
 
 	auto f = atoi(Cmd_Argv(1));
 	if (f >= m->numframes)
@@ -1395,7 +1396,7 @@ void PrintFrameName(model_t* m, int frame)
 	auto hdr = static_cast<aliashdr_t *>(Mod_Extradata(m));
 	if (!hdr)
 		return;
-	auto pframedesc = &hdr->frames[frame];
+	const auto pframedesc = &hdr->frames[frame];
 
 	Con_Printf("frame %i: %s\n", frame, pframedesc->name);
 }
@@ -1407,10 +1408,10 @@ Host_Viewnext_f
 */
 void Host_Viewnext_f()
 {
-	auto e = FindViewthing();
+	const auto e = FindViewthing();
 	if (!e)
 		return;
-	auto m = cl.model_precache[static_cast<int>(e->v.modelindex)];
+	const auto m = cl.model_precache[static_cast<int>(e->v.modelindex)];
 
 	e->v.frame = e->v.frame + 1;
 	if (e->v.frame >= m->numframes)
@@ -1426,11 +1427,11 @@ Host_Viewprev_f
 */
 void Host_Viewprev_f()
 {
-	auto e = FindViewthing();
+	const auto e = FindViewthing();
 	if (!e)
 		return;
 
-	auto m = cl.model_precache[static_cast<int>(e->v.modelindex)];
+	const auto m = cl.model_precache[static_cast<int>(e->v.modelindex)];
 
 	e->v.frame = e->v.frame - 1;
 	if (e->v.frame < 0)

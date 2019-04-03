@@ -44,7 +44,7 @@ void Sys_PageIn(void* ptr, int size)
 	// touch all the memory to make sure it's there. The 16-page skip is to
 	// keep Win 95 from thinking we're trying to page ourselves in (we are
 	// doing that, of course, but there's no reason we shouldn't)
-	auto x = static_cast<byte *>(ptr);
+	const auto x = static_cast<byte *>(ptr);
 
 	for (auto n = 0; n < 4; n++)
 	{
@@ -84,9 +84,9 @@ filelength
 */
 int filelength(FILE* f)
 {
-	int pos = ftell(f);
+	const int pos = ftell(f);
 	fseek(f, 0, SEEK_END);
-	int end = ftell(f);
+	const int end = ftell(f);
 	fseek(f, pos, SEEK_SET);
 
 	return end;
@@ -94,9 +94,9 @@ int filelength(FILE* f)
 
 int Sys_FileOpenRead(char* path, int* hndl)
 {
-	int  retval;
-	auto i = findhandle();
-	auto f = fopen(path, "rb");
+	int        retval;
+	const auto i = findhandle();
+	const auto f = fopen(path, "rb");
 
 	if (!f)
 	{
@@ -116,8 +116,8 @@ int Sys_FileOpenRead(char* path, int* hndl)
 
 int Sys_FileOpenAppend(char* path)
 {
-	auto i = findhandle();
-	auto f = fopen(path, "a");
+	const auto i = findhandle();
+	const auto f = fopen(path, "a");
 
 	if (!f)
 		Sys_Error("Error opening %s: %s", path, strerror(errno));
@@ -127,8 +127,8 @@ int Sys_FileOpenAppend(char* path)
 
 int Sys_FileOpenWrite(char* path)
 {
-	auto i = findhandle();
-	auto f = fopen(path, "wb");
+	const auto i = findhandle();
+	const auto f = fopen(path, "wb");
 
 	if (!f)
 		Sys_Error("Error opening %s: %s", path, strerror(errno));
@@ -151,20 +151,18 @@ void Sys_FileSeek(int handle, int position)
 
 int Sys_FileRead(int handle, void* dest, int count)
 {
-	int x = fread(dest, 1, count, sys_handles[handle]);
-	return x;
+	return fread(dest, 1, count, sys_handles[handle]);
 }
 
 int Sys_FileWrite(int handle, void* data, int count)
 {
-	int x = fwrite(data, 1, count, sys_handles[handle]);
-	return x;
+	return fwrite(data, 1, count, sys_handles[handle]);
 }
 
 int Sys_FileTime(char* path)
 {
-	int  retval;
-	auto f = fopen(path, "rb");
+	int        retval;
+	const auto f = fopen(path, "rb");
 
 	if (f)
 	{
@@ -262,8 +260,8 @@ void Sys_Error(char* error, ...)
 		WriteFile(houtput, text4, strlen(text4), &dummy, nullptr);
 
 
-		auto starttime     = Sys_FloatTime();
-		sc_return_on_enter = qtrue; // so Enter will get us out of here
+		const auto starttime = Sys_FloatTime();
+		sc_return_on_enter   = qtrue; // so Enter will get us out of here
 
 		while (!Sys_ConsoleInput() &&
 			Sys_FloatTime() - starttime < CONSOLE_ERROR_TIMEOUT)
@@ -351,7 +349,7 @@ double Sys_FloatTime()
 
 	QueryPerformanceCounter(&PerformanceCount);
 
-	auto temp = static_cast<unsigned int>(PerformanceCount.LowPart) >> lowshift |
+	const auto temp = static_cast<unsigned int>(PerformanceCount.LowPart) >> lowshift |
 		static_cast<unsigned int>(PerformanceCount.HighPart) << 32 - lowshift;
 
 	if (first)
@@ -368,10 +366,9 @@ double Sys_FloatTime()
 		}
 		else
 		{
-			auto t2 = temp - oldtime;
-
-			auto time = static_cast<double>(t2) * pfreq;
-			oldtime   = temp;
+			const auto t2   = temp - oldtime;
+			const auto time = static_cast<double>(t2) * pfreq;
+			oldtime         = temp;
 
 			curtime += time;
 
@@ -407,7 +404,7 @@ void Sys_InitFloatTime()
 {
 	Sys_FloatTime();
 
-	auto j = COM_CheckParm("-starttime");
+	const auto j = COM_CheckParm("-starttime");
 
 	if (j)
 	{

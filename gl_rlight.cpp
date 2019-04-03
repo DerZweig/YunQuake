@@ -54,7 +54,7 @@ void R_RenderDlight(dlight_t* light)
 	int    i;
 	vec3_t v;
 
-	float rad = light->radius * 0.35;
+	const float rad = light->radius * 0.35;
 
 	VectorSubtract (light->origin, r_origin, v);
 	if (Length(v) < rad)
@@ -72,7 +72,7 @@ void R_RenderDlight(dlight_t* light)
 	glColor3f(0, 0, 0);
 	for (i = 16; i >= 0; i--)
 	{
-		float     a = i / 16.0 * M_PI * 2;
+		const float     a = i / 16.0 * M_PI * 2;
 		for (auto j = 0; j < 3; j++)
 			v[j]    = light->origin[j] + vright[j] * cos(a) * rad
 				+ vup[j] * sin(a) * rad;
@@ -136,7 +136,7 @@ void R_MarkLights(dlight_t* light, int bit, mnode_t* node)
 		return;
 
 	splitplane = node->plane;
-	auto dist  = DotProduct (light->origin, splitplane->normal) - splitplane->dist;
+	const auto dist  = DotProduct (light->origin, splitplane->normal) - splitplane->dist;
 
 	if (dist > light->radius)
 	{
@@ -213,14 +213,14 @@ int RecursiveLightPoint(mnode_t* node, vec3_t start, vec3_t end)
 
 	// FIXME: optimize for axial
 	plane      = node->plane;
-	auto front = DotProduct (start, plane->normal) - plane->dist;
-	auto back  = DotProduct (end, plane->normal) - plane->dist;
-	int  side  = front < 0;
+	const auto front = DotProduct (start, plane->normal) - plane->dist;
+	const auto back  = DotProduct (end, plane->normal) - plane->dist;
+	const int  side  = front < 0;
 
 	if (back < 0 == side)
 		return RecursiveLightPoint(node->children[side], start, end);
 
-	auto frac = front / (front - back);
+	const auto frac = front / (front - back);
 	mid[0]    = start[0] + (end[0] - start[0]) * frac;
 	mid[1]    = start[1] + (end[1] - start[1]) * frac;
 	mid[2]    = start[2] + (end[2] - start[2]) * frac;
@@ -245,8 +245,8 @@ int RecursiveLightPoint(mnode_t* node, vec3_t start, vec3_t end)
 
 		tex = surf->texinfo;
 
-		int s = DotProduct (mid, tex->vecs[0]) + tex->vecs[0][3];
-		int t = DotProduct (mid, tex->vecs[1]) + tex->vecs[1][3];
+		const int s = DotProduct (mid, tex->vecs[0]) + tex->vecs[0][3];
+		const int t = DotProduct (mid, tex->vecs[1]) + tex->vecs[1][3];
 
 		if (s < surf->texturemins[0] ||
 			t < surf->texturemins[1])
@@ -273,7 +273,7 @@ int RecursiveLightPoint(mnode_t* node, vec3_t start, vec3_t end)
 			for (auto maps = 0; maps < MAXLIGHTMAPS && surf->styles[maps] != 255;
 			     maps++)
 			{
-				unsigned scale = d_lightstylevalue[surf->styles[maps]];
+				const unsigned scale = d_lightstylevalue[surf->styles[maps]];
 				r += *lightmap * scale;
 				lightmap += ((surf->extents[0] >> 4) + 1) *
 					((surf->extents[1] >> 4) + 1);

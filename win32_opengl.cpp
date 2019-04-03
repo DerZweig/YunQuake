@@ -173,8 +173,8 @@ qboolean VID_SetWindowedMode(int modenum)
 	auto rect = WindowRect;
 	AdjustWindowRectEx(&rect, WindowStyle, FALSE, 0);
 
-	int width  = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
+	const int width  = rect.right - rect.left;
+	const int height = rect.bottom - rect.top;
 
 	// Create the DIB window
 	dibwindow = CreateWindowEx(
@@ -206,7 +206,7 @@ qboolean VID_SetWindowedMode(int modenum)
 	// (to avoid flickering when re-sizing the window on the desktop),
 	// we clear the window to black when created, otherwise it will be
 	// empty while Quake starts up.
-	auto hdc = GetDC(dibwindow);
+	const auto hdc = GetDC(dibwindow);
 	PatBlt(hdc, 0, 0, WindowRect.right, WindowRect.bottom,BLACKNESS);
 	ReleaseDC(dibwindow, hdc);
 
@@ -246,8 +246,8 @@ qboolean VID_SetFullDIBMode(int modenum)
 	auto rect = WindowRect;
 	AdjustWindowRectEx(&rect, WindowStyle, FALSE, 0);
 
-	int width  = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
+	const int width  = rect.right - rect.left;
+	const int height = rect.bottom - rect.top;
 
 	// Create the DIB window
 	dibwindow = CreateWindowEx(
@@ -273,7 +273,7 @@ qboolean VID_SetFullDIBMode(int modenum)
 	// (to avoid flickering when re-sizing the window on the desktop), we
 	// clear the window to black when created, otherwise it will be
 	// empty while Quake starts up.
-	auto hdc = GetDC(dibwindow);
+	const auto hdc = GetDC(dibwindow);
 	PatBlt(hdc, 0, 0, WindowRect.right, WindowRect.bottom,BLACKNESS);
 	ReleaseDC(dibwindow, hdc);
 
@@ -312,7 +312,7 @@ int VID_SetMode(int modenum, unsigned char* palette)
 	}
 
 	// so Con_Printfs don't mess us up by forcing vid and snd updates
-	int temp                 = scr_disabled_for_loading;
+	const int temp                 = scr_disabled_for_loading;
 	scr_disabled_for_loading = qtrue;
 
 	// Set either the fullscreen or windowed mode
@@ -575,10 +575,10 @@ void VID_SetPalette(unsigned char* palette)
 		pal    = reinterpret_cast<unsigned char *>(d_8to24table);
 		for (v = 0, k = 0, l = 10000 * 10000; v < 256; v++, pal += 4)
 		{
-			int  r1 = r - pal[0];
-			int  g1 = g - pal[1];
-			int  b1 = b - pal[2];
-			auto j  = r1 * r1 + g1 * g1 + b1 * b1;
+			const int  r1 = r - pal[0];
+			const int  g1 = g - pal[1];
+			const int  b1 = b - pal[2];
+			const auto j  = r1 * r1 + g1 * g1 + b1 * b1;
 			if (j < l)
 			{
 				k = v;
@@ -610,8 +610,8 @@ void VID_Shutdown()
 	if (vid_initialized)
 	{
 		vid_canalttab = qfalse;
-		auto hRC      = wglGetCurrentContext();
-		auto hDC      = wglGetCurrentDC();
+		const auto hRC      = wglGetCurrentContext();
+		const auto hDC      = wglGetCurrentDC();
 
 		wglMakeCurrent(nullptr, nullptr);
 
@@ -926,8 +926,8 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_ACTIVATE:
 		{
-			int  fActive    = LOWORD(wParam);
-			auto fMinimized = static_cast<BOOL>(HIWORD(wParam));
+			const int  fActive    = LOWORD(wParam);
+			const auto fMinimized = static_cast<BOOL>(HIWORD(wParam));
 			AppActivate(!(fActive == WA_INACTIVE), fMinimized);
 
 			// fix the leftover Alt from any Alt-Tab or the like that switched us away
@@ -1021,7 +1021,7 @@ char* VID_GetExtModeDescription(int mode)
 	if (mode < 0 || mode >= nummodes)
 		return nullptr;
 
-	auto pv = VID_GetModePtr(mode);
+	const auto pv = VID_GetModePtr(mode);
 	if (modelist[mode].type == modestate_t::MS_FULLDIB)
 	{
 		if (!leavecurrentmode)
@@ -1079,9 +1079,9 @@ VID_DescribeMode_f
 */
 void VID_DescribeMode_f()
 {
-	auto modenum = Q_atoi(Cmd_Argv(1));
+	const auto modenum = Q_atoi(Cmd_Argv(1));
 
-	int t            = leavecurrentmode;
+	const int t            = leavecurrentmode;
 	leavecurrentmode = 0;
 
 	Con_Printf("%s\n", VID_GetExtModeDescription(modenum));
@@ -1097,15 +1097,15 @@ VID_DescribeModes_f
 */
 void VID_DescribeModes_f()
 {
-	auto lnummodes = VID_NumModes();
+	const auto lnummodes = VID_NumModes();
 
-	int t            = leavecurrentmode;
+	const int t            = leavecurrentmode;
 	leavecurrentmode = 0;
 
 	for (auto i = 1; i < lnummodes; i++)
 	{
 		VID_GetModePtr(i);
-		auto pinfo = VID_GetExtModeDescription(i);
+		const auto pinfo = VID_GetExtModeDescription(i);
 		Con_Printf("%2d: %s\n", i, pinfo);
 	}
 
@@ -1176,7 +1176,7 @@ void VID_InitFullDIB(HINSTANCE hInstance)
 	BOOL    stat;
 
 	// enumerate >8 bpp modes
-	auto originalnummodes = nummodes;
+	const auto originalnummodes = nummodes;
 	auto modenum          = 0;
 
 	do
@@ -1268,7 +1268,7 @@ static void Check_Gamma(unsigned char* pal)
 
 	for (i = 0; i < 768; i++)
 	{
-		float f   = pow((pal[i] + 1) / 256.0, vid_gamma);
+		const float f   = pow((pal[i] + 1) / 256.0, vid_gamma);
 		float inf = f * 255 + 0.5;
 		if (inf < 0)
 			inf = 0;
@@ -1325,7 +1325,7 @@ void VID_Init(unsigned char* palette)
 
 	if (COM_CheckParm("-window"))
 	{
-		auto hdc = GetDC(nullptr);
+		const auto hdc = GetDC(nullptr);
 
 		if (GetDeviceCaps(hdc, RASTERCAPS) & RC_PALETTE)
 		{
@@ -1578,18 +1578,18 @@ void VID_MenuDraw()
 {
 	int i;
 
-	auto p = Draw_CachePic("gfx/vidmodes.lmp");
+	const auto p = Draw_CachePic("gfx/vidmodes.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 
 	vid_wmodes     = 0;
-	auto lnummodes = VID_NumModes();
+	const auto lnummodes = VID_NumModes();
 
 	for (i = 1; i < lnummodes && vid_wmodes < MAX_MODEDESCS; i++)
 	{
-		auto ptr = VID_GetModeDescription(i);
+		const auto ptr = VID_GetModeDescription(i);
 		VID_GetModePtr(i);
 
-		auto k = vid_wmodes;
+		const auto k = vid_wmodes;
 
 		modedescs[k].modenum = i;
 		modedescs[k].desc    = ptr;

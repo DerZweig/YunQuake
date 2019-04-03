@@ -59,9 +59,9 @@ void W_LoadWadFile(char* filename)
 		|| header->identification[3] != '2')
 		Sys_Error("Wad file %s doesn't have WAD2 id\n", filename);
 
-	wad_numlumps      = LittleLong(header->numlumps);
-	auto infotableofs = LittleLong(header->infotableofs);
-	wad_lumps         = reinterpret_cast<lumpinfo_t *>(wad_base + infotableofs);
+	wad_numlumps            = LittleLong(header->numlumps);
+	const auto infotableofs = LittleLong(header->infotableofs);
+	wad_lumps               = reinterpret_cast<lumpinfo_t *>(wad_base + infotableofs);
 
 	for (i = 0, lump_p = wad_lumps; i < wad_numlumps; i++, lump_p++)
 	{
@@ -99,16 +99,16 @@ lumpinfo_t* W_GetLumpinfo(char* name)
 
 void* W_GetLumpName(char* name)
 {
-	auto lump = W_GetLumpinfo(name);
+	const auto lump = W_GetLumpinfo(name);
 	return static_cast<void *>(wad_base + lump->filepos);
 }
 
-void* W_GetLumpNum(int num)
+void* W_GetLumpNum(const int num)
 {
 	if (num < 0 || num > wad_numlumps)
 		Sys_Error("W_GetLumpNum: bad number: %i", num);
 
-	auto lump = wad_lumps + num;
+	const auto lump = wad_lumps + num;
 	return static_cast<void *>(wad_base + lump->filepos);
 }
 

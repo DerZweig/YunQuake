@@ -78,13 +78,13 @@ DWORD RequestProc(DWORD dwNichts)
 
 	while (true)
 	{
-		auto dwRet = WaitForMultipleObjects(2, heventWait, FALSE, INFINITE);
+		const auto dwRet = WaitForMultipleObjects(2, heventWait, FALSE, INFINITE);
 
 		// heventDone fired, so we're exiting.
 		if (dwRet == WAIT_OBJECT_0 + 1)
 			break;
 
-		auto pBuffer = static_cast<int *>(GetMappedBuffer(hfileBuffer));
+		const auto pBuffer = static_cast<int *>(GetMappedBuffer(hfileBuffer));
 
 		// hfileBuffer is invalid.  Just leave.
 		if (!pBuffer)
@@ -104,10 +104,10 @@ DWORD RequestProc(DWORD dwNichts)
 			{
 				// Param1 : Begin line
 				// Param2 : End line
-				auto iBeginLine = pBuffer[1];
-				auto iEndLine   = pBuffer[2];
-				pBuffer[0]      = ReadText(reinterpret_cast<LPTSTR>(pBuffer + 1), iBeginLine,
-				                           iEndLine);
+				const auto iBeginLine = pBuffer[1];
+				const auto iEndLine   = pBuffer[2];
+				pBuffer[0]            = ReadText(reinterpret_cast<LPTSTR>(pBuffer + 1), iBeginLine,
+				                                 iEndLine);
 			}
 			break;
 
@@ -133,8 +133,8 @@ DWORD RequestProc(DWORD dwNichts)
 
 LPVOID GetMappedBuffer(HANDLE hfileBuffer)
 {
-	auto pBuffer = MapViewOfFile(hfileBuffer,
-	                             FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+	const auto pBuffer = MapViewOfFile(hfileBuffer,
+	                                   FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 
 	return pBuffer;
 }
@@ -150,7 +150,7 @@ BOOL GetScreenBufferLines(int* piLines)
 {
 	CONSOLE_SCREEN_BUFFER_INFO info;
 
-	auto bRet = GetConsoleScreenBufferInfo(hStdout, &info);
+	const auto bRet = GetConsoleScreenBufferInfo(hStdout, &info);
 
 	if (bRet)
 		*piLines = info.dwSize.Y;
@@ -173,12 +173,12 @@ BOOL ReadText(LPTSTR pszText, int iBeginLine, int iEndLine)
 	coord.X = 0;
 	coord.Y = iBeginLine;
 
-	auto bRet = ReadConsoleOutputCharacter(
-	                                       hStdout,
-	                                       pszText,
-	                                       80 * (iEndLine - iBeginLine + 1),
-	                                       coord,
-	                                       &dwRead);
+	const auto bRet = ReadConsoleOutputCharacter(
+	                                             hStdout,
+	                                             pszText,
+	                                             80 * (iEndLine - iBeginLine + 1),
+	                                             coord,
+	                                             &dwRead);
 
 	// Make sure it's null terminated.
 	if (bRet)
@@ -235,7 +235,7 @@ BOOL WriteText(LPCTSTR szText)
 
 int CharToCode(char c)
 {
-	char upper = toupper(c);
+	const char upper = toupper(c);
 
 	switch (c)
 	{
@@ -260,7 +260,7 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 {
 	CONSOLE_SCREEN_BUFFER_INFO info;
 
-	auto coordMax = GetLargestConsoleWindowSize(hStdout);
+	const auto coordMax = GetLargestConsoleWindowSize(hStdout);
 
 	if (cy > coordMax.Y)
 		cy = coordMax.Y;

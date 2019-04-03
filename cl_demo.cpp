@@ -175,7 +175,7 @@ void CL_Record_f()
 	if (cmd_source != cmd_source_t::src_command)
 		return;
 
-	auto c = Cmd_Argc();
+	const auto c = Cmd_Argc();
 	if (c != 2 && c != 3 && c != 4)
 	{
 		Con_Printf("record <demoname> [<map> [cd track]]\n");
@@ -300,8 +300,8 @@ void CL_FinishTimeDemo()
 	cls.timedemo = qfalse;
 
 	// the first frame didn't count
-	auto  frames = host_framecount - cls.td_startframe - 1;
-	float time   = realtime - cls.td_starttime;
+	const auto frames = host_framecount - cls.td_startframe - 1;
+	float      time   = realtime - cls.td_starttime;
 	if (!time)
 		time = 1;
 	Con_Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);

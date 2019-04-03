@@ -208,7 +208,7 @@ float CalcFov(float fov_x, float width, float height)
 	if (fov_x < 1 || fov_x > 179)
 		Sys_Error("Bad fov: %f", fov_x);
 
-	float x = width / tan(fov_x / 360 * M_PI);
+	const float x = width / tan(fov_x / 360 * M_PI);
 
 	auto a = atan(height / x);
 
@@ -279,7 +279,7 @@ static void SCR_CalcRefdef()
 	}
 	size /= 100.0;
 
-	int h = vid.height - sb_lines;
+	const int h = vid.height - sb_lines;
 
 	r_refdef.vrect.width = vid.width * size;
 	if (r_refdef.vrect.width < 96)
@@ -436,7 +436,7 @@ void SCR_DrawPause()
 	if (!cl.paused)
 		return;
 
-	auto pic = Draw_CachePic("gfx/pause.lmp");
+	const auto pic = Draw_CachePic("gfx/pause.lmp");
 	Draw_Pic((vid.width - pic->width) / 2,
 	         (vid.height - 48 - pic->height) / 2, pic);
 }
@@ -452,7 +452,7 @@ void SCR_DrawLoading()
 	if (!scr_drawloading)
 		return;
 
-	auto pic = Draw_CachePic("gfx/loading.lmp");
+	const auto pic = Draw_CachePic("gfx/loading.lmp");
 	Draw_Pic((vid.width - pic->width) / 2,
 	         (vid.height - 48 - pic->height) / 2, pic);
 }
@@ -591,10 +591,10 @@ void SCR_ScreenShot_f()
 	glReadPixels(glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, buffer.data() + 18);
 
 	// swap rgb to bgr
-	auto c = 18 + glwidth * glheight * 3;
+	const auto c = 18 + glwidth * glheight * 3;
 	for (i = 18; i < c; i += 3)
 	{
-		int temp      = buffer[i];
+		const int temp      = buffer[i];
 		buffer[i]     = buffer[i + 2];
 		buffer[i + 2] = temp;
 	}

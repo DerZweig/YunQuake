@@ -129,14 +129,15 @@ void M_DrawPic(int x, int y, qpic_t* pic)
 byte identityTable[256];
 byte translationTable[256];
 
-void M_BuildTranslationTable(int top, int bottom)
+void M_BuildTranslationTable(const int top, const int bottom)
 {
 	int j;
 
 	for (j               = 0; j < 256; j++)
 		identityTable[j] = j;
-	auto dest            = translationTable;
-	auto source          = identityTable;
+
+	const auto dest   = translationTable;
+	const auto source = identityTable;
 	memcpy(dest, source, 256);
 
 	if (top < 128) // the artists made some backwards ranges.  sigh.
@@ -270,11 +271,12 @@ void M_Menu_Main_f()
 void M_Main_Draw()
 {
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/ttl_main.lmp");
+	const auto p = Draw_CachePic("gfx/ttl_main.lmp");
+
 	M_DrawPic((320 - p->width) / 2, 4, p);
 	M_DrawTransPic(72, 32, Draw_CachePic("gfx/mainmenu.lmp"));
 
-	auto f = static_cast<int>(host_time * 10) % 6;
+	const auto f = static_cast<int>(host_time * 10) % 6;
 
 	M_DrawTransPic(54, 32 + m_main_cursor * 20, Draw_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
@@ -352,11 +354,11 @@ void M_Menu_SinglePlayer_f()
 void M_SinglePlayer_Draw()
 {
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/ttl_sgl.lmp");
+	const auto p = Draw_CachePic("gfx/ttl_sgl.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 	M_DrawTransPic(72, 32, Draw_CachePic("gfx/sp_menu.lmp"));
 
-	auto f = static_cast<int>(host_time * 10) % 6;
+	const auto f = static_cast<int>(host_time * 10) % 6;
 
 	M_DrawTransPic(54, 32 + m_singleplayer_cursor * 20, Draw_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 }
@@ -430,7 +432,7 @@ void M_ScanSaves()
 		strcpy(m_filenames[i], "--- UNUSED SLOT ---");
 		loadable[i] = qfalse;
 		sprintf(name, "%s/s%i.sav", com_gamedir, i);
-		auto f = fopen(name, "r");
+		const auto f = fopen(name, "r");
 		if (!f)
 			continue;
 		fscanf(f, "%i\n", &version);
@@ -472,7 +474,7 @@ void M_Menu_Save_f()
 
 void M_Load_Draw()
 {
-	auto p = Draw_CachePic("gfx/p_load.lmp");
+	const auto p = Draw_CachePic("gfx/p_load.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 
 	for (auto i = 0; i < MAX_SAVEGAMES; i++)
@@ -485,7 +487,7 @@ void M_Load_Draw()
 
 void M_Save_Draw()
 {
-	auto p = Draw_CachePic("gfx/p_save.lmp");
+	const auto p = Draw_CachePic("gfx/p_save.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 
 	for (auto i = 0; i < MAX_SAVEGAMES; i++)
@@ -590,11 +592,11 @@ void M_Menu_MultiPlayer_f()
 void M_MultiPlayer_Draw()
 {
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/p_multi.lmp");
+	const auto p = Draw_CachePic("gfx/p_multi.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 	M_DrawTransPic(72, 32, Draw_CachePic("gfx/mp_menu.lmp"));
 
-	auto f = static_cast<int>(host_time * 10) % 6;
+	const auto f = static_cast<int>(host_time * 10) % 6;
 
 	M_DrawTransPic(54, 32 + m_multiplayer_cursor * 20, Draw_CachePic(va("gfx/menudot%i.lmp", f + 1)));
 
@@ -1140,7 +1142,7 @@ void M_DrawCheckbox(int x, int y, int on)
 void M_Options_Draw()
 {
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/p_option.lmp");
+	const auto p = Draw_CachePic("gfx/p_option.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 
 	M_Print(16, 32, "    Customize controls");
@@ -1309,13 +1311,13 @@ void M_Menu_Keys_f()
 
 void M_FindKeysForCommand(char* command, int* twokeys)
 {
-	twokeys[0] = twokeys[1] = -1;
-	int  l     = strlen(command);
-	auto count = 0;
+	twokeys[0]      = twokeys[1] = -1;
+	const int l     = strlen(command);
+	auto      count = 0;
 
 	for (auto j = 0; j < 256; j++)
 	{
-		auto b = keybindings[j];
+		const auto b = keybindings[j];
 		if (!b)
 			continue;
 		if (!strncmp(b, command, l))
@@ -1330,11 +1332,11 @@ void M_FindKeysForCommand(char* command, int* twokeys)
 
 void M_UnbindCommand(char* command)
 {
-	int l = strlen(command);
+	const int l = strlen(command);
 
 	for (auto j = 0; j < 256; j++)
 	{
-		auto b = keybindings[j];
+		const auto b = keybindings[j];
 		if (!b)
 			continue;
 		if (!strncmp(b, command, l))
@@ -1347,7 +1349,7 @@ void M_Keys_Draw()
 {
 	int keys[2];
 
-	auto p = Draw_CachePic("gfx/ttl_cstm.lmp");
+	const auto p = Draw_CachePic("gfx/ttl_cstm.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 
 	if (bind_grab)
@@ -1358,7 +1360,7 @@ void M_Keys_Draw()
 	// search for known bindings
 	for (auto i = 0; i < NUMCOMMANDS; i++)
 	{
-		auto y = 48 + 8 * i;
+		const auto y = 48 + 8 * i;
 
 		M_Print(16, y, bindnames[i][1]);
 		M_FindKeysForCommand(bindnames[i][0], keys);
@@ -1369,9 +1371,9 @@ void M_Keys_Draw()
 		}
 		else
 		{
-			auto name = Key_KeynumToString(keys[0]);
+			const auto name = Key_KeynumToString(keys[0]);
 			M_Print(140, y, name);
-			int x = strlen(name) * 8;
+			const int x = strlen(name) * 8;
 			if (keys[1] != -1)
 			{
 				M_Print(140 + x + 8, y, "or");
@@ -1721,8 +1723,8 @@ void M_SerialConfig_Draw()
 	char* directModem;
 
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p     = Draw_CachePic("gfx/p_multi.lmp");
-	auto basex = (320 - p->width) / 2;
+	const auto p     = Draw_CachePic("gfx/p_multi.lmp");
+	auto       basex = (320 - p->width) / 2;
 	M_DrawPic(basex, 4, p);
 
 	if (StartingGame)
@@ -1920,7 +1922,7 @@ void M_SerialConfig_Key(int key)
 			break;
 		if (serialConfig_cursor == 4)
 		{
-			int l = strlen(serialConfig_phone);
+			const int l = strlen(serialConfig_phone);
 			if (l < 15)
 			{
 				serialConfig_phone[l + 1] = 0;
@@ -1966,8 +1968,8 @@ void M_Menu_ModemConfig_f()
 void M_ModemConfig_Draw()
 {
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p     = Draw_CachePic("gfx/p_multi.lmp");
-	auto basex = (320 - p->width) / 2;
+	const auto p     = Draw_CachePic("gfx/p_multi.lmp");
+	auto       basex = (320 - p->width) / 2;
 	M_DrawPic(basex, 4, p);
 	basex += 8;
 
@@ -2150,8 +2152,8 @@ void M_LanConfig_Draw()
 	char* protocol;
 
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p     = Draw_CachePic("gfx/p_multi.lmp");
-	auto basex = (320 - p->width) / 2;
+	const auto p     = Draw_CachePic("gfx/p_multi.lmp");
+	auto       basex = (320 - p->width) / 2;
 	M_DrawPic(basex, 4, p);
 
 	if (StartingGame)
@@ -2481,7 +2483,7 @@ int gameoptions_cursor;
 void M_GameOptions_Draw()
 {
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/p_multi.lmp");
+	const auto p = Draw_CachePic("gfx/p_multi.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 
 	M_DrawTextBox(152, 32, 10, 1);
@@ -2795,9 +2797,9 @@ void M_Menu_Search_f()
 
 void M_Search_Draw()
 {
-	auto p = Draw_CachePic("gfx/p_multi.lmp");
+	const auto p = Draw_CachePic("gfx/p_multi.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
-	auto x = 320 / 2 - 12 * 8 / 2 + 4;
+	const auto x = 320 / 2 - 12 * 8 / 2 + 4;
 	M_DrawTextBox(x - 8, 32, 12, 1);
 	M_Print(x, 40, "Searching...");
 
@@ -2870,7 +2872,7 @@ void M_ServerList_Draw()
 		slist_sorted = qtrue;
 	}
 
-	auto p = Draw_CachePic("gfx/p_multi.lmp");
+	const auto p = Draw_CachePic("gfx/p_multi.lmp");
 	M_DrawPic((320 - p->width) / 2, 4, p);
 	for (auto n = 0; n < hostCacheCount; n++)
 	{

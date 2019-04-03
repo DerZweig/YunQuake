@@ -929,8 +929,8 @@ void IN_Commands()
 
 	// loop through the joystick buttons
 	// key a joystick event or auxillary event for higher number buttons for each state change
-	auto buttonstate = ji.dwButtons;
-	for (i           = 0; i < joy_numbuttons; i++)
+	const auto buttonstate = ji.dwButtons;
+	for (i                 = 0; i < joy_numbuttons; i++)
 	{
 		if (buttonstate & 1 << i && !(joy_oldbuttonstate & 1 << i))
 		{
@@ -1044,8 +1044,8 @@ void IN_JoyMove(usercmd_t* cmd)
 	if (in_speed.state & 1)
 		speed = cl_movespeedkey.value;
 	else
-		speed    = 1;
-	float aspeed = speed * host_frametime;
+		speed          = 1;
+	const float aspeed = speed * host_frametime;
 
 	// loop through the axes
 	for (auto i = 0; i < JOY_MAX_AXES; i++)

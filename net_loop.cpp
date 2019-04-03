@@ -108,7 +108,7 @@ int Loop_GetMessage(qsocket_t* sock)
 	if (sock->receiveMessageLength == 0)
 		return 0;
 
-	int  ret    = sock->receiveMessage[0];
+	const int  ret    = sock->receiveMessage[0];
 	auto length = sock->receiveMessage[1] + (sock->receiveMessage[2] << 8);
 	// alignment byte skipped here
 	SZ_Clear(&net_message);
@@ -132,7 +132,7 @@ int Loop_SendMessage(qsocket_t* sock, sizebuf_t* data)
 	if (!sock->driverdata)
 		return -1;
 
-	auto bufferLength = &static_cast<qsocket_t *>(sock->driverdata)->receiveMessageLength;
+	const auto bufferLength = &static_cast<qsocket_t *>(sock->driverdata)->receiveMessageLength;
 
 	if (*bufferLength + data->cursize + 4 > NET_MAXMESSAGE)
 		Sys_Error("Loop_SendMessage: overflow\n");
@@ -163,7 +163,7 @@ int Loop_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data)
 	if (!sock->driverdata)
 		return -1;
 
-	auto bufferLength = &static_cast<qsocket_t *>(sock->driverdata)->receiveMessageLength;
+	const auto bufferLength = &static_cast<qsocket_t *>(sock->driverdata)->receiveMessageLength;
 
 	if (*bufferLength + data->cursize + sizeof(byte) + sizeof(short) > NET_MAXMESSAGE)
 		return 0;

@@ -80,8 +80,8 @@ void SubdividePolygon(int numverts, float* verts)
 			if (dist[j] > 0 != dist[j + 1] > 0)
 			{
 				// clip point
-				auto      frac  = dist[j] / (dist[j] - dist[j + 1]);
-				for (auto k     = 0; k < 3; k++)
+				const auto frac = dist[j] / (dist[j] - dist[j + 1]);
+				for (auto  k    = 0; k < 3; k++)
 					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
 				f++;
 				b++;
@@ -100,8 +100,8 @@ void SubdividePolygon(int numverts, float* verts)
 	for (i          = 0; i < numverts; i++, verts += 3)
 	{
 		VectorCopy (verts, poly->verts[i]);
-		auto s            = DotProduct (verts, warpface->texinfo->vecs[0]);
-		auto t            = DotProduct (verts, warpface->texinfo->vecs[1]);
+		const auto s      = DotProduct (verts, warpface->texinfo->vecs[0]);
+		const auto t      = DotProduct (verts, warpface->texinfo->vecs[1]);
 		poly->verts[i][3] = s;
 		poly->verts[i][4] = t;
 	}
@@ -130,7 +130,7 @@ void GL_SubdivideSurface(msurface_t* fa)
 	numverts    = 0;
 	for (auto i = 0; i < fa->numedges; i++)
 	{
-		auto lindex = loadmodel->surfedges[fa->firstedge + i];
+		const auto lindex = loadmodel->surfedges[fa->firstedge + i];
 
 		if (lindex > 0)
 			vec = loadmodel->vertexes[loadmodel->edges[lindex].v[0]].position;
@@ -201,8 +201,8 @@ void EmitWaterPolys(msurface_t* fa)
 		glBegin(GL_POLYGON);
 		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
 		{
-			auto os = v[3];
-			auto ot = v[4];
+			const auto os = v[3];
+			const auto ot = v[4];
 
 			auto s = os + turbsin[static_cast<int>((ot * 0.125 + realtime) * TURBSCALE) & 255];
 			s *= 1.0 / 64;
@@ -244,8 +244,8 @@ void EmitSkyPolys(msurface_t* fa)
 			dir[0] *= length;
 			dir[1] *= length;
 
-			float s = (speedscale + dir[0]) * (1.0 / 128);
-			float t = (speedscale + dir[1]) * (1.0 / 128);
+			const float s = (speedscale + dir[0]) * (1.0 / 128);
+			const float t = (speedscale + dir[1]) * (1.0 / 128);
 
 			glTexCoord2f(s, t);
 			glVertex3fv(v);
@@ -332,7 +332,7 @@ void R_InitSky(texture_t* mt)
 	int      g;
 	int      b;
 
-	auto src = reinterpret_cast<byte *>(mt) + mt->offsets[0];
+	const auto src = reinterpret_cast<byte *>(mt) + mt->offsets[0];
 
 	// make an average value for the back to avoid
 	// a fringe on the top level
@@ -342,7 +342,7 @@ void R_InitSky(texture_t* mt)
 		for (j = 0; j < 128; j++)
 		{
 			p                  = src[i * 256 + j + 128];
-			auto rgba          = &d_8to24table[p];
+			const auto rgba    = &d_8to24table[p];
 			trans[i * 128 + j] = *rgba;
 			r += reinterpret_cast<byte *>(rgba)[0];
 			g += reinterpret_cast<byte *>(rgba)[1];

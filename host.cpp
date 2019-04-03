@@ -221,7 +221,7 @@ void Host_WriteConfiguration()
 	// config.cfg cvars
 	if (host_initialized & !isDedicated)
 	{
-		auto f = fopen(va("%s/config.cfg", com_gamedir), "w");
+		const auto f = fopen(va("%s/config.cfg", com_gamedir), "w");
 		if (!f)
 		{
 			Con_Printf("Couldn't write config.cfg.\n");
@@ -311,7 +311,7 @@ Called when the player is getting totally kicked off the host
 if (crash = qtrue), don't bother sending signofs
 =====================
 */
-void SV_DropClient(qboolean crash)
+void SV_DropClient(const qboolean crash)
 {
 	int       i;
 	client_t* client;
@@ -329,7 +329,7 @@ void SV_DropClient(qboolean crash)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
-			auto saveSelf          = pr_global_struct->self;
+			const auto saveSelf    = pr_global_struct->self;
 			pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
 			PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
 			pr_global_struct->self = saveSelf;
@@ -372,7 +372,7 @@ Host_ShutdownServer
 This only happens at the end of a game, not between levels
 ==================
 */
-void Host_ShutdownServer(qboolean crash)
+void Host_ShutdownServer(const qboolean crash)
 {
 	int       i;
 	int       count;
@@ -389,7 +389,7 @@ void Host_ShutdownServer(qboolean crash)
 		CL_Disconnect();
 
 	// flush any pending messages - like the score!!!
-	auto start = Sys_FloatTime();
+	const auto start = Sys_FloatTime();
 	do
 	{
 		count  = 0;
@@ -466,7 +466,7 @@ Host_FilterTime
 Returns qfalse if the time is too short to run a frame
 ===================
 */
-qboolean Host_FilterTime(float time)
+qboolean Host_FilterTime(const float time)
 {
 	realtime += time;
 
@@ -502,7 +502,7 @@ void Host_GetConsoleCommands()
 {
 	while (true)
 	{
-		auto cmd = Sys_ConsoleInput();
+		const auto cmd = Sys_ConsoleInput();
 		if (!cmd)
 			break;
 		Cbuf_AddText(cmd);
@@ -548,7 +548,7 @@ Host_Frame
 Runs all active servers
 ==================
 */
-void _Host_Frame(float time)
+void _Host_Frame(const float time)
 {
 	static double time1 = 0;
 	static double time2 = 0;
@@ -630,17 +630,17 @@ void _Host_Frame(float time)
 
 	if (host_speeds.value)
 	{
-		int pass1 = (time1 - time3) * 1000;
-		time3     = Sys_FloatTime();
-		int pass2 = (time2 - time1) * 1000;
-		int pass3 = (time3 - time2) * 1000;
+		const int pass1 = (time1 - time3) * 1000;
+		time3           = Sys_FloatTime();
+		const int pass2 = (time2 - time1) * 1000;
+		const int pass3 = (time3 - time2) * 1000;
 		Con_Printf("%3i tot %3i server %3i gfx %3i snd\n", pass1 + pass2 + pass3, pass1, pass2, pass3);
 	}
 
 	host_framecount++;
 }
 
-void Host_Frame(float time)
+void Host_Frame(const float time)
 {
 	static double timetotal;
 	static int    timecount;
@@ -651,9 +651,9 @@ void Host_Frame(float time)
 		return;
 	}
 
-	auto time1 = Sys_FloatTime();
+	const auto time1 = Sys_FloatTime();
 	_Host_Frame(time);
-	auto time2 = Sys_FloatTime();
+	const auto time2 = Sys_FloatTime();
 
 	timetotal += time2 - time1;
 	timecount++;
@@ -661,7 +661,7 @@ void Host_Frame(float time)
 	if (timecount < 1000)
 		return;
 
-	int m       = timetotal * 1000 / timecount;
+	const int m = timetotal * 1000 / timecount;
 	timecount   = 0;
 	timetotal   = 0;
 	auto      c = 0;
@@ -704,7 +704,7 @@ void Host_InitVCR(quakeparms_t* parms)
 		for (i      = 0; i < com_argc; i++)
 		{
 			Sys_FileRead(vcrFile, &len, sizeof(int));
-			auto p = new char[len]();
+			const auto p = new char[len]();
 			Sys_FileRead(vcrFile, p, len);
 			com_argv[i + 1] = p;
 		}

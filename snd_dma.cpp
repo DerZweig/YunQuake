@@ -302,7 +302,7 @@ sfx_t* S_PrecacheSound(char* name)
 	if (!sound_started || nosound.value)
 		return nullptr;
 
-	auto sfx = S_FindName(name);
+	const auto sfx = S_FindName(name);
 
 	// cache it in
 	if (precache.value)
@@ -376,8 +376,8 @@ void SND_Spatialize(channel_t* ch)
 
 	VectorSubtract(ch->origin, listener_origin, source_vec);
 
-	auto dist = VectorNormalize(source_vec) * ch->dist_mult;
-	auto dot  = DotProduct(listener_right, source_vec);
+	const auto dist = VectorNormalize(source_vec) * ch->dist_mult;
+	const auto dot  = DotProduct(listener_right, source_vec);
 
 	if (shm->channels == 1)
 	{
@@ -409,8 +409,6 @@ void SND_Spatialize(channel_t* ch)
 
 void S_StartSound(int entnum, int entchannel, sfx_t* sfx, vec3_t origin, float fvol, float attenuation)
 {
-	channel_t* target_chan;
-
 	if (!sound_started)
 		return;
 
@@ -420,10 +418,10 @@ void S_StartSound(int entnum, int entchannel, sfx_t* sfx, vec3_t origin, float f
 	if (nosound.value)
 		return;
 
-	int vol = fvol * 255;
+	const int vol = fvol * 255;
 
 	// pick a channel to play on
-	target_chan = SND_PickChannel(entnum, entchannel);
+	auto target_chan = SND_PickChannel(entnum, entchannel);
 	if (!target_chan)
 		return;
 
@@ -440,7 +438,7 @@ void S_StartSound(int entnum, int entchannel, sfx_t* sfx, vec3_t origin, float f
 		return; // not audible at all
 
 	// new channel
-	auto sc = S_LoadSound(sfx);
+	const auto sc = S_LoadSound(sfx);
 	if (!sc)
 	{
 		target_chan->sfx = nullptr;
@@ -570,8 +568,6 @@ S_StaticSound
 */
 void S_StaticSound(sfx_t* sfx, vec3_t origin, const float vol, const float attenuation)
 {
-	channel_t* ss;
-
 	if (!sfx)
 		return;
 
@@ -581,10 +577,10 @@ void S_StaticSound(sfx_t* sfx, vec3_t origin, const float vol, const float atten
 		return;
 	}
 
-	ss = &channels[total_channels];
+	auto ss = &channels[total_channels];
 	total_channels++;
 
-	auto sc = S_LoadSound(sfx);
+	const auto sc = S_LoadSound(sfx);
 	if (!sc)
 		return;
 

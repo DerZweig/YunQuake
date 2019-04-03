@@ -122,8 +122,8 @@ Two entities have touched, so run their touch functions
 */
 void SV_Impact(edict_t* e1, edict_t* e2)
 {
-	auto old_self  = pr_global_struct->self;
-	auto old_other = pr_global_struct->other;
+	const auto old_self  = pr_global_struct->self;
+	const auto old_other = pr_global_struct->other;
 
 	pr_global_struct->time = sv.time;
 	if (e1->v.touch && e1->v.solid != SOLID_NOT)
@@ -163,11 +163,11 @@ int ClipVelocity(vec3_t in, vec3_t normal, vec3_t out, float overbounce)
 	if (!normal[2])
 		blocked |= 2; // step
 
-	auto backoff = DotProduct (in, normal) * overbounce;
+	const auto backoff = DotProduct (in, normal) * overbounce;
 
 	for (auto i = 0; i < 3; i++)
 	{
-		auto change = normal[i] * backoff;
+		const auto change = normal[i] * backoff;
 		out[i]      = in[i] - change;
 		if (out[i] > -STOP_EPSILON && out[i] < STOP_EPSILON)
 			out[i] = 0;
@@ -201,7 +201,7 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
 	trace_t trace;
 	vec3_t  end;
 
-	auto numbumps = 4;
+	const auto numbumps = 4;
 
 	auto blocked = 0;
 	VectorCopy (ent->v.velocity, original_velocity);
@@ -309,7 +309,7 @@ int SV_FlyMove(edict_t* ent, float time, trace_t* steptrace)
 				return 7;
 			}
 			CrossProduct(planes[0], planes[1], dir);
-			auto d = DotProduct (dir, ent->v.velocity);
+			const auto d = DotProduct (dir, ent->v.velocity);
 			VectorScale(dir, d, ent->v.velocity);
 		}
 
@@ -338,7 +338,7 @@ void SV_AddGravity(edict_t* ent)
 {
 	float ent_gravity;
 
-	auto val = GetEdictFieldValue(ent, "gravity");
+	const auto val = GetEdictFieldValue(ent, "gravity");
 	if (val && val->_float)
 		ent_gravity = val->_float;
 	else
@@ -469,7 +469,7 @@ void SV_PushMove(edict_t* pusher, float movetime)
 		pusher->v.solid = SOLID_BSP;
 
 		// if it is still inside the pusher, block
-		auto block = SV_TestEntityPosition(check);
+		const auto block = SV_TestEntityPosition(check);
 		if (block)
 		{
 			// fail the move
@@ -521,8 +521,8 @@ void SV_Physics_Pusher(edict_t* ent)
 {
 	float movetime;
 
-	auto oldltime  = ent->v.ltime;
-	auto thinktime = ent->v.nextthink;
+	const auto oldltime  = ent->v.ltime;
+	const auto thinktime = ent->v.nextthink;
 
 	if (thinktime < ent->v.ltime + host_frametime)
 	{
@@ -659,7 +659,7 @@ void SV_WallFriction(edict_t* ent, trace_t* trace)
 		return;
 
 	// cut the tangential velocity
-	auto i = DotProduct (trace->plane.normal, ent->v.velocity);
+	const auto i = DotProduct (trace->plane.normal, ent->v.velocity);
 	VectorScale(trace->plane.normal, i, into);
 	VectorSubtract (ent->v.velocity, into, side);
 
@@ -726,7 +726,7 @@ int SV_TryUnstick(edict_t* ent, vec3_t oldvel)
 		ent->v.velocity[0] = oldvel[0];
 		ent->v.velocity[1] = oldvel[1];
 		ent->v.velocity[2] = 0;
-		auto clip          = SV_FlyMove(ent, 0.1, &steptrace);
+		const auto clip          = SV_FlyMove(ent, 0.1, &steptrace);
 
 		if (fabs(oldorg[1] - ent->v.origin[1]) > 4
 			|| fabs(oldorg[0] - ent->v.origin[0]) > 4)
@@ -761,12 +761,11 @@ void SV_WalkMove(edict_t* ent)
 	vec3_t  nosteporg;
 	vec3_t  nostepvel;
 	trace_t steptrace;
-	trace_t downtrace;
 
 	//
 	// do a regular slide move unless it looks like you ran into a step
 	//
-	auto oldonground = static_cast<int>(ent->v.flags) & FL_ONGROUND;
+	const auto oldonground = static_cast<int>(ent->v.flags) & FL_ONGROUND;
 	ent->v.flags     = static_cast<int>(ent->v.flags) & ~FL_ONGROUND;
 
 	VectorCopy (ent->v.origin, oldorg);
@@ -828,7 +827,7 @@ void SV_WalkMove(edict_t* ent)
 		SV_WallFriction(ent, &steptrace);
 
 	// move down
-	downtrace = SV_PushEntity(ent, downmove); // FIXME: don't link?
+	auto downtrace = SV_PushEntity(ent, downmove); // FIXME: don't link?
 
 	if (downtrace.plane.normal[2] > 0.7)
 	{
@@ -974,7 +973,7 @@ SV_CheckWaterTransition
 */
 void SV_CheckWaterTransition(edict_t* ent)
 {
-	auto cont = SV_PointContents(ent->v.origin);
+	const auto cont = SV_PointContents(ent->v.origin);
 	if (!ent->v.watertype)
 	{
 		// just spawned here

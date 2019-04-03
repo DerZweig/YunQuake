@@ -108,7 +108,7 @@ void SV_StartSound(edict_t* entity, int channel, char* sample, int volume, float
 		return;
 	}
 
-	auto ent = NUM_FOR_EDICT(entity);
+	const auto ent = NUM_FOR_EDICT(entity);
 
 	channel = ent << 3 | channel;
 
@@ -210,12 +210,9 @@ void SV_ConnectClient(int clientnum)
 
 	Con_DPrintf("Client %s connected\n", client->netconnection->address);
 
-	auto edictnum = clientnum + 1;
-
-	auto ent = EDICT_NUM(edictnum);
-
-	// set up the client_t
-	auto netconnection = client->netconnection;
+	const auto edictnum      = clientnum + 1;
+	const auto ent           = EDICT_NUM(edictnum);
+	const auto netconnection = client->netconnection; // set up the client_t
 
 	if (sv.loadgame)
 		memcpy(spawn_parms, client->spawn_parms, sizeof spawn_parms);
@@ -265,7 +262,7 @@ void SV_CheckForNewClients()
 	//
 	while (true)
 	{
-		auto ret = NET_CheckNewConnections();
+		const auto ret = NET_CheckNewConnections();
 		if (!ret)
 			break;
 
@@ -321,8 +318,6 @@ byte fatpvs[MAX_MAP_LEAFS / 8];
 
 void SV_AddToFatPVS(vec3_t org, mnode_t* node)
 {
-	mplane_t* plane;
-
 	while (true)
 	{
 		// if this is a leaf, accumulate the pvs bits
@@ -330,15 +325,15 @@ void SV_AddToFatPVS(vec3_t org, mnode_t* node)
 		{
 			if (node->contents != CONTENTS_SOLID)
 			{
-				auto      pvs = Mod_LeafPVS(reinterpret_cast<mleaf_t *>(node), sv.worldmodel);
-				for (auto i   = 0; i < fatbytes; i++)
+				const auto pvs = Mod_LeafPVS(reinterpret_cast<mleaf_t *>(node), sv.worldmodel);
+				for (auto  i   = 0; i < fatbytes; i++)
 					fatpvs[i] |= pvs[i];
 			}
 			return;
 		}
 
-		plane  = node->plane;
-		auto d = DotProduct (org, plane->normal) - plane->dist;
+		auto       plane = node->plane;
+		const auto d     = DotProduct (org, plane->normal) - plane->dist;
 		if (d > 8)
 			node = node->children[0];
 		else if (d < -8)
@@ -379,17 +374,16 @@ SV_WriteEntitiesToClient
 */
 void SV_WriteEntitiesToClient(edict_t* clent, sizebuf_t* msg)
 {
-	int      i;
-	vec3_t   org;
-	edict_t* ent;
+	int    i;
+	vec3_t org;
 
 	// find the client's PVS
 	VectorAdd (clent->v.origin, clent->v.view_ofs, org);
-	auto pvs = SV_FatPVS(org);
+	const auto pvs = SV_FatPVS(org);
 
 	// send over all entities (excpet the client) that touch the pvs
-	ent         = NEXT_EDICT(sv.edicts);
-	for (auto e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
+	auto      ent = NEXT_EDICT(sv.edicts);
+	for (auto e   = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore if not touching a PV leaf
 		if (ent != clent) // clent is ALLWAYS sent
@@ -417,7 +411,7 @@ void SV_WriteEntitiesToClient(edict_t* clent, sizebuf_t* msg)
 
 		for (i = 0; i < 3; i++)
 		{
-			auto miss = ent->v.origin[i] - ent->baseline.origin[i];
+			const auto miss = ent->v.origin[i] - ent->baseline.origin[i];
 			if (miss < -0.1 || miss > 0.1)
 				bits |= U_ORIGIN1 << i;
 		}
@@ -558,7 +552,7 @@ void SV_WriteClientdataToMessage(edict_t* ent, sizebuf_t* msg)
 	if (ent->v.idealpitch)
 		bits |= SU_IDEALPITCH;
 
-	auto val = GetEdictFieldValue(ent, "items2");
+	const auto val = GetEdictFieldValue(ent, "items2");
 
 	if (val)
 		items = static_cast<int>(ent->v.items) | static_cast<int>(val->_float) << 23;

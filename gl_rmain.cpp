@@ -136,15 +136,15 @@ mspriteframe_t* R_GetSpriteFrame(entity_t* currententity)
 	else
 	{
 		auto pspritegroup = reinterpret_cast<mspritegroup_t *>(psprite->frames[frame].frameptr);
-		auto pintervals   = pspritegroup->intervals;
-		auto numframes    = pspritegroup->numframes;
-		auto fullinterval = pintervals[numframes - 1];
+		const auto pintervals   = pspritegroup->intervals;
+		const auto numframes    = pspritegroup->numframes;
+		const auto fullinterval = pintervals[numframes - 1];
 
-		float time = cl.time + currententity->syncbase;
+		const float time = cl.time + currententity->syncbase;
 
 		// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 		// are positive, so we don't have to worry about division by 0
-		auto targettime = time - static_cast<int>(time / fullinterval) * fullinterval;
+		const auto targettime = time - static_cast<int>(time / fullinterval) * fullinterval;
 
 		for (i = 0; i < numframes - 1; i++)
 		{
@@ -176,8 +176,8 @@ void R_DrawSpriteModel(entity_t* e)
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
-	auto frame   = R_GetSpriteFrame(e);
-	auto psprite = static_cast<msprite_t *>(currententity->model->cache.data);
+	const auto frame   = R_GetSpriteFrame(e);
+	const auto psprite = static_cast<msprite_t *>(currententity->model->cache.data);
 
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -578,7 +578,7 @@ void GL_DrawAliasFrame(aliashdr_t* paliashdr, int posenum)
 			order += 2;
 
 			// normals and vertexes come from the frame list
-			auto l = shadedots[verts->lightnormalindex] * shadelight;
+			const auto l = shadedots[verts->lightnormalindex] * shadelight;
 			glColor3f(l, l, l);
 			glVertex3f(verts->v[0], verts->v[1], verts->v[2]);
 			verts++;
@@ -601,13 +601,13 @@ void GL_DrawAliasShadow(aliashdr_t* paliashdr, int posenum)
 {
 	vec3_t point;
 
-	auto lheight = currententity->origin[2] - lightspot[2];
+	const auto lheight = currententity->origin[2] - lightspot[2];
 	auto verts   = reinterpret_cast<trivertx_t *>(reinterpret_cast<byte *>(paliashdr) + paliashdr->posedata);
 
 	verts += posenum * paliashdr->poseverts;
 
 	auto  order  = reinterpret_cast<int *>(reinterpret_cast<byte *>(paliashdr) + paliashdr->commands);
-	float height = -lheight + 1.0;
+	const float height = -lheight + 1.0;
 
 	while (true)
 	{
@@ -664,11 +664,11 @@ void R_SetupAliasFrame(int frame, aliashdr_t* paliashdr)
 	}
 
 	auto pose     = paliashdr->frames[frame].firstpose;
-	auto numposes = paliashdr->frames[frame].numposes;
+	const auto numposes = paliashdr->frames[frame].numposes;
 
 	if (numposes > 1)
 	{
-		auto interval = paliashdr->frames[frame].interval;
+		const auto interval = paliashdr->frames[frame].interval;
 		pose += static_cast<int>(cl.time / interval) % numposes;
 	}
 
@@ -684,7 +684,6 @@ R_DrawAliasModel
 */
 void R_DrawAliasModel(entity_t* e)
 {
-	int      lnum;
 	vec3_t   dist;
 	model_t* clmodel;
 	vec3_t   mins, maxs;
@@ -711,14 +710,14 @@ void R_DrawAliasModel(entity_t* e)
 	if (e == &cl.viewent && ambientlight < 24)
 		ambientlight = shadelight = 24;
 
-	for (lnum = 0; lnum < MAX_DLIGHTS; lnum++)
+	for (auto lnum = 0; lnum < MAX_DLIGHTS; lnum++)
 	{
 		if (cl_dlights[lnum].die >= cl.time)
 		{
 			VectorSubtract (currententity->origin,
 				cl_dlights[lnum].origin,
 				dist);
-			auto add = cl_dlights[lnum].radius - Length(dist);
+			const auto add = cl_dlights[lnum].radius - Length(dist);
 
 			if (add > 0)
 			{
@@ -749,7 +748,7 @@ void R_DrawAliasModel(entity_t* e)
 	shadedots  = r_avertexnormal_dots[static_cast<int>(e->angles[1] * (SHADEDOT_QUANT / 360.0)) & SHADEDOT_QUANT - 1];
 	shadelight = shadelight / 200.0;
 
-	float an       = e->angles[1] / 180 * M_PI;
+	const float an       = e->angles[1] / 180 * M_PI;
 	shadevector[0] = cos(-an);
 	shadevector[1] = sin(-an);
 	shadevector[2] = 1;
@@ -783,7 +782,7 @@ void R_DrawAliasModel(entity_t* e)
 		glScalef(paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 	}
 
-	auto anim = static_cast<int>(cl.time * 10) & 3;
+	const auto anim = static_cast<int>(cl.time * 10) & 3;
 	GL_Bind(paliashdr->gl_texturenum[currententity->skinnum][anim]);
 
 	// we can't dynamically colormap textures, so they are cached
@@ -922,7 +921,7 @@ void R_DrawViewModel()
 			continue;
 
 		VectorSubtract (currententity->origin, dl->origin, dist);
-		auto add = dl->radius - Length(dist);
+		const auto add = dl->radius - Length(dist);
 		if (add > 0)
 			ambientlight += add;
 	}
@@ -1057,11 +1056,11 @@ void R_SetupFrame()
 
 void MYgluPerspective(GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar)
 {
-	auto ymax = zNear * tan(fovy * M_PI / 360.0);
-	auto ymin = -ymax;
+	const auto ymax = zNear * tan(fovy * M_PI / 360.0);
+	const auto ymin = -ymax;
 
-	auto xmin = ymin * aspect;
-	auto xmax = ymax * aspect;
+	const auto xmin = ymin * aspect;
+	const auto xmax = ymax * aspect;
 
 	glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
 }
@@ -1104,7 +1103,7 @@ void R_SetupGL()
 	}
 
 	glViewport(glx + x, gly + y2, w, h);
-	auto screenaspect = static_cast<float>(r_refdef.vrect.width) / r_refdef.vrect.height;
+	const auto screenaspect = static_cast<float>(r_refdef.vrect.width) / r_refdef.vrect.height;
 	//	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*180/M_PI;
 	MYgluPerspective(r_refdef.fov_y, screenaspect, 4, 4096);
 
@@ -1249,7 +1248,7 @@ void R_Mirror()
 	r_refdef.viewangles[1] = atan2(vpn[1], vpn[0]) / M_PI * 180;
 	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
-	auto ent = &cl_entities[cl.viewentity];
+	const auto ent = &cl_entities[cl.viewentity];
 	if (cl_numvisedicts < MAX_VISEDICTS)
 	{
 		cl_visedicts[cl_numvisedicts] = ent;
@@ -1336,7 +1335,7 @@ void R_RenderView()
 
 	if (r_speeds.value)
 	{
-		auto time2 = Sys_FloatTime();
+		const auto time2 = Sys_FloatTime();
 		Con_Printf("%3i ms  %4i wpoly %4i epoly\n", static_cast<int>((time2 - time1) * 1000), c_brush_polys, c_alias_polys);
 	}
 }

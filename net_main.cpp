@@ -213,7 +213,7 @@ static void NET_Port_f()
 		return;
 	}
 
-	auto n = Q_atoi(Cmd_Argv(1));
+	const auto n = Q_atoi(Cmd_Argv(1));
 	if (n < 1 || n > 65534)
 	{
 		Con_Printf("Bad value, must be between 1 and 65534\n");
@@ -396,7 +396,7 @@ JustDoIt:
 	{
 		if (net_drivers[net_driverlevel].initialized == qfalse)
 			continue;
-		auto ret = dfunc.Connect(host);
+		const auto ret = dfunc.Connect(host);
 		if (ret)
 			return ret;
 	}
@@ -520,7 +520,7 @@ int NET_GetMessage(qsocket_t* sock)
 
 	SetNetTime();
 
-	auto ret = sfunc.QGetMessage(sock);
+	const auto ret = sfunc.QGetMessage(sock);
 
 	// see if this connection has timed out
 	if (ret == 0 && sock->driver)
@@ -602,7 +602,7 @@ int NET_SendMessage(qsocket_t* sock, sizebuf_t* data)
 	}
 
 	SetNetTime();
-	auto r = sfunc.QSendMessage(sock, data);
+	const auto r = sfunc.QSendMessage(sock, data);
 	if (r == 1 && sock->driver)
 		messagesSent++;
 
@@ -631,7 +631,7 @@ int NET_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data)
 	}
 
 	SetNetTime();
-	auto r = sfunc.SendUnreliableMessage(sock, data);
+	const auto r = sfunc.SendUnreliableMessage(sock, data);
 	if (r == 1 && sock->driver)
 		unreliableMessagesSent++;
 
@@ -666,7 +666,7 @@ qboolean NET_CanSendMessage(qsocket_t* sock)
 
 	SetNetTime();
 
-	int r = sfunc.CanSendMessage(sock);
+	const int r = sfunc.CanSendMessage(sock);
 
 	if (recording)
 	{
@@ -712,7 +712,7 @@ int NET_SendToAll(sizebuf_t* data, int blocktime)
 		}
 	}
 
-	auto start = Sys_FloatTime();
+	const auto start = Sys_FloatTime();
 	while (count)
 	{
 		count  = 0;
@@ -797,7 +797,7 @@ void NET_Init()
 
 	for (i = 0; i < net_numsockets; i++)
 	{
-		auto s          = static_cast<qsocket_t *>(Hunk_AllocName(sizeof(qsocket_t), "qsocket"));
+		const auto s    = static_cast<qsocket_t *>(Hunk_AllocName(sizeof(qsocket_t), "qsocket"));
 		s->next         = net_freeSockets;
 		net_freeSockets = s;
 		s->disconnected = qtrue;
@@ -828,7 +828,7 @@ void NET_Init()
 	// initialize all the drivers
 	for (net_driverlevel = 0; net_driverlevel < net_numdrivers; net_driverlevel++)
 	{
-		auto controlSocket = net_drivers[net_driverlevel].Init();
+		const auto controlSocket = net_drivers[net_driverlevel].Init();
 		if (controlSocket == -1)
 			continue;
 		net_drivers[net_driverlevel].initialized = qtrue;

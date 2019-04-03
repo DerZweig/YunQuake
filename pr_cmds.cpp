@@ -12,11 +12,10 @@
 
 char* PF_VarString(int first)
 {
-	int         i;
 	static char out[256];
 
-	out[0] = 0;
-	for (i = first; i < pr_argc; i++)
+	out[0]     = 0;
+	for (int i = first; i < pr_argc; i++)
 	{
 		strcat(out, G_STRING((OFS_PARM0+i*3)));
 	}
@@ -36,9 +35,9 @@ error(value)
 */
 void PF_error()
 {
-	auto s = PF_VarString(0);
+	const auto s = PF_VarString(0);
 	Con_Printf("======SERVER ERROR in %s:\n%s\n", pr_strings + pr_xfunction->s_name, s);
-	auto ed = PROG_TO_EDICT(pr_global_struct->self);
+	const auto ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print(ed);
 
 	Host_Error("Program error");
@@ -56,9 +55,9 @@ objerror(value)
 */
 void PF_objerror()
 {
-	auto s = PF_VarString(0);
+	const auto s = PF_VarString(0);
 	Con_Printf("======OBJECT ERROR in %s:\n%s\n", pr_strings + pr_xfunction->s_name, s);
-	auto ed = PROG_TO_EDICT(pr_global_struct->self);
+	const auto ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print(ed);
 	ED_Free(ed);
 
@@ -90,8 +89,8 @@ setorigin (entity, origin)
 */
 void PF_setorigin()
 {
-	auto e   = G_EDICT(OFS_PARM0);
-	auto org = G_VECTOR(OFS_PARM1);
+	auto       e   = G_EDICT(OFS_PARM0);
+	const auto org = G_VECTOR(OFS_PARM1);
 	VectorCopy (org, e->v.origin);
 	SV_LinkEdict(e, qfalse);
 }
@@ -102,17 +101,19 @@ void SetMinMaxSize(edict_t* e, float* min, float* max, qboolean rotate)
 	vec3_t rmin;
 	vec3_t rmax;
 	float  bounds[2][3];
-	float  xvector[2], yvector[2];
-	vec3_t base,       transformed;
+	float  xvector[2];
+	float  yvector[2];
+	vec3_t base;
+	vec3_t transformed;
 	int    i;
 
 	for (i = 0; i < 3; i++)
 		if (min[i] > max[i])
 			PR_RunError("backwards mins/maxs");
 
-	auto angles = e->v.angles;
+	const auto angles = e->v.angles;
 
-	float a = angles[1] / 180 * M_PI;
+	const float a = angles[1] / 180 * M_PI;
 
 	xvector[0] = cos(a);
 	xvector[1] = sin(a);
@@ -170,9 +171,9 @@ setsize (entity, minvector, maxvector)
 */
 void PF_setsize()
 {
-	auto e   = G_EDICT(OFS_PARM0);
-	auto min = G_VECTOR(OFS_PARM1);
-	auto max = G_VECTOR(OFS_PARM2);
+	const auto e   = G_EDICT(OFS_PARM0);
+	const auto min = G_VECTOR(OFS_PARM1);
+	const auto max = G_VECTOR(OFS_PARM2);
 	SetMinMaxSize(e, min, max, qfalse);
 }
 
@@ -189,8 +190,8 @@ void PF_setmodel()
 	char** check;
 	int    i;
 
-	auto e = G_EDICT(OFS_PARM0);
-	auto m = G_STRING(OFS_PARM1);
+	const auto e = G_EDICT(OFS_PARM0);
+	const auto m = G_STRING(OFS_PARM1);
 
 	// check to see if model was properly precached
 	for (i = 0, check = sv.model_precache; *check; i++, check++)
@@ -223,7 +224,7 @@ bprint(value)
 */
 void PF_bprint()
 {
-	auto s = PF_VarString(0);
+	const auto s = PF_VarString(0);
 	SV_BroadcastPrintf("%s", s);
 }
 
@@ -238,8 +239,8 @@ sprint(clientent, value)
 */
 void PF_sprint()
 {
-	auto entnum = G_EDICTNUM(OFS_PARM0);
-	auto s      = PF_VarString(1);
+	const auto entnum = G_EDICTNUM(OFS_PARM0);
+	const auto s      = PF_VarString(1);
 
 	if (entnum < 1 || entnum > svs.maxclients)
 	{
@@ -265,8 +266,8 @@ centerprint(clientent, value)
 */
 void PF_centerprint()
 {
-	auto entnum = G_EDICTNUM(OFS_PARM0);
-	auto s      = PF_VarString(1);
+	const auto entnum = G_EDICTNUM(OFS_PARM0);
+	const auto s      = PF_VarString(1);
 
 	if (entnum < 1 || entnum > svs.maxclients)
 	{
@@ -292,7 +293,7 @@ void PF_normalize()
 {
 	vec3_t newvalue;
 
-	auto value1 = G_VECTOR(OFS_PARM0);
+	const auto value1 = G_VECTOR(OFS_PARM0);
 
 	auto length = value1[0] * value1[0] + value1[1] * value1[1] + value1[2] * value1[2];
 	length      = sqrt(length);
@@ -319,8 +320,8 @@ scalar vlen(vector)
 */
 void PF_vlen()
 {
-	auto value1         = G_VECTOR(OFS_PARM0);
-	auto length         = value1[0] * value1[0] + value1[1] * value1[1] + value1[2] * value1[2];
+	const auto value1   = G_VECTOR(OFS_PARM0);
+	auto       length   = value1[0] * value1[0] + value1[1] * value1[1] + value1[2] * value1[2];
 	length              = sqrt(length);
 	G_FLOAT(OFS_RETURN) = length;
 }
@@ -336,7 +337,7 @@ void PF_vectoyaw()
 {
 	float yaw;
 
-	auto value1 = G_VECTOR(OFS_PARM0);
+	const auto value1 = G_VECTOR(OFS_PARM0);
 
 	if (value1[1] == 0 && value1[0] == 0)
 		yaw = 0;
@@ -363,7 +364,7 @@ void PF_vectoangles()
 	float yaw;
 	float pitch;
 
-	auto value1 = G_VECTOR(OFS_PARM0);
+	const auto value1 = G_VECTOR(OFS_PARM0);
 
 	if (value1[1] == 0 && value1[0] == 0)
 	{
@@ -379,8 +380,8 @@ void PF_vectoangles()
 		if (yaw < 0)
 			yaw += 360;
 
-		auto forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
-		pitch        = static_cast<int>(atan2(value1[2], forward) * 180 / M_PI);
+		const auto forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
+		pitch              = static_cast<int>(atan2(value1[2], forward) * 180 / M_PI);
 		if (pitch < 0)
 			pitch += 360;
 	}
@@ -401,7 +402,7 @@ random()
 */
 void PF_random()
 {
-	auto num            = (rand() & 0x7fff) / static_cast<float>(0x7fff);
+	const auto num      = (rand() & 0x7fff) / static_cast<float>(0x7fff);
 	G_FLOAT(OFS_RETURN) = num;
 }
 
@@ -414,10 +415,10 @@ particle(origin, color, count)
 */
 void PF_particle()
 {
-	auto org   = G_VECTOR(OFS_PARM0);
-	auto dir   = G_VECTOR(OFS_PARM1);
-	auto color = G_FLOAT(OFS_PARM2);
-	auto count = G_FLOAT(OFS_PARM3);
+	const auto org   = G_VECTOR(OFS_PARM0);
+	const auto dir   = G_VECTOR(OFS_PARM1);
+	const auto color = G_FLOAT(OFS_PARM2);
+	const auto count = G_FLOAT(OFS_PARM3);
 	SV_StartParticle(org, dir, color, count);
 }
 
@@ -433,10 +434,10 @@ void PF_ambientsound()
 	char** check;
 	int    soundnum;
 
-	auto pos         = G_VECTOR (OFS_PARM0);
-	auto samp        = G_STRING(OFS_PARM1);
-	auto vol         = G_FLOAT(OFS_PARM2);
-	auto attenuation = G_FLOAT(OFS_PARM3);
+	const auto pos         = G_VECTOR (OFS_PARM0);
+	const auto samp        = G_STRING(OFS_PARM1);
+	const auto vol         = G_FLOAT(OFS_PARM2);
+	const auto attenuation = G_FLOAT(OFS_PARM3);
 
 	// check to see if samp was properly precached
 	for (soundnum = 0, check = sv.sound_precache; *check; check++, soundnum++)
@@ -478,11 +479,11 @@ Larger attenuations will drop off.
 */
 void PF_sound()
 {
-	auto entity      = G_EDICT(OFS_PARM0);
-	int  channel     = G_FLOAT(OFS_PARM1);
-	auto sample      = G_STRING(OFS_PARM2);
-	int  volume      = G_FLOAT(OFS_PARM3) * 255;
-	auto attenuation = G_FLOAT(OFS_PARM4);
+	const auto entity      = G_EDICT(OFS_PARM0);
+	const int  channel     = G_FLOAT(OFS_PARM1);
+	const auto sample      = G_STRING(OFS_PARM2);
+	const int  volume      = G_FLOAT(OFS_PARM3) * 255;
+	const auto attenuation = G_FLOAT(OFS_PARM4);
 
 	if (volume < 0 || volume > 255)
 		Sys_Error("SV_StartSound: volume = %i", volume);
@@ -523,14 +524,12 @@ traceline (vector1, vector2, tryents)
 */
 void PF_traceline()
 {
-	trace_t trace;
+	const auto v1         = G_VECTOR(OFS_PARM0);
+	const auto v2         = G_VECTOR(OFS_PARM1);
+	const int  nomonsters = G_FLOAT(OFS_PARM2);
+	const auto ent        = G_EDICT(OFS_PARM3);
 
-	auto v1         = G_VECTOR(OFS_PARM0);
-	auto v2         = G_VECTOR(OFS_PARM1);
-	int  nomonsters = G_FLOAT(OFS_PARM2);
-	auto ent        = G_EDICT(OFS_PARM3);
-
-	trace = SV_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
+	auto trace = SV_Move(v1, vec3_origin, vec3_origin, v2, nomonsters, ent);
 
 	pr_global_struct->trace_allsolid   = trace.allsolid;
 	pr_global_struct->trace_startsolid = trace.startsolid;
@@ -606,8 +605,8 @@ int PF_newcheckclient(int check)
 
 	// get the PVS for the entity
 	VectorAdd (ent->v.origin, ent->v.view_ofs, org);
-	auto leaf = Mod_PointInLeaf(org, sv.worldmodel);
-	auto pvs  = Mod_LeafPVS(leaf, sv.worldmodel);
+	const auto leaf = Mod_PointInLeaf(org, sv.worldmodel);
+	const auto pvs  = Mod_LeafPVS(leaf, sv.worldmodel);
 	memcpy(checkpvs, pvs, sv.worldmodel->numleafs + 7 >> 3);
 
 	return i;
@@ -633,9 +632,7 @@ int c_invis, c_notvis;
 
 void PF_checkclient()
 {
-	edict_t* ent;
-	edict_t* self;
-	vec3_t   view;
+	vec3_t view;
 
 	// find a new check if on a new frame
 	if (sv.time - sv.lastchecktime >= 0.1)
@@ -645,7 +642,7 @@ void PF_checkclient()
 	}
 
 	// return check if it might be visible	
-	ent = EDICT_NUM(sv.lastcheck);
+	const auto ent = EDICT_NUM(sv.lastcheck);
 	if (ent->free || ent->v.health <= 0)
 	{
 		RETURN_EDICT(sv.edicts);
@@ -653,10 +650,10 @@ void PF_checkclient()
 	}
 
 	// if current entity can't possibly see the check entity, return 0
-	self = PROG_TO_EDICT(pr_global_struct->self);
+	auto self = PROG_TO_EDICT(pr_global_struct->self);
 	VectorAdd (self->v.origin, self->v.view_ofs, view);
-	auto leaf = Mod_PointInLeaf(view, sv.worldmodel);
-	auto l    = leaf - sv.worldmodel->leafs - 1;
+	const auto leaf = Mod_PointInLeaf(view, sv.worldmodel);
+	const auto l    = leaf - sv.worldmodel->leafs - 1;
 	if (l < 0 || !(checkpvs[l >> 3] & 1 << (l & 7)))
 	{
 		c_notvis++;
@@ -683,13 +680,13 @@ stuffcmd (clientent, value)
 */
 void PF_stuffcmd()
 {
-	auto entnum = G_EDICTNUM(OFS_PARM0);
+	const auto entnum = G_EDICTNUM(OFS_PARM0);
 	if (entnum < 1 || entnum > svs.maxclients)
 		PR_RunError("Parm 0 not a client");
-	auto str = G_STRING(OFS_PARM1);
+	const auto str = G_STRING(OFS_PARM1);
 
-	auto old    = host_client;
-	host_client = &svs.clients[entnum - 1];
+	const auto old = host_client;
+	host_client    = &svs.clients[entnum - 1];
 	Host_ClientCommands("%s", str);
 	host_client = old;
 }
@@ -705,7 +702,7 @@ localcmd (string)
 */
 void PF_localcmd()
 {
-	auto str = G_STRING(OFS_PARM0);
+	const auto str = G_STRING(OFS_PARM0);
 	Cbuf_AddText(str);
 }
 
@@ -718,7 +715,7 @@ float cvar (string)
 */
 void PF_cvar()
 {
-	auto str            = G_STRING(OFS_PARM0);
+	const auto str      = G_STRING(OFS_PARM0);
 	G_FLOAT(OFS_RETURN) = Cvar_VariableValue(str);
 }
 
@@ -731,8 +728,8 @@ float cvar (string)
 */
 void PF_cvar_set()
 {
-	auto var = G_STRING(OFS_PARM0);
-	auto val = G_STRING(OFS_PARM1);
+	const auto var = G_STRING(OFS_PARM0);
+	const auto val = G_STRING(OFS_PARM1);
 	Cvar_Set(var, val);
 }
 
@@ -747,11 +744,11 @@ findradius (origin, radius)
 */
 void PF_findradius()
 {
-	vec3_t eorg;
-	auto   chain = static_cast<edict_t *>(sv.edicts);
-	auto   org   = G_VECTOR(OFS_PARM0);
-	auto   rad   = G_FLOAT(OFS_PARM1);
-	auto   ent   = NEXT_EDICT(sv.edicts);
+	vec3_t     eorg;
+	auto       chain = static_cast<edict_t *>(sv.edicts);
+	const auto org   = G_VECTOR(OFS_PARM0);
+	const auto rad   = G_FLOAT(OFS_PARM1);
+	auto       ent   = NEXT_EDICT(sv.edicts);
 
 	for (auto i = 1; i < sv.num_edicts; i++, ent = NEXT_EDICT(ent))
 	{
@@ -786,7 +783,7 @@ char pr_string_temp[128];
 
 void PF_ftos()
 {
-	auto v = G_FLOAT(OFS_PARM0);
+	const auto v = G_FLOAT(OFS_PARM0);
 
 	if (v == static_cast<int>(v))
 		sprintf(pr_string_temp, "%d", static_cast<int>(v));
@@ -797,7 +794,7 @@ void PF_ftos()
 
 void PF_fabs()
 {
-	auto v              = G_FLOAT(OFS_PARM0);
+	const auto v        = G_FLOAT(OFS_PARM0);
 	G_FLOAT(OFS_RETURN) = fabs(v);
 }
 
@@ -810,13 +807,13 @@ void PF_vtos()
 
 void PF_Spawn()
 {
-	auto ed = ED_Alloc();
+	const auto ed = ED_Alloc();
 	RETURN_EDICT(ed);
 }
 
 void PF_Remove()
 {
-	auto ed = G_EDICT(OFS_PARM0);
+	const auto ed = G_EDICT(OFS_PARM0);
 	ED_Free(ed);
 }
 
@@ -824,20 +821,19 @@ void PF_Remove()
 // entity (entity start, .string field, string match) find = #5;
 void PF_Find()
 {
-	edict_t* ed;
-	auto     e = G_EDICTNUM(OFS_PARM0);
-	auto     f = G_INT(OFS_PARM1);
-	auto     s = G_STRING(OFS_PARM2);
+	auto       e = G_EDICTNUM(OFS_PARM0);
+	const auto f = G_INT(OFS_PARM1);
+	const auto s = G_STRING(OFS_PARM2);
 
 	if (!s)
 		PR_RunError("PF_Find: bad search string");
 
 	for (e++; e < sv.num_edicts; e++)
 	{
-		ed = EDICT_NUM(e);
+		auto ed = EDICT_NUM(e);
 		if (ed->free)
 			continue;
-		auto t = E_STRING(ed,f);
+		const auto t = E_STRING(ed,f);
 		if (!t)
 			continue;
 		if (!strcmp(t, s))
@@ -867,7 +863,7 @@ void PF_precache_sound()
 	if (sv.state != server_state_t::ss_loading)
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 
-	auto s            = G_STRING(OFS_PARM0);
+	const auto s      = G_STRING(OFS_PARM0);
 	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
 	PR_CheckEmptyString(s);
 
@@ -889,7 +885,7 @@ void PF_precache_model()
 	if (sv.state != server_state_t::ss_loading)
 		PR_RunError("PF_Precache_*: Precache can only be done in spawn functions");
 
-	auto s            = G_STRING(OFS_PARM0);
+	const auto s      = G_STRING(OFS_PARM0);
 	G_INT(OFS_RETURN) = G_INT(OFS_PARM0);
 	PR_CheckEmptyString(s);
 
@@ -939,9 +935,9 @@ void PF_walkmove()
 {
 	vec3_t move;
 
-	auto ent  = PROG_TO_EDICT(pr_global_struct->self);
-	auto yaw  = G_FLOAT(OFS_PARM0);
-	auto dist = G_FLOAT(OFS_PARM1);
+	const auto ent  = PROG_TO_EDICT(pr_global_struct->self);
+	auto       yaw  = G_FLOAT(OFS_PARM0);
+	const auto dist = G_FLOAT(OFS_PARM1);
 
 	if (!(static_cast<int>(ent->v.flags) & (FL_ONGROUND | FL_FLY | FL_SWIM)))
 	{
@@ -956,8 +952,8 @@ void PF_walkmove()
 	move[2] = 0;
 
 	// save program state, because SV_movestep may call other progs
-	auto oldf    = pr_xfunction;
-	auto oldself = pr_global_struct->self;
+	const auto oldf    = pr_xfunction;
+	const auto oldself = pr_global_struct->self;
 
 	G_FLOAT(OFS_RETURN) = SV_movestep(ent, move, qtrue);
 
@@ -1011,8 +1007,8 @@ void PF_lightstyle()
 	client_t* client;
 	int       j;
 
-	int  style = G_FLOAT(OFS_PARM0);
-	auto val   = G_STRING(OFS_PARM1);
+	const int  style = G_FLOAT(OFS_PARM0);
+	const auto val   = G_STRING(OFS_PARM1);
 
 	// change the string in sv
 	sv.lightstyles[style] = val;
@@ -1032,7 +1028,7 @@ void PF_lightstyle()
 
 void PF_rint()
 {
-	auto f = G_FLOAT(OFS_PARM0);
+	const auto f = G_FLOAT(OFS_PARM0);
 	if (f > 0)
 		G_FLOAT(OFS_RETURN) = static_cast<int>(f + 0.5);
 	else
@@ -1057,7 +1053,7 @@ PF_checkbottom
 */
 void PF_checkbottom()
 {
-	auto ent            = G_EDICT(OFS_PARM0);
+	const auto ent      = G_EDICT(OFS_PARM0);
 	G_FLOAT(OFS_RETURN) = SV_CheckBottom(ent);
 }
 
@@ -1068,7 +1064,7 @@ PF_pointcontents
 */
 void PF_pointcontents()
 {
-	auto v              = G_VECTOR(OFS_PARM0);
+	const auto v        = G_VECTOR(OFS_PARM0);
 	G_FLOAT(OFS_RETURN) = SV_PointContents(v);
 }
 
@@ -1194,10 +1190,10 @@ This was a major timewaster in progs, so it was converted to C
 */
 void PF_changeyaw()
 {
-	auto ent     = PROG_TO_EDICT(pr_global_struct->self);
-	auto current = anglemod(ent->v.angles[1]);
-	auto ideal   = ent->v.ideal_yaw;
-	auto speed   = ent->v.yaw_speed;
+	auto       ent     = PROG_TO_EDICT(pr_global_struct->self);
+	const auto current = anglemod(ent->v.angles[1]);
+	const auto ideal   = ent->v.ideal_yaw;
+	const auto speed   = ent->v.yaw_speed;
 
 	if (current == ideal)
 		return;
@@ -1242,7 +1238,7 @@ MESSAGE WRITING
 
 sizebuf_t* WriteDest()
 {
-	int dest = G_FLOAT(OFS_PARM0);
+	const int dest = G_FLOAT(OFS_PARM0);
 	switch (dest)
 	{
 	case MSG_BROADCAST:
@@ -1250,8 +1246,8 @@ sizebuf_t* WriteDest()
 
 	case MSG_ONE:
 		{
-			auto ent    = PROG_TO_EDICT(pr_global_struct->msg_entity);
-			auto entnum = NUM_FOR_EDICT(ent);
+			const auto ent    = PROG_TO_EDICT(pr_global_struct->msg_entity);
+			const auto entnum = NUM_FOR_EDICT(ent);
 			if (entnum < 1 || entnum > svs.maxclients)
 				PR_RunError("WriteDest: not a client");
 			return &svs.clients[entnum - 1].message;
@@ -1345,8 +1341,8 @@ PF_setspawnparms
 */
 void PF_setspawnparms()
 {
-	auto ent = G_EDICT(OFS_PARM0);
-	auto i   = NUM_FOR_EDICT(ent);
+	const auto ent = G_EDICT(OFS_PARM0);
+	auto       i   = NUM_FOR_EDICT(ent);
 	if (i < 1 || i > svs.maxclients)
 		PR_RunError("Entity is not a client");
 
@@ -1369,7 +1365,7 @@ void PF_changelevel()
 		return;
 	svs.changelevel_issued = qtrue;
 
-	auto s = G_STRING(OFS_PARM0);
+	const auto s = G_STRING(OFS_PARM0);
 	Cbuf_AddText(va("changelevel %s\n", s));
 }
 

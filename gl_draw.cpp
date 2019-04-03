@@ -155,8 +155,8 @@ int pic_count;
 
 qpic_t* Draw_PicFromWad(char* name)
 {
-	auto p  = static_cast<qpic_t *>(W_GetLumpName(name));
-	auto gl = reinterpret_cast<glpic_t *>(p->data);
+	auto       p  = static_cast<qpic_t *>(W_GetLumpName(name));
+	const auto gl = reinterpret_cast<glpic_t *>(p->data);
 
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
@@ -228,12 +228,12 @@ qpic_t* Draw_CachePic(char* path)
 	pic->pic.width  = dat->width;
 	pic->pic.height = dat->height;
 
-	auto gl    = reinterpret_cast<glpic_t *>(pic->pic.data);
-	gl->texnum = GL_LoadPicTexture(dat);
-	gl->sl     = 0;
-	gl->sh     = 1;
-	gl->tl     = 0;
-	gl->th     = 1;
+	const auto gl = reinterpret_cast<glpic_t *>(pic->pic.data);
+	gl->texnum    = GL_LoadPicTexture(dat);
+	gl->sl        = 0;
+	gl->sh        = 1;
+	gl->tl        = 0;
+	gl->th        = 1;
 
 	return &pic->pic;
 }
@@ -241,9 +241,9 @@ qpic_t* Draw_CachePic(char* path)
 
 void Draw_CharToConback(int num, byte* dest)
 {
-	auto row    = num >> 4;
-	auto col    = num & 15;
-	auto source = draw_chars + (row << 10) + (col << 3);
+	const auto row    = num >> 4;
+	const auto col    = num & 15;
+	auto       source = draw_chars + (row << 10) + (col << 3);
 
 	auto drawline = 8;
 
@@ -353,7 +353,7 @@ void Draw_Init()
 	// now turn them into textures
 	char_texture = GL_LoadTexture("charset", 128, 128, draw_chars, qfalse, qtrue);
 
-	auto start = Hunk_LowMark();
+	const auto start = Hunk_LowMark();
 
 	auto cb = reinterpret_cast<qpic_t *>(COM_LoadTempFile("gfx/conback.lmp"));
 	if (!cb)
@@ -366,19 +366,19 @@ void Draw_Init()
 #else
 	sprintf(ver, "(gl %4.2f) %4.2f", static_cast<float>(GLQUAKE_VERSION), static_cast<float>(VERSION));
 #endif
-	auto      dest = cb->data + 320 * 186 + 320 - 11 - 8 * strlen(ver);
-	int       y    = strlen(ver);
-	for (auto x    = 0; x < y; x++)
+	const auto dest = cb->data + 320 * 186 + 320 - 11 - 8 * strlen(ver);
+	const int  y    = strlen(ver);
+	for (auto  x    = 0; x < y; x++)
 		Draw_CharToConback(ver[x], dest + (x << 3));
 
-	conback->width  = cb->width;
-	conback->height = cb->height;
-	auto ncdata     = cb->data;
+	conback->width    = cb->width;
+	conback->height   = cb->height;
+	const auto ncdata = cb->data;
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	auto gl         = reinterpret_cast<glpic_t *>(conback->data);
+	const auto gl   = reinterpret_cast<glpic_t *>(conback->data);
 	gl->texnum      = GL_LoadTexture("conback", conback->width, conback->height, ncdata, qfalse, qfalse);
 	gl->sl          = 0;
 	gl->sh          = 1;
@@ -424,12 +424,11 @@ void Draw_Character(int x, int y, int num)
 	if (y <= -8)
 		return; // totally off screen
 
-	auto row = num >> 4;
-	auto col = num & 15;
-
-	float frow = row * 0.0625;
-	float fcol = col * 0.0625;
-	float size = 0.0625;
+	const auto  row  = num >> 4;
+	const auto  col  = num & 15;
+	const float frow = row * 0.0625;
+	const float fcol = col * 0.0625;
+	const float size = 0.0625;
 
 	GL_Bind(char_texture);
 
@@ -482,7 +481,7 @@ void Draw_AlphaPic(int x, int y, qpic_t* pic, float alpha)
 {
 	if (scrap_dirty)
 		Scrap_Upload();
-	auto gl = reinterpret_cast<glpic_t *>(pic->data);
+	const auto gl = reinterpret_cast<glpic_t *>(pic->data);
 	glDisable(GL_ALPHA_TEST);
 	glEnable(GL_BLEND);
 	glColor4f(1, 1, 1, alpha);
@@ -512,7 +511,7 @@ void Draw_Pic(int x, int y, qpic_t* pic)
 {
 	if (scrap_dirty)
 		Scrap_Upload();
-	auto gl = reinterpret_cast<glpic_t *>(pic->data);
+	const auto gl = reinterpret_cast<glpic_t *>(pic->data);
 	glColor4f(1, 1, 1, 1);
 	GL_Bind(gl->texnum);
 	glBegin(GL_QUADS);
@@ -562,10 +561,10 @@ void Draw_TransPicTranslate(int x, int y, qpic_t* pic, byte* translation)
 	auto      dest = trans;
 	for (auto v    = 0; v < 64; v++, dest += 64)
 	{
-		auto      src = &menuplyr_pixels[(v * pic->height >> 6) * pic->width];
-		for (auto u   = 0; u < 64; u++)
+		const auto src = &menuplyr_pixels[(v * pic->height >> 6) * pic->width];
+		for (auto  u   = 0; u < 64; u++)
 		{
-			int p = src[u * pic->width >> 6];
+			const int p = src[u * pic->width >> 6];
 			if (p == 255)
 				dest[u] = p;
 			else
@@ -600,7 +599,7 @@ Draw_ConsoleBackground
 */
 void Draw_ConsoleBackground(int lines)
 {
-	int y = vid.height * 3 >> 2;
+	const int y = vid.height * 3 >> 2;
 
 	if (lines > y)
 		Draw_Pic(0, lines - vid.height, conback);
@@ -775,12 +774,12 @@ GL_ResampleTexture
 */
 void GL_ResampleTexture(unsigned* in, int inwidth, int inheight, unsigned* out, int outwidth, int outheight)
 {
-	unsigned  fracstep = inwidth * 0x10000 / outwidth;
-	for (auto i        = 0; i < outheight; i++, out += outwidth)
+	const unsigned fracstep = inwidth * 0x10000 / outwidth;
+	for (auto      i        = 0; i < outheight; i++, out += outwidth)
 	{
-		auto      inrow = in + inwidth * (i * inheight / outheight);
-		auto      frac  = fracstep >> 1;
-		for (auto j     = 0; j < outwidth; j += 4)
+		const auto inrow = in + inwidth * (i * inheight / outheight);
+		auto       frac  = fracstep >> 1;
+		for (auto  j     = 0; j < outwidth; j += 4)
 		{
 			out[j] = inrow[frac >> 16];
 			frac += fracstep;
@@ -801,12 +800,12 @@ GL_Resample8BitTexture -- JACK
 */
 void GL_Resample8BitTexture(unsigned char* in, int inwidth, int inheight, unsigned char* out, int outwidth, int outheight)
 {
-	unsigned  fracstep = inwidth * 0x10000 / outwidth;
-	for (auto i        = 0; i < outheight; i++, out += outwidth)
+	const unsigned fracstep = inwidth * 0x10000 / outwidth;
+	for (auto      i        = 0; i < outheight; i++, out += outwidth)
 	{
-		auto      inrow = in + inwidth * (i * inheight / outheight);
-		auto      frac  = fracstep >> 1;
-		for (auto j     = 0; j < outwidth; j += 4)
+		const auto inrow = in + inwidth * (i * inheight / outheight);
+		auto       frac  = fracstep >> 1;
+		for (auto  j     = 0; j < outwidth; j += 4)
 		{
 			out[j] = inrow[frac >> 16];
 			frac += fracstep;
@@ -861,10 +860,10 @@ void GL_MipMap8Bit(byte* in, int width, int height)
 	{
 		for (auto j = 0; j < width; j += 2, out += 1, in += 2)
 		{
-			auto at1 = reinterpret_cast<byte *>(d_8to24table + in[0]);
-			auto at2 = reinterpret_cast<byte *>(d_8to24table + in[1]);
-			auto at3 = reinterpret_cast<byte *>(d_8to24table + in[width + 0]);
-			auto at4 = reinterpret_cast<byte *>(d_8to24table + in[width + 1]);
+			const auto at1 = reinterpret_cast<byte *>(d_8to24table + in[0]);
+			const auto at2 = reinterpret_cast<byte *>(d_8to24table + in[1]);
+			const auto at3 = reinterpret_cast<byte *>(d_8to24table + in[width + 0]);
+			const auto at4 = reinterpret_cast<byte *>(d_8to24table + in[width + 1]);
 
 			unsigned short r = at1[0] + at2[0] + at3[0] + at4[0];
 			r >>= 5;
@@ -910,7 +909,7 @@ void GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, qboolea
 	if (scaled_width * scaled_height > sizeof scaled / 4)
 		Sys_Error("GL_LoadTexture: too big");
 
-	auto samples = alpha ? gl_alpha_format : gl_solid_format;
+	const auto samples = alpha ? gl_alpha_format : gl_solid_format;
 
 	texels += scaled_width * scaled_height;
 
@@ -1042,7 +1041,7 @@ void GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean alp
 	static unsigned trans[640 * 480]; // FIXME, temporary
 	int             i;
 
-	auto s = width * height;
+	const auto s = width * height;
 	// if there are no transparent pixels, make it a 3 component
 	// texture even if it was specified as otherwise
 	if (alpha)
@@ -1050,7 +1049,7 @@ void GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean alp
 		auto noalpha = qtrue;
 		for (i       = 0; i < s; i++)
 		{
-			int p = data[i];
+			const int p = data[i];
 			if (p == 255)
 				noalpha = qfalse;
 			trans[i]    = d_8to24table[p];

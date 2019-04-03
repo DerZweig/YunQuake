@@ -8,18 +8,18 @@
 
 struct memblock_t
 {
-	int size; // including the header and possibly tiny fragments
-	int tag; // a tag of 0 is a free block
-	int id; // should be ZONEID
+	int         size; // including the header and possibly tiny fragments
+	int         tag; // a tag of 0 is a free block
+	int         id; // should be ZONEID
 	memblock_t* next;
 	memblock_t* prev;
-	int pad; // pad to 64 bit boundary
+	int         pad; // pad to 64 bit boundary
 };
 
 struct memzone_t
 {
-	int size; // total bytes malloced, including header
-	memblock_t blocklist; // start / end cap for linked list
+	int         size; // total bytes malloced, including header
+	memblock_t  blocklist; // start / end cap for linked list
 	memblock_t* rover;
 };
 
@@ -29,8 +29,8 @@ static char* argvdummy = " ";
 static char* safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
-cvar_t registered = {"registered","0"};
-cvar_t cmdline = {"cmdline","0", qfalse, qtrue};
+cvar_t registered = {"registered", "0"};
+cvar_t cmdline    = {"cmdline", "0", qfalse, qtrue};
 
 qboolean com_modified; // set qtrue if using non-id files
 
@@ -41,15 +41,15 @@ int static_registered = 1; // only for startup check, then set
 qboolean msg_suppress_1 = 0;
 
 void COM_InitFilesystem();
-void Cache_FreeLow(int new_low_hunk);
+void Cache_FreeLow(int  new_low_hunk);
 void Cache_FreeHigh(int new_high_hunk);
 
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT              339
 #define PAK0_CRC                32981
 
-char com_token[1024];
-int com_argc;
+char   com_token[1024];
+int    com_argc;
 char** com_argv;
 
 #define CMDLINE_LENGTH	256
@@ -60,22 +60,10 @@ qboolean standard_quake = qtrue, rogue, hipnotic;
 // this graphic needs to be in the pak file to use registered features
 unsigned short pop[] =
 {
-	0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000
-	,0x0000,0x0000,0x6600,0x0000,0x0000,0x0000,0x6600,0x0000
-	,0x0000,0x0066,0x0000,0x0000,0x0000,0x0000,0x0067,0x0000
-	,0x0000,0x6665,0x0000,0x0000,0x0000,0x0000,0x0065,0x6600
-	,0x0063,0x6561,0x0000,0x0000,0x0000,0x0000,0x0061,0x6563
-	,0x0064,0x6561,0x0000,0x0000,0x0000,0x0000,0x0061,0x6564
-	,0x0064,0x6564,0x0000,0x6469,0x6969,0x6400,0x0064,0x6564
-	,0x0063,0x6568,0x6200,0x0064,0x6864,0x0000,0x6268,0x6563
-	,0x0000,0x6567,0x6963,0x0064,0x6764,0x0063,0x6967,0x6500
-	,0x0000,0x6266,0x6769,0x6a68,0x6768,0x6a69,0x6766,0x6200
-	,0x0000,0x0062,0x6566,0x6666,0x6666,0x6666,0x6562,0x0000
-	,0x0000,0x0000,0x0062,0x6364,0x6664,0x6362,0x0000,0x0000
-	,0x0000,0x0000,0x0000,0x0062,0x6662,0x0000,0x0000,0x0000
-	,0x0000,0x0000,0x0000,0x0061,0x6661,0x0000,0x0000,0x0000
-	,0x0000,0x0000,0x0000,0x0000,0x6500,0x0000,0x0000,0x0000
-	,0x0000,0x0000,0x0000,0x0000,0x6400,0x0000,0x0000,0x0000
+	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x6600, 0x0000, 0x0000, 0x0000, 0x6600, 0x0000, 0x0000, 0x0066, 0x0000, 0x0000, 0x0000, 0x0000, 0x0067, 0x0000, 0x0000, 0x6665, 0x0000, 0x0000, 0x0000, 0x0000, 0x0065, 0x6600, 0x0063, 0x6561, 0x0000, 0x0000, 0x0000,
+	0x0000, 0x0061, 0x6563, 0x0064, 0x6561, 0x0000, 0x0000, 0x0000, 0x0000, 0x0061, 0x6564, 0x0064, 0x6564, 0x0000, 0x6469, 0x6969, 0x6400, 0x0064, 0x6564, 0x0063, 0x6568, 0x6200, 0x0064, 0x6864, 0x0000, 0x6268, 0x6563, 0x0000, 0x6567, 0x6963, 0x0064, 0x6764, 0x0063, 0x6967, 0x6500, 0x0000, 0x6266,
+	0x6769, 0x6a68, 0x6768, 0x6a69, 0x6766, 0x6200, 0x0000, 0x0062, 0x6566, 0x6666, 0x6666, 0x6666, 0x6562, 0x0000, 0x0000, 0x0000, 0x0062, 0x6364, 0x6664, 0x6362, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0062, 0x6662, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0061, 0x6661, 0x0000, 0x0000,
+	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x6500, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x6400, 0x0000, 0x0000, 0x0000
 };
 
 /*
@@ -116,16 +104,16 @@ void RemoveLink(link_t* l)
 
 void InsertLinkBefore(link_t* l, link_t* before)
 {
-	l->next = before;
-	l->prev = before->prev;
+	l->next       = before;
+	l->prev       = before->prev;
 	l->prev->next = l;
 	l->next->prev = l;
 }
 
 void InsertLinkAfter(link_t* l, link_t* after)
 {
-	l->next = after->next;
-	l->prev = after;
+	l->next       = after->next;
+	l->prev       = after;
 	l->prev->next = l;
 	l->next->prev = l;
 }
@@ -145,12 +133,12 @@ void Q_memset(void* dest, int fill, int count)
 	if (((reinterpret_cast<long>(dest) | count) & 3) == 0)
 	{
 		count >>= 2;
-		fill = fill | fill << 8 | fill << 16 | fill << 24;
-		for (i = 0; i < count; i++)
+		fill                            = fill | fill << 8 | fill << 16 | fill << 24;
+		for (i                          = 0; i < count; i++)
 			static_cast<int *>(dest)[i] = fill;
 	}
 	else
-		for (i = 0; i < count; i++)
+		for (i                           = 0; i < count; i++)
 			static_cast<byte *>(dest)[i] = fill;
 }
 
@@ -161,11 +149,11 @@ void Q_memcpy(void* dest, void* src, int count)
 	if (((reinterpret_cast<long>(dest) | reinterpret_cast<long>(src) | count) & 3) == 0)
 	{
 		count >>= 2;
-		for (i = 0; i < count; i++)
+		for (i                          = 0; i < count; i++)
 			static_cast<int *>(dest)[i] = static_cast<int *>(src)[i];
 	}
 	else
-		for (i = 0; i < count; i++)
+		for (i                           = 0; i < count; i++)
 			static_cast<byte *>(dest)[i] = static_cast<byte *>(src)[i];
 }
 
@@ -383,7 +371,7 @@ float Q_atof(char* str)
 	// assume decimal
 	//
 	auto decimal = -1;
-	auto total = 0;
+	auto total   = 0;
 	while (true)
 	{
 		c = *str++;
@@ -419,11 +407,11 @@ float Q_atof(char* str)
 
 qboolean bigendien;
 
-short (*BigShort)(short l);
+short (*BigShort)(short    l);
 short (*LittleShort)(short l);
-int (*BigLong)(int l);
-int (*LittleLong)(int l);
-float (*BigFloat)(float l);
+int (*  BigLong)(int       l);
+int (*  LittleLong)(int    l);
+float (*BigFloat)(float    l);
 float (*LittleFloat)(float l);
 
 short ShortSwap(short l)
@@ -459,11 +447,11 @@ float FloatSwap(float f)
 	union
 	{
 		float f;
-		byte b[4];
-	} dat1, dat2;
+		byte  b[4];
+	}         dat1, dat2;
 
 
-	dat1.f = f;
+	dat1.f    = f;
 	dat2.b[0] = dat1.b[3];
 	dat2.b[1] = dat1.b[2];
 	dat2.b[2] = dat1.b[1];
@@ -497,7 +485,7 @@ void MSG_WriteChar(sizebuf_t* sb, int c)
 #endif
 
 	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 1));
-	buf[0] = c;
+	buf[0]   = c;
 }
 
 void MSG_WriteByte(sizebuf_t* sb, int c)
@@ -508,7 +496,7 @@ void MSG_WriteByte(sizebuf_t* sb, int c)
 #endif
 
 	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 1));
-	buf[0] = c;
+	buf[0]   = c;
 }
 
 void MSG_WriteShort(sizebuf_t* sb, int c)
@@ -519,17 +507,17 @@ void MSG_WriteShort(sizebuf_t* sb, int c)
 #endif
 
 	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 2));
-	buf[0] = c & 0xff;
-	buf[1] = c >> 8;
+	buf[0]   = c & 0xff;
+	buf[1]   = c >> 8;
 }
 
 void MSG_WriteLong(sizebuf_t* sb, int c)
 {
 	auto buf = static_cast<byte *>(SZ_GetSpace(sb, 4));
-	buf[0] = c & 0xff;
-	buf[1] = c >> 8 & 0xff;
-	buf[2] = c >> 16 & 0xff;
-	buf[3] = c >> 24;
+	buf[0]   = c & 0xff;
+	buf[1]   = c >> 8 & 0xff;
+	buf[2]   = c >> 16 & 0xff;
+	buf[3]   = c >> 24;
 }
 
 void MSG_WriteFloat(sizebuf_t* sb, float f)
@@ -537,8 +525,8 @@ void MSG_WriteFloat(sizebuf_t* sb, float f)
 	union
 	{
 		float f;
-		int l;
-	} dat;
+		int   l;
+	}         dat;
 
 
 	dat.f = f;
@@ -568,13 +556,13 @@ void MSG_WriteAngle(sizebuf_t* sb, float f)
 //
 // reading functions
 //
-int msg_readcount;
+int      msg_readcount;
 qboolean msg_badread;
 
 void MSG_BeginReading()
 {
 	msg_readcount = 0;
-	msg_badread = qfalse;
+	msg_badread   = qfalse;
 }
 
 // returns -1 and sets msg_badread if no more characters are available
@@ -644,10 +632,10 @@ float MSG_ReadFloat()
 {
 	union
 	{
-		byte b[4];
+		byte  b[4];
 		float f;
-		int l;
-	} dat;
+		int   l;
+	}         dat;
 
 	dat.b[0] = net_message.data[msg_readcount];
 	dat.b[1] = net_message.data[msg_readcount + 1];
@@ -697,9 +685,9 @@ void SZ_Alloc(sizebuf_t* buf, int startsize)
 {
 	if (startsize < 256)
 		startsize = 256;
-	buf->data = static_cast<byte*>(Hunk_AllocName(startsize, "sizebuf"));
-	buf->maxsize = startsize;
-	buf->cursize = 0;
+	buf->data     = static_cast<byte*>(Hunk_AllocName(startsize, "sizebuf"));
+	buf->maxsize  = startsize;
+	buf->cursize  = 0;
 }
 
 
@@ -783,7 +771,7 @@ void COM_StripExtension(char* in, char* out)
 {
 	while (*in && *in != '.')
 		*out++ = *in++;
-	*out = 0;
+	*out       = 0;
 }
 
 /*
@@ -794,16 +782,16 @@ COM_FileExtension
 char* COM_FileExtension(char* in)
 {
 	static char exten[8];
-	int i;
+	int         i;
 
 	while (*in && *in != '.')
 		in++;
 	if (!*in)
 		return "";
 	in++;
-	for (i = 0; i < 7 && *in; i++ , in++)
+	for (i       = 0; i < 7 && *in; i++, in++)
 		exten[i] = *in;
-	exten[i] = 0;
+	exten[i]     = 0;
 	return exten;
 }
 
@@ -872,7 +860,7 @@ char* COM_Parse(char* data)
 {
 	int c;
 
-	auto len = 0;
+	auto len     = 0;
 	com_token[0] = 0;
 
 	if (!data)
@@ -972,7 +960,7 @@ being registered.
 */
 void COM_CheckRegistered()
 {
-	int h;
+	int            h;
 	unsigned short check[128];
 
 	COM_OpenFile("gfx/pop.lmp", &h);
@@ -1057,17 +1045,17 @@ void COM_InitArgv(int argc, char** argv)
 	}
 
 	largv[com_argc] = argvdummy;
-	com_argv = largv;
+	com_argv        = largv;
 
 	if (COM_CheckParm("-rogue"))
 	{
-		rogue = qtrue;
+		rogue          = qtrue;
 		standard_quake = qfalse;
 	}
 
 	if (COM_CheckParm("-hipnotic"))
 	{
-		hipnotic = qtrue;
+		hipnotic       = qtrue;
 		standard_quake = qfalse;
 	}
 }
@@ -1080,27 +1068,27 @@ COM_Init
 */
 void COM_Init(char* basedir)
 {
-	byte swaptest[2] = {1,0};
+	byte swaptest[2] = {1, 0};
 
 	// set the byte swapping variables in a portable manner 
 	if (*reinterpret_cast<short *>(swaptest) == 1)
 	{
-		bigendien = qfalse;
-		BigShort = ShortSwap;
+		bigendien   = qfalse;
+		BigShort    = ShortSwap;
 		LittleShort = ShortNoSwap;
-		BigLong = LongSwap;
-		LittleLong = LongNoSwap;
-		BigFloat = FloatSwap;
+		BigLong     = LongSwap;
+		LittleLong  = LongNoSwap;
+		BigFloat    = FloatSwap;
 		LittleFloat = FloatNoSwap;
 	}
 	else
 	{
-		bigendien = qtrue;
-		BigShort = ShortNoSwap;
+		bigendien   = qtrue;
+		BigShort    = ShortNoSwap;
 		LittleShort = ShortSwap;
-		BigLong = LongNoSwap;
-		LittleLong = LongSwap;
-		BigFloat = FloatNoSwap;
+		BigLong     = LongNoSwap;
+		LittleLong  = LongSwap;
+		BigFloat    = FloatNoSwap;
 		LittleFloat = FloatSwap;
 	}
 
@@ -1124,7 +1112,7 @@ FIXME: make this buffer size safe someday
 */
 char* va(char* format, ...)
 {
-	va_list argptr;
+	va_list     argptr;
 	static char string[1024];
 
 	va_start (argptr, format);
@@ -1162,14 +1150,14 @@ int com_filesize;
 struct packfile_t
 {
 	char name[MAX_QPATH];
-	int filepos, filelen;
+	int  filepos, filelen;
 };
 
 struct pack_t
 {
-	char filename[MAX_OSPATH];
-	int handle;
-	int numfiles;
+	char        filename[MAX_OSPATH];
+	int         handle;
+	int         numfiles;
 	packfile_t* files;
 };
 
@@ -1179,14 +1167,14 @@ struct pack_t
 struct dpackfile_t
 {
 	char name[56];
-	int filepos, filelen;
+	int  filepos, filelen;
 };
 
 struct dpackheader_t
 {
 	char id[4];
-	int dirofs;
-	int dirlen;
+	int  dirofs;
+	int  dirlen;
 };
 
 #define MAX_FILES_IN_PACK       2048
@@ -1196,8 +1184,8 @@ char com_gamedir[MAX_OSPATH];
 
 struct searchpath_t
 {
-	char filename[MAX_OSPATH];
-	pack_t* pack; // only one of filename / pack will be used
+	char          filename[MAX_OSPATH];
+	pack_t*       pack; // only one of filename / pack will be used
 	searchpath_t* next;
 };
 
@@ -1261,7 +1249,8 @@ void COM_CreatePath(char* path)
 	for (auto ofs = path + 1; *ofs; ofs++)
 	{
 		if (*ofs == '/')
-		{ // create the directory
+		{
+			// create the directory
 			*ofs = 0;
 			Sys_mkdir(path);
 			*ofs = '/';
@@ -1280,8 +1269,8 @@ needed.  This is for the convenience of developers using ISDN from home.
 */
 void COM_CopyFile(char* netpath, char* cachepath)
 {
-	int in;
-	int count;
+	int  in;
+	int  count;
 	char buf[4096];
 
 	auto remaining = Sys_FileOpenRead(netpath, &in);
@@ -1315,7 +1304,7 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 {
 	char netpath[MAX_OSPATH];
 	char cachepath[MAX_OSPATH];
-	int i;
+	int  i;
 
 	if (file && handle)
 		Sys_Error("COM_FindFile: both handle and file set");
@@ -1327,7 +1316,8 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 	//
 	auto search = com_searchpaths;
 	if (proghack)
-	{ // gross hack to use quake 1 progs with quake 2 maps
+	{
+		// gross hack to use quake 1 progs with quake 2 maps
 		if (!strcmp(filename, "progs.dat"))
 			search = search->next;
 	}
@@ -1339,9 +1329,10 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 		{
 			// look through all the pak file elements
 			auto pak = search->pack;
-			for (i = 0; i < pak->numfiles; i++)
+			for (i   = 0; i < pak->numfiles; i++)
 				if (!strcmp(pak->files[i].name, filename))
-				{ // found it!
+				{
+					// found it!
 					Sys_Printf("PackFile: %s : %s\n", pak->filename, filename);
 					if (handle)
 					{
@@ -1349,7 +1340,8 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 						Sys_FileSeek(pak->handle, pak->files[i].filepos);
 					}
 					else
-					{ // open a new file on the pakfile
+					{
+						// open a new file on the pakfile
 						*file = fopen(pak->filename, "rb");
 						if (*file)
 							fseek(*file, pak->files[i].filepos, SEEK_SET);
@@ -1362,7 +1354,8 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 		{
 			// check a file in the directory tree
 			if (!static_registered)
-			{ // if not a registered version, don't ever go beyond base
+			{
+				// if not a registered version, don't ever go beyond base
 				if (strchr(filename, '/') || strchr(filename, '\\'))
 					continue;
 			}
@@ -1412,7 +1405,7 @@ int COM_FindFile(char* filename, int* handle, FILE** file)
 	if (handle)
 		*handle = -1;
 	else
-		*file = nullptr;
+		*file    = nullptr;
 	com_filesize = -1;
 	return -1;
 }
@@ -1471,12 +1464,12 @@ Allways appends a 0 byte.
 ============
 */
 cache_user_t* loadcache;
-byte* loadbuf;
-int loadsize;
+byte*         loadbuf;
+int           loadsize;
 
 byte* COM_LoadFile(char* path, int usehunk)
 {
-	int h;
+	int  h;
 	char base[32];
 
 	byte* buf = nullptr; // quiet compiler warning
@@ -1539,7 +1532,7 @@ void COM_LoadCacheFile(char* path, cache_user_t* cu)
 // uses temp hunk if larger than bufsize
 byte* COM_LoadStackFile(char* path, void* buffer, int bufsize)
 {
-	loadbuf = static_cast<byte *>(buffer);
+	loadbuf  = static_cast<byte *>(buffer);
 	loadsize = bufsize;
 	auto buf = COM_LoadFile(path, 4);
 
@@ -1558,10 +1551,10 @@ of the list so they override previous pack files.
 */
 pack_t* COM_LoadPackFile(char* packfile)
 {
-	dpackheader_t header;
-	int i;
-	int packhandle;
-	dpackfile_t info[MAX_FILES_IN_PACK];
+	dpackheader_t  header;
+	int            i;
+	int            packhandle;
+	dpackfile_t    info[MAX_FILES_IN_PACK];
 	unsigned short crc;
 
 	if (Sys_FileOpenRead(packfile, &packhandle) == -1)
@@ -1604,11 +1597,11 @@ pack_t* COM_LoadPackFile(char* packfile)
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 	}
 
-	auto pack = static_cast<pack_t *>(Hunk_Alloc(sizeof (pack_t)));
+	auto pack = static_cast<pack_t *>(Hunk_Alloc(sizeof(pack_t)));
 	strcpy(pack->filename, packfile);
-	pack->handle = packhandle;
+	pack->handle   = packhandle;
 	pack->numfiles = numpackfiles;
-	pack->files = newfiles;
+	pack->files    = newfiles;
 
 	Con_Printf("Added packfile %s (%i files)\n", packfile, numpackfiles);
 	return pack;
@@ -1634,7 +1627,7 @@ void COM_AddGameDirectory(char* dir)
 	//
 	auto search = static_cast<searchpath_t*>(Hunk_Alloc(sizeof(searchpath_t)));
 	strcpy(search->filename, dir);
-	search->next = com_searchpaths;
+	search->next    = com_searchpaths;
 	com_searchpaths = search;
 
 	//
@@ -1646,9 +1639,9 @@ void COM_AddGameDirectory(char* dir)
 		auto pak = COM_LoadPackFile(pakfile);
 		if (!pak)
 			break;
-		search = static_cast<searchpath_t*>(Hunk_Alloc(sizeof(searchpath_t)));
-		search->pack = pak;
-		search->next = com_searchpaths;
+		search          = static_cast<searchpath_t*>(Hunk_Alloc(sizeof(searchpath_t)));
+		search->pack    = pak;
+		search->next    = com_searchpaths;
 		com_searchpaths = search;
 	}
 
@@ -1730,7 +1723,7 @@ void COM_InitFilesystem()
 	i = COM_CheckParm("-path");
 	if (i)
 	{
-		com_modified = qtrue;
+		com_modified    = qtrue;
 		com_searchpaths = nullptr;
 		while (++i < com_argc)
 		{
@@ -1746,7 +1739,7 @@ void COM_InitFilesystem()
 			}
 			else
 				strcpy(search->filename, com_argv[i]);
-			search->next = com_searchpaths;
+			search->next    = com_searchpaths;
 			com_searchpaths = search;
 		}
 	}
@@ -1787,16 +1780,16 @@ void Z_ClearZone(memzone_t* zone, int size)
 
 	zone->blocklist.next = reinterpret_cast<memblock_t *>(reinterpret_cast<byte *>(zone) + sizeof(memzone_t));
 	zone->blocklist.prev = zone->blocklist.next;
-	auto block = zone->blocklist.next;
+	auto block           = zone->blocklist.next;
 
-	zone->blocklist.tag = 1; // in use block
-	zone->blocklist.id = 0;
+	zone->blocklist.tag  = 1; // in use block
+	zone->blocklist.id   = 0;
 	zone->blocklist.size = 0;
-	zone->rover = block;
+	zone->rover          = block;
 
 	block->prev = block->next = &zone->blocklist;
-	block->tag = 0; // free block
-	block->id = ZONEID;
+	block->tag  = 0; // free block
+	block->id   = ZONEID;
 	block->size = size - sizeof(memzone_t);
 }
 
@@ -1821,20 +1814,22 @@ void Z_Free(void* ptr)
 
 	auto other = block->prev;
 	if (!other->tag)
-	{ // merge with previous free block
+	{
+		// merge with previous free block
 		other->size += block->size;
-		other->next = block->next;
+		other->next       = block->next;
 		other->next->prev = other;
 		if (block == mainzone->rover)
 			mainzone->rover = other;
-		block = other;
+		block               = other;
 	}
 
 	other = block->next;
 	if (!other->tag)
-	{ // merge the next free block onto the end
+	{
+		// merge the next free block onto the end
 		block->size += other->size;
-		block->next = other->next;
+		block->next       = other->next;
 		block->next->prev = block;
 		if (other == mainzone->rover)
 			mainzone->rover = block;
@@ -1873,7 +1868,7 @@ void* Z_TagMalloc(int size, int tag)
 	size += 4; // space for memory trash tester
 	size = size + 7 & ~7; // align to 8-byte boundary
 
-	auto base = rover = mainzone->rover;
+	auto base  = rover = mainzone->rover;
 	auto start = base->prev;
 
 	do
@@ -1884,23 +1879,25 @@ void* Z_TagMalloc(int size, int tag)
 			base = rover = rover->next;
 		else
 			rover = rover->next;
-	} while (base->tag || base->size < size);
+	}
+	while (base->tag || base->size < size);
 
 	//
 	// found a block big enough
 	//
 	auto extra = base->size - size;
 	if (extra > MINFRAGMENT)
-	{ // there will be a free fragment after the allocated block
-		auto res = reinterpret_cast<memblock_t *>(reinterpret_cast<byte *>(base) + size);
-		res->size = extra;
-		res->tag = 0; // free block
-		res->prev = base;
-		res->id = ZONEID;
-		res->next = base->next;
+	{
+		// there will be a free fragment after the allocated block
+		auto res        = reinterpret_cast<memblock_t *>(reinterpret_cast<byte *>(base) + size);
+		res->size       = extra;
+		res->tag        = 0; // free block
+		res->prev       = base;
+		res->id         = ZONEID;
+		res->next       = base->next;
 		res->next->prev = res;
-		base->next = res;
-		base->size = size;
+		base->next      = res;
+		base->size      = size;
 	}
 
 	base->tag = tag; // no longer a free block
@@ -1928,7 +1925,7 @@ void Z_Print(memzone_t* zone)
 	for (auto block = zone->blocklist.next; ; block = block->next)
 	{
 		Con_Printf("block:%p    size:%7i    tag:%3i\n",
-				   block, block->size, block->tag);
+		           block, block->size, block->tag);
 
 		if (block->next == &zone->blocklist)
 			break; // all blocks have been hit	
@@ -1968,19 +1965,19 @@ void Z_CheckHeap()
 
 struct hunk_t
 {
-	int sentinal;
-	int size; // including sizeof(hunk_t), -1 = not allocated
+	int  sentinal;
+	int  size; // including sizeof(hunk_t), -1 = not allocated
 	char name[8];
 };
 
 byte* hunk_base;
-int hunk_size;
+int   hunk_size;
 
 int hunk_low_used;
 int hunk_high_used;
 
 qboolean hunk_tempactive;
-int hunk_tempmark;
+int      hunk_tempmark;
 
 
 /*
@@ -2014,15 +2011,15 @@ void Hunk_Print(qboolean all)
 {
 	char name[9];
 
-	name[8] = 0;
-	auto count = 0;
-	auto sum = 0;
+	name[8]          = 0;
+	auto count       = 0;
+	auto sum         = 0;
 	auto totalblocks = 0;
 
-	auto h = reinterpret_cast<hunk_t *>(hunk_base);
-	auto endlow = reinterpret_cast<hunk_t *>(hunk_base + hunk_low_used);
+	auto h         = reinterpret_cast<hunk_t *>(hunk_base);
+	auto endlow    = reinterpret_cast<hunk_t *>(hunk_base + hunk_low_used);
 	auto starthigh = reinterpret_cast<hunk_t *>(hunk_base + hunk_size - hunk_high_used);
-	auto endhigh = reinterpret_cast<hunk_t *>(hunk_base + hunk_size);
+	auto endhigh   = reinterpret_cast<hunk_t *>(hunk_base + hunk_size);
 
 	Con_Printf("          :%8i total hunk size\n", hunk_size);
 	Con_Printf("-------------------------\n");
@@ -2075,7 +2072,7 @@ void Hunk_Print(qboolean all)
 			if (!all)
 				Con_Printf("          :%8i %8s (TOTAL)\n", sum, name);
 			count = 0;
-			sum = 0;
+			sum   = 0;
 		}
 
 		h = next;
@@ -2111,7 +2108,7 @@ void* Hunk_AllocName(int size, char* name)
 
 	memset(h, 0, size);
 
-	h->size = size;
+	h->size     = size;
 	h->sentinal = HUNK_SENTINAL;
 	Q_strncpy(h->name, name, 8);
 
@@ -2200,7 +2197,7 @@ void* Hunk_HighAllocName(int size, char* name)
 	auto h = reinterpret_cast<hunk_t *>(hunk_base + hunk_size - hunk_high_used);
 
 	memset(h, 0, size);
-	h->size = size;
+	h->size     = size;
 	h->sentinal = HUNK_SENTINAL;
 	Q_strncpy(h->name, name, 8);
 
@@ -2244,10 +2241,10 @@ CACHE MEMORY
 
 struct cache_system_t
 {
-	int size; // including this header
-	cache_user_t* user;
-	char name[16];
-	cache_system_t *prev, *next;
+	int             size; // including this header
+	cache_user_t*   user;
+	char            name[16];
+	cache_system_t *prev, *    next;
 	cache_system_t *lru_prev, *lru_next; // for LRU flushing	
 };
 
@@ -2346,9 +2343,9 @@ void Cache_MakeLRU(cache_system_t* cs)
 		Sys_Error("Cache_MakeLRU: active link");
 
 	cache_head.lru_next->lru_prev = cs;
-	cs->lru_next = cache_head.lru_next;
-	cs->lru_prev = &cache_head;
-	cache_head.lru_next = cs;
+	cs->lru_next                  = cache_head.lru_next;
+	cs->lru_prev                  = &cache_head;
+	cache_head.lru_next           = cs;
 }
 
 /*
@@ -2375,7 +2372,7 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 		res->size = size;
 
 		cache_head.prev = cache_head.next = res;
-		res->prev = res->next = &cache_head;
+		res->prev       = res->next       = &cache_head;
 
 		Cache_MakeLRU(res);
 		return res;
@@ -2383,7 +2380,7 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 
 	// search from the bottom up for space
 
-	res = reinterpret_cast<cache_system_t *>(hunk_base + hunk_low_used);
+	res     = reinterpret_cast<cache_system_t *>(hunk_base + hunk_low_used);
 	auto cs = cache_head.next;
 
 	do
@@ -2391,14 +2388,15 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 		if (!nobottom || cs != cache_head.next)
 		{
 			if (reinterpret_cast<byte *>(cs) - reinterpret_cast<byte *>(res) >= size)
-			{ // found space
+			{
+				// found space
 				memset(res, 0, sizeof*res);
 				res->size = size;
 
-				res->next = cs;
-				res->prev = cs->prev;
+				res->next      = cs;
+				res->prev      = cs->prev;
 				cs->prev->next = res;
-				cs->prev = res;
+				cs->prev       = res;
 
 				Cache_MakeLRU(res);
 
@@ -2408,8 +2406,9 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 
 		// continue looking		
 		res = reinterpret_cast<cache_system_t *>(reinterpret_cast<byte *>(cs) + cs->size);
-		cs = cs->next;
-	} while (cs != &cache_head);
+		cs  = cs->next;
+	}
+	while (cs != &cache_head);
 
 	// try to allocate one at the very end
 	if (hunk_base + hunk_size - hunk_high_used - reinterpret_cast<byte *>(res) >= size)
@@ -2417,10 +2416,10 @@ cache_system_t* Cache_TryAlloc(int size, qboolean nobottom)
 		memset(res, 0, sizeof*res);
 		res->size = size;
 
-		res->next = &cache_head;
-		res->prev = cache_head.prev;
+		res->next             = &cache_head;
+		res->prev             = cache_head.prev;
 		cache_head.prev->next = res;
-		cache_head.prev = res;
+		cache_head.prev       = res;
 
 		Cache_MakeLRU(res);
 
@@ -2487,7 +2486,7 @@ Cache_Init
 */
 void Cache_Init()
 {
-	cache_head.next = cache_head.prev = &cache_head;
+	cache_head.next     = cache_head.prev     = &cache_head;
 	cache_head.lru_next = cache_head.lru_prev = &cache_head;
 
 	Cmd_AddCommand("flush", Cache_Flush);
@@ -2509,7 +2508,7 @@ void Cache_Free(cache_user_t* c)
 
 	cs->prev->next = cs->next;
 	cs->next->prev = cs->prev;
-	cs->next = cs->prev = nullptr;
+	cs->next       = cs->prev = nullptr;
 
 	c->data = nullptr;
 
@@ -2559,7 +2558,7 @@ void* Cache_Alloc(cache_user_t* c, int size, char* name)
 		if (cs)
 		{
 			strncpy(cs->name, name, sizeof cs->name - 1);
-			c->data = static_cast<void *>(cs + 1);
+			c->data  = static_cast<void *>(cs + 1);
 			cs->user = c;
 			break;
 		}
@@ -2586,9 +2585,9 @@ void Memory_Init(void* buf, int size)
 {
 	auto zonesize = DYNAMIC_SIZE;
 
-	hunk_base = static_cast<byte*>(buf);
-	hunk_size = size;
-	hunk_low_used = 0;
+	hunk_base      = static_cast<byte*>(buf);
+	hunk_size      = size;
+	hunk_low_used  = 0;
 	hunk_high_used = 0;
 
 	Cache_Init();

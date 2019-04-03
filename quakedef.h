@@ -1,4 +1,5 @@
 #pragma once
+
 #define	VERSION				1.09
 #define	GLQUAKE_VERSION		1.00
 #define	D3DQUAKE_VERSION	0.01
@@ -199,11 +200,11 @@ struct entity_state_t
 {
 	vec3_t origin;
 	vec3_t angles;
-	int modelindex;
-	int frame;
-	int colormap;
-	int skin;
-	int effects;
+	int    modelindex;
+	int    frame;
+	int    colormap;
+	int    skin;
+	int    effects;
 };
 
 #define VID_CBITS	6
@@ -214,29 +215,29 @@ using pixel_t = byte;
 
 struct vrect_t
 {
-	int x, y, width, height;
+	int      x, y, width, height;
 	vrect_t* pnext;
 };
 
 struct viddef_t
 {
-	pixel_t* buffer; // invisible buffer
-	pixel_t* colormap; // 256 * VID_GRADES size
+	pixel_t*        buffer; // invisible buffer
+	pixel_t*        colormap; // 256 * VID_GRADES size
 	unsigned short* colormap16; // 256 * VID_GRADES size
-	int fullbright; // index of first fullbright color
-	unsigned rowbytes; // may be > width if displayed in a window
-	unsigned width;
-	unsigned height;
-	float aspect; // width / height -- < 0 is taller than wide
-	int numpages;
-	int recalc_refdef; // if qtrue, recalc vid-based stuff
-	pixel_t* conbuffer;
-	int conrowbytes;
-	unsigned conwidth;
-	unsigned conheight;
-	int maxwarpwidth;
-	int maxwarpheight;
-	pixel_t* direct; 
+	int             fullbright; // index of first fullbright color
+	unsigned        rowbytes; // may be > width if displayed in a window
+	unsigned        width;
+	unsigned        height;
+	float           aspect; // width / height -- < 0 is taller than wide
+	int             numpages;
+	int             recalc_refdef; // if qtrue, recalc vid-based stuff
+	pixel_t*        conbuffer;
+	int             conrowbytes;
+	unsigned        conwidth;
+	unsigned        conheight;
+	int             maxwarpwidth;
+	int             maxwarpheight;
+	pixel_t*        direct;
 };
 
 #include "wad.h"
@@ -269,12 +270,12 @@ struct viddef_t
 
 struct quakeparms_t
 {
-	char* basedir;
-	char* cachedir; // for development over ISDN lines
-	int argc;
+	char*  basedir;
+	char*  cachedir; // for development over ISDN lines
+	int    argc;
 	char** argv;
-	void* membase;
-	int memsize;
+	void*  membase;
+	int    memsize;
 };
 
 
@@ -290,13 +291,12 @@ extern qboolean noclip_anglehack;
 extern quakeparms_t host_parms;
 
 
-
 extern qboolean host_initialized; // qtrue if into command execution
-extern double host_frametime;
-extern byte* host_basepal;
-extern byte* host_colormap;
-extern int host_framecount; // incremented every frame, never reset
-extern double realtime; // not bounded in any way, changed at
+extern double   host_frametime;
+extern byte*    host_basepal;
+extern byte*    host_colormap;
+extern int      host_framecount; // incremented every frame, never reset
+extern double   realtime; // not bounded in any way, changed at
 // start of every frame, never reset
 
 void Host_ClearMemory();
@@ -304,11 +304,11 @@ void Host_ServerFrame();
 void Host_InitCommands();
 void Host_Init(quakeparms_t* parms);
 void Host_Shutdown();
-void Host_Error(char* error, ...);
+void Host_Error(char*   error, ...);
 void Host_EndGame(char* message, ...);
-void Host_Frame(float time);
+void Host_Frame(float   time);
 void Host_Quit_f();
-void Host_ClientCommands(char* fmt, ...);
+void Host_ClientCommands(char*    fmt, ...);
 void Host_ShutdownServer(qboolean crash);
 
 void IN_Init();
@@ -318,41 +318,40 @@ void IN_Move(usercmd_t* cmd);
 void IN_ClearStates();
 void IN_Accumulate();
 
-int Sys_FileOpenRead(char* path, int* hndl);
-int Sys_FileOpenAppend(char * path);
-int Sys_FileOpenWrite(char* path);
-void Sys_FileClose(int handle);
-void Sys_FileSeek(int handle, int position);
-int Sys_FileRead(int handle, void* dest, int count);
-int Sys_FileWrite(int handle, void* data, int count);
-int Sys_FileTime(char* path);
-void Sys_mkdir(char* path);
-void Sys_Error(char* error, ...);
-void Sys_Printf(char* fmt, ...);
-void Sys_Quit();
+int    Sys_FileOpenRead(char*   path, int* hndl);
+int    Sys_FileOpenAppend(char* path);
+int    Sys_FileOpenWrite(char*  path);
+void   Sys_FileClose(int        handle);
+void   Sys_FileSeek(int         handle, int   position);
+int    Sys_FileRead(int         handle, void* dest, int count);
+int    Sys_FileWrite(int        handle, void* data, int count);
+int    Sys_FileTime(char*       path);
+void   Sys_mkdir(char*          path);
+void   Sys_Error(char*          error, ...);
+void   Sys_Printf(char*         fmt, ...);
+void   Sys_Quit();
 double Sys_FloatTime();
-char* Sys_ConsoleInput();
-void Sys_Sleep();
-void Sys_SendKeyEvents();
+char*  Sys_ConsoleInput();
+void   Sys_Sleep();
+void   Sys_SendKeyEvents();
 
 
-
-extern viddef_t vid; // global video state
+extern viddef_t       vid; // global video state
 extern unsigned short d_8to16table[256];
-extern unsigned d_8to24table[256];
-extern void(*vid_menudrawfn)();
-extern void(*vid_menukeyfn)(int key);
+extern unsigned       d_8to24table[256];
+extern void (*        vid_menudrawfn)();
+extern void (*        vid_menukeyfn)(int key);
 
-void VID_SetPalette(unsigned char* palette);
+void VID_SetPalette(unsigned char*   palette);
 void VID_ShiftPalette(unsigned char* palette);
-void VID_Init(unsigned char* palette);
+void VID_Init(unsigned char*         palette);
 void VID_Shutdown();
-int VID_SetMode(int modenum, unsigned char* palette);
+int  VID_SetMode(int modenum, unsigned char* palette);
 
-extern qboolean msg_suppress_1; 
-extern int current_skill; 
+extern qboolean msg_suppress_1;
+extern int      current_skill;
 extern qboolean isDedicated;
-extern int minimum_memory;
+extern int      minimum_memory;
 
 //
 // chase

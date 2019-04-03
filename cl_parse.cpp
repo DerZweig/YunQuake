@@ -80,8 +80,8 @@ CL_ParseStartSoundPacket
 void CL_ParseStartSoundPacket()
 {
 	vec3_t pos;
-	int volume;
-	float attenuation;
+	int    volume;
+	float  attenuation;
 
 	auto field_mask = MSG_ReadByte();
 
@@ -95,7 +95,7 @@ void CL_ParseStartSoundPacket()
 	else
 		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
 
-	auto channel = MSG_ReadShort();
+	auto channel   = MSG_ReadShort();
 	auto sound_num = MSG_ReadByte();
 
 	auto ent = channel >> 3;
@@ -105,7 +105,7 @@ void CL_ParseStartSoundPacket()
 		Host_Error("CL_ParseStartSoundPacket: ent = %i", ent);
 
 	for (auto i = 0; i < 3; i++)
-		pos[i] = MSG_ReadCoord();
+		pos[i]  = MSG_ReadCoord();
 
 	S_StartSound(ent, channel, cl.sound_precache[sound_num], pos, volume / 255.0, attenuation);
 }
@@ -121,8 +121,8 @@ so the server doesn't disconnect.
 void CL_KeepaliveMessage()
 {
 	static float lastmsg;
-	int ret;
-	byte olddata[8192];
+	int          ret;
+	byte         olddata[8192];
 
 	if (sv.active)
 		return; // no need if server is local
@@ -177,7 +177,7 @@ CL_ParseServerInfo
 */
 void CL_ParseServerInfo()
 {
-	int nummodels, numsounds;
+	int  nummodels, numsounds;
 	char model_precache[MAX_MODELS][MAX_QPATH];
 	char sound_precache[MAX_SOUNDS][MAX_QPATH];
 
@@ -301,15 +301,16 @@ int bitcounts[16];
 
 void CL_ParseUpdate(int bits)
 {
-	int i;
-	int modnum;
-	qboolean forcelink;
+	int       i;
+	int       modnum;
+	qboolean  forcelink;
 	entity_t* ent;
-	int num;
-	int skin;
+	int       num;
+	int       skin;
 
 	if (cls.signon == SIGNONS - 1)
-	{ // first update is the final signon stage
+	{
+		// first update is the final signon stage
 		cls.signon = SIGNONS;
 		CL_SignonReply();
 	}
@@ -446,7 +447,8 @@ void CL_ParseUpdate(int bits)
 		ent->forcelink = qtrue;
 
 	if (forcelink)
-	{ // didn't have an update last message
+	{
+		// didn't have an update last message
 		VectorCopy (ent->msg_origins[0], ent->msg_origins[1]);
 		VectorCopy (ent->msg_origins[0], ent->origin);
 		VectorCopy (ent->msg_angles[0], ent->msg_angles[1]);
@@ -463,10 +465,10 @@ CL_ParseBaseline
 void CL_ParseBaseline(entity_t* ent)
 {
 	ent->baseline.modelindex = MSG_ReadByte();
-	ent->baseline.frame = MSG_ReadByte();
-	ent->baseline.colormap = MSG_ReadByte();
-	ent->baseline.skin = MSG_ReadByte();
-	for (auto i = 0; i < 3; i++)
+	ent->baseline.frame      = MSG_ReadByte();
+	ent->baseline.colormap   = MSG_ReadByte();
+	ent->baseline.skin       = MSG_ReadByte();
+	for (auto i              = 0; i < 3; i++)
 	{
 		ent->baseline.origin[i] = MSG_ReadCoord();
 		ent->baseline.angles[i] = MSG_ReadAngle();
@@ -512,16 +514,17 @@ void CL_ParseClientdata(int bits)
 	i = MSG_ReadLong();
 
 	if (cl.items != i)
-	{ // set flash times
+	{
+		// set flash times
 		Sbar_Changed();
 		for (j = 0; j < 32; j++)
 			if (i & 1 << j && !(cl.items & 1 << j))
 				cl.item_gettime[j] = cl.time;
-		cl.items = i;
+		cl.items                   = i;
 	}
 
 	cl.onground = (bits & SU_ONGROUND) != 0;
-	cl.inwater = (bits & SU_INWATER) != 0;
+	cl.inwater  = (bits & SU_INWATER) != 0;
 
 	if (bits & SU_WEAPONFRAME)
 		cl.stats[STAT_WEAPONFRAME] = MSG_ReadByte();
@@ -603,26 +606,26 @@ void CL_NewTranslation(int slot)
 
 	if (slot > cl.maxclients)
 		Sys_Error("CL_NewTranslation: slot > cl.maxclients");
-	auto dest = cl.scores[slot].translations;
+	auto dest   = cl.scores[slot].translations;
 	auto source = vid.colormap;
 	memcpy(dest, vid.colormap, sizeof cl.scores[slot].translations);
-	auto top = cl.scores[slot].colors & 0xf0;
+	auto top    = cl.scores[slot].colors & 0xf0;
 	auto bottom = (cl.scores[slot].colors & 15) << 4;
 
 	R_TranslatePlayerSkin(slot);
 
-	for (auto i = 0; i < VID_GRADES; i++ , dest += 256 , source += 256)
+	for (auto i = 0; i < VID_GRADES; i++, dest += 256, source += 256)
 	{
 		if (top < 128) // the artists made some backwards ranges.  sigh.
 			memcpy(dest + TOP_RANGE, source + top, 16);
 		else
-			for (j = 0; j < 16; j++)
+			for (j                  = 0; j < 16; j++)
 				dest[TOP_RANGE + j] = source[top + 15 - j];
 
 		if (bottom < 128)
 			memcpy(dest + BOTTOM_RANGE, source + bottom, 16);
 		else
-			for (j = 0; j < 16; j++)
+			for (j                     = 0; j < 16; j++)
 				dest[BOTTOM_RANGE + j] = source[bottom + 15 - j];
 	}
 }
@@ -644,11 +647,11 @@ void CL_ParseStatic()
 	CL_ParseBaseline(ent);
 
 	// copy it to the current state
-	ent->model = cl.model_precache[ent->baseline.modelindex];
-	ent->frame = ent->baseline.frame;
+	ent->model    = cl.model_precache[ent->baseline.modelindex];
+	ent->frame    = ent->baseline.frame;
 	ent->colormap = vid.colormap;
-	ent->skinnum = ent->baseline.skin;
-	ent->effects = ent->baseline.effects;
+	ent->skinnum  = ent->baseline.skin;
+	ent->effects  = ent->baseline.effects;
 
 	VectorCopy (ent->baseline.origin, ent->origin);
 	VectorCopy (ent->baseline.angles, ent->angles);
@@ -664,11 +667,11 @@ void CL_ParseStaticSound()
 {
 	vec3_t org;
 
-	for (auto i = 0; i < 3; i++)
-		org[i] = MSG_ReadCoord();
+	for (auto i    = 0; i < 3; i++)
+		org[i]     = MSG_ReadCoord();
 	auto sound_num = MSG_ReadByte();
-	auto vol = MSG_ReadByte();
-	auto atten = MSG_ReadByte();
+	auto vol       = MSG_ReadByte();
+	auto atten     = MSG_ReadByte();
 
 	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
 }
@@ -775,7 +778,7 @@ void CL_ParseServerMessage()
 			break;
 
 		case svc_setangle:
-			for (i = 0; i < 3; i++)
+			for (i               = 0; i < 3; i++)
 				cl.viewangles[i] = MSG_ReadAngle();
 			break;
 
@@ -844,7 +847,6 @@ void CL_ParseServerMessage()
 		case svc_setpause:
 			{
 				cl.paused = MSG_ReadByte();
-
 			}
 			break;
 
@@ -876,24 +878,24 @@ void CL_ParseServerMessage()
 			break;
 
 		case svc_cdtrack:
-			cl.cdtrack = MSG_ReadByte();
+			cl.cdtrack   = MSG_ReadByte();
 			cl.looptrack = MSG_ReadByte();
 			break;
 		case svc_intermission:
-			cl.intermission = 1;
+			cl.intermission   = 1;
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = qtrue; // go to full screen
 			break;
 
 		case svc_finale:
-			cl.intermission = 2;
+			cl.intermission   = 2;
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = qtrue; // go to full screen
 			SCR_CenterPrint(MSG_ReadString());
 			break;
 
 		case svc_cutscene:
-			cl.intermission = 3;
+			cl.intermission   = 3;
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = qtrue; // go to full screen
 			SCR_CenterPrint(MSG_ReadString());

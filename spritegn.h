@@ -1,4 +1,5 @@
 #pragma once
+
 #define SPRITE_VERSION	1
 
 // must match definition in modelgen.h
@@ -11,14 +12,14 @@ enum class synctype_t
 // TODO: shorten these?
 struct dsprite_t
 {
-	int ident;
-	int version;
-	int type;
-	float boundingradius;
-	int width;
-	int height;
-	int numframes;
-	float beamlength;
+	int        ident;
+	int        version;
+	int        type;
+	float      boundingradius;
+	int        width;
+	int        height;
+	int        numframes;
+	float      beamlength;
 	synctype_t synctype;
 };
 

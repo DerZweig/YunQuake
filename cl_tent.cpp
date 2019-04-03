@@ -1,8 +1,8 @@
 #include "quakedef.h"
 
-int num_temp_entities;
+int      num_temp_entities;
 entity_t cl_temp_entities[MAX_TEMP_ENTITIES];
-beam_t cl_beams[MAX_BEAMS];
+beam_t   cl_beams[MAX_BEAMS];
 
 sfx_t* cl_sfx_wizhit;
 sfx_t* cl_sfx_knighthit;
@@ -19,13 +19,13 @@ CL_ParseTEnt
 */
 void CL_InitTEnts()
 {
-	cl_sfx_wizhit = S_PrecacheSound("wizard/hit.wav");
+	cl_sfx_wizhit    = S_PrecacheSound("wizard/hit.wav");
 	cl_sfx_knighthit = S_PrecacheSound("hknight/hit.wav");
-	cl_sfx_tink1 = S_PrecacheSound("weapons/tink1.wav");
-	cl_sfx_ric1 = S_PrecacheSound("weapons/ric1.wav");
-	cl_sfx_ric2 = S_PrecacheSound("weapons/ric2.wav");
-	cl_sfx_ric3 = S_PrecacheSound("weapons/ric3.wav");
-	cl_sfx_r_exp3 = S_PrecacheSound("weapons/r_exp3.wav");
+	cl_sfx_tink1     = S_PrecacheSound("weapons/tink1.wav");
+	cl_sfx_ric1      = S_PrecacheSound("weapons/ric1.wav");
+	cl_sfx_ric2      = S_PrecacheSound("weapons/ric2.wav");
+	cl_sfx_ric3      = S_PrecacheSound("weapons/ric3.wav");
+	cl_sfx_r_exp3    = S_PrecacheSound("weapons/r_exp3.wav");
 }
 
 /*
@@ -35,9 +35,9 @@ CL_ParseBeam
 */
 void CL_ParseBeam(model_t* m)
 {
-	vec3_t start, end;
+	vec3_t  start, end;
 	beam_t* b;
-	int i;
+	int     i;
 
 	auto ent = MSG_ReadShort();
 
@@ -50,11 +50,11 @@ void CL_ParseBeam(model_t* m)
 	end[2] = MSG_ReadCoord();
 
 	// override any beam with the same entity
-	for (i = 0 , b = cl_beams; i < MAX_BEAMS; i++ , b++)
+	for (i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
 		if (b->entity == ent)
 		{
-			b->entity = ent;
-			b->model = m;
+			b->entity  = ent;
+			b->model   = m;
 			b->endtime = cl.time + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
@@ -62,12 +62,12 @@ void CL_ParseBeam(model_t* m)
 		}
 
 	// find a free beam
-	for (i = 0 , b = cl_beams; i < MAX_BEAMS; i++ , b++)
+	for (i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.time)
 		{
-			b->entity = ent;
-			b->model = m;
+			b->entity  = ent;
+			b->model   = m;
 			b->endtime = cl.time + 0.2;
 			VectorCopy (start, b->start);
 			VectorCopy (end, b->end);
@@ -84,9 +84,9 @@ CL_ParseTEnt
 */
 void CL_ParseTEnt()
 {
-	vec3_t pos;
+	vec3_t    pos;
 	dlight_t* dl;
-	int rnd;
+	int       rnd;
 
 	auto type = MSG_ReadByte();
 	switch (type)
@@ -164,8 +164,8 @@ void CL_ParseTEnt()
 		dl = CL_AllocDlight(0);
 		VectorCopy (pos, dl->origin);
 		dl->radius = 350;
-		dl->die = cl.time + 0.5;
-		dl->decay = 300;
+		dl->die    = cl.time + 0.5;
+		dl->decay  = 300;
 		S_StartSound(-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
 
@@ -212,17 +212,17 @@ void CL_ParseTEnt()
 
 	case TE_EXPLOSION2: // color mapped explosion
 		{
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
-			auto colorStart = MSG_ReadByte();
+			pos[0]           = MSG_ReadCoord();
+			pos[1]           = MSG_ReadCoord();
+			pos[2]           = MSG_ReadCoord();
+			auto colorStart  = MSG_ReadByte();
 			auto colorLength = MSG_ReadByte();
 			R_ParticleExplosion2(pos, colorStart, colorLength);
 			dl = CL_AllocDlight(0);
 			VectorCopy(pos, dl->origin);
 			dl->radius = 350;
-			dl->die = cl.time + 0.5;
-			dl->decay = 300;
+			dl->die    = cl.time + 0.5;
+			dl->decay  = 300;
 			S_StartSound(-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		}
 		break;
@@ -262,16 +262,16 @@ CL_UpdateTEnts
 */
 void CL_UpdateTEnts()
 {
-	int i;
-	beam_t* b;
-	vec3_t dist, org;
+	int       i;
+	beam_t*   b;
+	vec3_t    dist, org;
 	entity_t* ent;
-	float yaw, pitch;
+	float     yaw, pitch;
 
 	num_temp_entities = 0;
 
 	// update lightning
-	for (i = 0 , b = cl_beams; i < MAX_BEAMS; i++ , b++)
+	for (i = 0, b = cl_beams; i < MAX_BEAMS; i++, b++)
 	{
 		if (!b->model || b->endtime < cl.time)
 			continue;
@@ -300,7 +300,7 @@ void CL_UpdateTEnts()
 				yaw += 360;
 
 			auto forward = sqrt(dist[0] * dist[0] + dist[1] * dist[1]);
-			pitch = static_cast<int>(atan2(dist[2], forward) * 180 / M_PI);
+			pitch        = static_cast<int>(atan2(dist[2], forward) * 180 / M_PI);
 			if (pitch < 0)
 				pitch += 360;
 		}
@@ -314,7 +314,7 @@ void CL_UpdateTEnts()
 			if (!ent)
 				return;
 			VectorCopy (org, ent->origin);
-			ent->model = b->model;
+			ent->model     = b->model;
 			ent->angles[0] = pitch;
 			ent->angles[1] = yaw;
 			ent->angles[2] = rand() % 360;

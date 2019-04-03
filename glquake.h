@@ -1,7 +1,4 @@
 #pragma once
-#pragma warning(disable : 4244)     // MIPS
-#pragma warning(disable : 4136)     // X86
-#pragma warning(disable : 4051)     // ALPHA
 
 #ifdef _WIN32
 #include <windows.h>
@@ -19,10 +16,10 @@ extern int texture_mode;
 
 extern float gldepthmin, gldepthmax;
 
-void GL_Upload32(unsigned* data, int width, int height, qboolean mipmap, qboolean alpha);
-void GL_Upload8(byte* data, int width, int height, qboolean mipmap, qboolean alpha);
-int GL_LoadTexture(char* identifier, int width, int height, byte* data, qboolean mipmap, qboolean alpha);
-int GL_FindTexture(char* identifier);
+void GL_Upload32(unsigned* data, int       width, int height, qboolean mipmap, qboolean alpha);
+void GL_Upload8(byte*      data, int       width, int height, qboolean mipmap, qboolean alpha);
+int  GL_LoadTexture(char*  identifier, int width, int height, byte*    data, qboolean   mipmap, qboolean alpha);
+int  GL_FindTexture(char*  identifier);
 
 struct glvert_t
 {
@@ -51,35 +48,35 @@ extern int glx, gly, glwidth, glheight;
 #define BACKFACE_EPSILON	0.01
 
 
-void R_TimeRefresh_f();
+void       R_TimeRefresh_f();
 texture_t* R_TextureAnimation(texture_t* base);
 
 struct surfcache_t
 {
-	surfcache_t* next;
+	surfcache_t*  next;
 	surfcache_t** owner; // nullptr is an empty chunk of memory
-	int lightadj[MAXLIGHTMAPS]; // checked for strobe flush
-	int dlight;
-	int size; // including header
-	unsigned width;
-	unsigned height; // DEBUG only needed for debug
-	float mipscale;
-	texture_t* texture; // checked for animating textures
-	byte data[4]; // width*height elements
+	int           lightadj[MAXLIGHTMAPS]; // checked for strobe flush
+	int           dlight;
+	int           size; // including header
+	unsigned      width;
+	unsigned      height; // DEBUG only needed for debug
+	float         mipscale;
+	texture_t*    texture; // checked for animating textures
+	byte          data[4]; // width*height elements
 };
 
 
 struct drawsurf_t
 {
-	pixel_t* surfdat; // destination for generated surface
-	int rowbytes; // destination logical width in bytes
+	pixel_t*    surfdat; // destination for generated surface
+	int         rowbytes; // destination logical width in bytes
 	msurface_t* surf; // description for surface to generate
-	fixed8_t lightadj[MAXLIGHTMAPS];
+	fixed8_t    lightadj[MAXLIGHTMAPS];
 	// adjust for lightmap levels for dynamic lighting
 	texture_t* texture; // corrected for animating textures
-	int surfmip; // mipmapped ratio of surface texels / world pixels
-	int surfwidth; // in mipmapped texels
-	int surfheight; // in mipmapped texels
+	int        surfmip; // mipmapped ratio of surface texels / world pixels
+	int        surfwidth; // in mipmapped texels
+	int        surfheight; // in mipmapped texels
 };
 
 
@@ -99,27 +96,27 @@ struct particle_t
 {
 	// driver-usable fields
 	vec3_t org;
-	float color;
+	float  color;
 	// drivers never touch the following fields
 	particle_t* next;
-	vec3_t vel;
-	float ramp;
-	float die;
-	ptype_t type;
+	vec3_t      vel;
+	float       ramp;
+	float       die;
+	ptype_t     type;
 };
 
 
 //====================================================
 
 
-extern entity_t r_worldentity;
-extern qboolean r_cache_thrash; // compatability
-extern vec3_t modelorg, r_entorigin;
+extern entity_t  r_worldentity;
+extern qboolean  r_cache_thrash; // compatability
+extern vec3_t    modelorg, r_entorigin;
 extern entity_t* currententity;
-extern int r_visframecount; // ??? what difs?
-extern int r_framecount;
-extern mplane_t frustum[4];
-extern int c_brush_polys, c_alias_polys;
+extern int       r_visframecount; // ??? what difs?
+extern int       r_framecount;
+extern mplane_t  frustum[4];
+extern int       c_brush_polys, c_alias_polys;
 
 
 //
@@ -133,19 +130,18 @@ extern vec3_t r_origin;
 //
 // screen size info
 //
-extern refdef_t r_refdef;
-extern mleaf_t *r_viewleaf, *r_oldviewleaf;
+extern refdef_t   r_refdef;
+extern mleaf_t *  r_viewleaf, *r_oldviewleaf;
 extern texture_t* r_notexture_mip;
-extern int d_lightstylevalue[256]; // 8.8 fraction of base light value
+extern int        d_lightstylevalue[256]; // 8.8 fraction of base light value
 
 extern qboolean envmap;
-extern int currenttexture;
-extern int cnttextures[2];
-extern int particletexture;
-extern int playertextures;
+extern int      currenttexture;
+extern int      cnttextures[2];
+extern int      particletexture;
+extern int      playertextures;
 
 extern int skytexturenum; // index in cl.loadmodel, not gl texture object
-
 
 
 extern int gl_lightmap_format;
@@ -155,8 +151,8 @@ extern int gl_alpha_format;
 extern cvar_t gl_max_size;
 extern cvar_t gl_playermip;
 
-extern int mirrortexturenum; // quake texturenum, not gltexturenum
-extern qboolean mirror;
+extern int       mirrortexturenum; // quake texturenum, not gltexturenum
+extern qboolean  mirror;
 extern mplane_t* mirror_plane;
 
 extern float r_world_matrix[16];
@@ -167,7 +163,7 @@ extern const char* gl_version;
 extern const char* gl_extensions;
 
 void R_TranslatePlayerSkin(int playernum);
-void GL_Bind(int texnum);
+void GL_Bind(int               texnum);
 
 // Multitexture
 #define    TEXTURE0_SGIS				0x835E
@@ -177,25 +173,25 @@ void GL_Bind(int texnum);
 #define APIENTRY /* */
 #endif
 
-using lpMTexFUNC= void (APIENTRY *)(GLenum, GLfloat, GLfloat);
-using lpSelTexFUNC= void (APIENTRY *)(GLenum);
-extern lpMTexFUNC qglMTexCoord2fSGIS;
+using lpMTexFUNC = void (APIENTRY *)(GLenum  , GLfloat, GLfloat);
+using lpSelTexFUNC = void (APIENTRY *)(GLenum);
+extern lpMTexFUNC   qglMTexCoord2fSGIS;
 extern lpSelTexFUNC qglSelectTextureSGIS;
 
 extern qboolean gl_mtexable;
-extern	int glwidth, glheight;
+extern int      glwidth, glheight;
 
 void GL_Set2D();
 void GL_DisableMultitexture();
 void GL_EnableMultitexture();
-int GL_LoadPicTexture(qpic_t *pic);
-void GL_SubdivideSurface(msurface_t *fa);
+int  GL_LoadPicTexture(qpic_t*              pic);
+void GL_SubdivideSurface(msurface_t*        fa);
 void GL_MakeAliasModelDisplayLists(model_t* m, aliashdr_t* hdr);
 
 
 void GL_BuildLightmaps();
 
 
-void EmitWaterPolys(msurface_t *fa);
-void EmitSkyPolys(msurface_t *fa);
-void EmitBothSkyLayers(msurface_t *fa);
+void EmitWaterPolys(msurface_t*    fa);
+void EmitSkyPolys(msurface_t*      fa);
+void EmitBothSkyLayers(msurface_t* fa);

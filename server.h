@@ -1,15 +1,16 @@
 #pragma once
+
 struct hull_t;
 struct trace_t;
 struct client_t;
 
 struct server_static_t
 {
-	int maxclients;
-	int maxclientslimit;
+	int       maxclients;
+	int       maxclientslimit;
 	client_t* clients; // [maxclients]
-	int serverflags; // episode completion information
-	qboolean changelevel_issued; // cleared when at SV_SpawnServer
+	int       serverflags; // episode completion information
+	qboolean  changelevel_issued; // cleared when at SV_SpawnServer
 };
 
 //=============================================================================
@@ -29,32 +30,32 @@ struct server_t
 
 	double time;
 
-	int lastcheck; // used by PF_checkclient
+	int    lastcheck; // used by PF_checkclient
 	double lastchecktime;
 
 	char name[64]; // map name
 
-	char modelname[64]; // maps/<name>.bsp, for model_precache[0]
+	char     modelname[64]; // maps/<name>.bsp, for model_precache[0]
 	model_t* worldmodel;
-	char* model_precache[MAX_MODELS]; // nullptr terminated
+	char*    model_precache[MAX_MODELS]; // nullptr terminated
 	model_t* models[MAX_MODELS];
-	char* sound_precache[MAX_SOUNDS]; // nullptr terminated
-	char* lightstyles[MAX_LIGHTSTYLES];
-	int num_edicts;
-	int max_edicts;
+	char*    sound_precache[MAX_SOUNDS]; // nullptr terminated
+	char*    lightstyles[MAX_LIGHTSTYLES];
+	int      num_edicts;
+	int      max_edicts;
 	edict_t* edicts; // can NOT be array indexed, because
 	// edict_t is variable sized, but can
 	// be used to reference the world ent
 	server_state_t state; // some actions are only valid during load
 
 	sizebuf_t datagram;
-	byte datagram_buf[MAX_DATAGRAM];
+	byte      datagram_buf[MAX_DATAGRAM];
 
 	sizebuf_t reliable_datagram; // copied to all clients at end of frame
-	byte reliable_datagram_buf[MAX_DATAGRAM];
+	byte      reliable_datagram_buf[MAX_DATAGRAM];
 
 	sizebuf_t signon;
-	byte signon_buf[8192];
+	byte      signon_buf[8192];
 };
 
 
@@ -75,17 +76,17 @@ struct client_t
 	qsocket_t* netconnection; // communications handle
 
 	usercmd_t cmd; // movement
-	vec3_t wishdir; // intended motion calced from cmd
+	vec3_t    wishdir; // intended motion calced from cmd
 
 	sizebuf_t message; // can be added to at any time,
 	// copied and clear once per frame
-	byte msgbuf[MAX_MSGLEN];
+	byte     msgbuf[MAX_MSGLEN];
 	edict_t* edict; // EDICT_NUM(clientnum+1)
-	char name[32]; // for printing to other people
-	int colors;
+	char     name[32]; // for printing to other people
+	int      colors;
 
 	float ping_times[NUM_PING_TIMES];
-	int num_pings; // ping_times[num_pings%NUM_PING_TIMES]
+	int   num_pings; // ping_times[num_pings%NUM_PING_TIMES]
 
 	// spawn parms are carried from level to level
 	float spawn_parms[NUM_SPAWN_PARMS];
@@ -157,9 +158,8 @@ struct client_t
 //============================================================================
 
 
-
 extern server_static_t svs; // persistant server info
-extern server_t sv; // local server
+extern server_t        sv; // local server
 
 extern client_t* host_client;
 
@@ -173,9 +173,9 @@ extern edict_t* sv_player;
 
 void SV_Init();
 
-void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
-void SV_StartSound(edict_t* entity, int channel, char* sample, int volume,
-                   float attenuation);
+void SV_StartParticle(vec3_t org, vec3_t dir, int       color, int  count);
+void SV_StartSound(edict_t*  entity, int channel, char* sample, int volume,
+                   float     attenuation);
 
 void SV_DropClient(qboolean crash);
 
@@ -191,20 +191,20 @@ void SV_AddUpdates();
 void SV_ClientThink();
 void SV_AddClientToServer(qsocket_t* ret);
 
-void SV_ClientPrintf(char* fmt, ...);
+void SV_ClientPrintf(char*    fmt, ...);
 void SV_BroadcastPrintf(char* fmt, ...);
 
 void SV_Physics();
 
 qboolean SV_CheckBottom(edict_t* ent);
-qboolean SV_movestep(edict_t* ent, vec3_t move, qboolean relink);
+qboolean SV_movestep(edict_t*    ent, vec3_t move, qboolean relink);
 
 void SV_WriteClientdataToMessage(edict_t* ent, sizebuf_t* msg);
 
 void SV_MoveToGoal();
 
-void SV_CheckForNewClients();
-void SV_RunClients();
-void SV_SaveSpawnparms();
-void SV_SpawnServer(char* server);
-qboolean SV_RecursiveHullCheck(hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace);
+void     SV_CheckForNewClients();
+void     SV_RunClients();
+void     SV_SaveSpawnparms();
+void     SV_SpawnServer(char*          server);
+qboolean SV_RecursiveHullCheck(hull_t* hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t* trace);

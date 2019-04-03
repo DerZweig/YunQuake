@@ -1,9 +1,9 @@
 #include "quakedef.h"
 #include "net_loop.h"
 
-qboolean localconnectpending = qfalse;
-qsocket_t* loop_client = nullptr;
-qsocket_t* loop_server = nullptr;
+qboolean   localconnectpending = qfalse;
+qsocket_t* loop_client         = nullptr;
+qsocket_t* loop_server         = nullptr;
 
 int Loop_Init()
 {
@@ -34,9 +34,9 @@ void Loop_SearchForHosts(qboolean xmit)
 	else
 		Q_strcpy(hostcache[0].name, hostname.string);
 	Q_strcpy(hostcache[0].map, sv.name);
-	hostcache[0].users = net_activeconnections;
+	hostcache[0].users    = net_activeconnections;
 	hostcache[0].maxusers = svs.maxclients;
-	hostcache[0].driver = net_driverlevel;
+	hostcache[0].driver   = net_driverlevel;
 	Q_strcpy(hostcache[0].cname, "local");
 }
 
@@ -58,8 +58,8 @@ qsocket_t* Loop_Connect(char* host)
 		Q_strcpy(loop_client->address, "localhost");
 	}
 	loop_client->receiveMessageLength = 0;
-	loop_client->sendMessageLength = 0;
-	loop_client->canSend = qtrue;
+	loop_client->sendMessageLength    = 0;
+	loop_client->canSend              = qtrue;
 
 	if (!loop_server)
 	{
@@ -71,8 +71,8 @@ qsocket_t* Loop_Connect(char* host)
 		Q_strcpy(loop_server->address, "LOCAL");
 	}
 	loop_server->receiveMessageLength = 0;
-	loop_server->sendMessageLength = 0;
-	loop_server->canSend = qtrue;
+	loop_server->sendMessageLength    = 0;
+	loop_server->canSend              = qtrue;
 
 	loop_client->driverdata = static_cast<void *>(loop_server);
 	loop_server->driverdata = static_cast<void *>(loop_client);
@@ -86,13 +86,13 @@ qsocket_t* Loop_CheckNewConnections()
 	if (!localconnectpending)
 		return nullptr;
 
-	localconnectpending = qfalse;
-	loop_server->sendMessageLength = 0;
+	localconnectpending               = qfalse;
+	loop_server->sendMessageLength    = 0;
 	loop_server->receiveMessageLength = 0;
-	loop_server->canSend = qtrue;
-	loop_client->sendMessageLength = 0;
+	loop_server->canSend              = qtrue;
+	loop_client->sendMessageLength    = 0;
 	loop_client->receiveMessageLength = 0;
-	loop_client->canSend = qtrue;
+	loop_client->canSend              = qtrue;
 	return loop_server;
 }
 
@@ -108,7 +108,7 @@ int Loop_GetMessage(qsocket_t* sock)
 	if (sock->receiveMessageLength == 0)
 		return 0;
 
-	int ret = sock->receiveMessage[0];
+	int  ret    = sock->receiveMessage[0];
 	auto length = sock->receiveMessage[1] + (sock->receiveMessage[2] << 8);
 	// alignment byte skipped here
 	SZ_Clear(&net_message);
@@ -205,9 +205,9 @@ void Loop_Close(qsocket_t* sock)
 {
 	if (sock->driverdata)
 		static_cast<qsocket_t *>(sock->driverdata)->driverdata = nullptr;
-	sock->receiveMessageLength = 0;
-	sock->sendMessageLength = 0;
-	sock->canSend = qtrue;
+	sock->receiveMessageLength                                 = 0;
+	sock->sendMessageLength                                    = 0;
+	sock->canSend                                              = qtrue;
 	if (sock == loop_client)
 		loop_client = nullptr;
 	else

@@ -3,15 +3,13 @@
 #include <wsipx.h>
 #include "net_wipx.h"
 
-
-
 #define MAXHOSTNAMELEN		256
 
-static int net_acceptsocket = -1; // socket for fielding new connections
-static int net_controlsocket;
+static int              net_acceptsocket = -1; // socket for fielding new connections
+static int              net_controlsocket;
 static struct qsockaddr broadcastaddr;
 
-extern int winsock_initialized;
+extern int     winsock_initialized;
 extern WSADATA winsockdata;
 
 #define IPXSOCKETS 18
@@ -22,10 +20,10 @@ static int sequence[IPXSOCKETS];
 
 int WIPX_Init()
 {
-	int i;
-	char buff[MAXHOSTNAMELEN];
+	int              i;
+	char             buff[MAXHOSTNAMELEN];
 	struct qsockaddr addr;
-	char* p;
+	char*            p;
 
 	if (COM_CheckParm("-noipx"))
 		return -1;
@@ -46,7 +44,7 @@ int WIPX_Init()
 	}
 	winsock_initialized++;
 
-	for (i = 0; i < IPXSOCKETS; i++)
+	for (i           = 0; i < IPXSOCKETS; i++)
 		ipxsocket[i] = 0;
 
 	// determine my name & address
@@ -132,10 +130,10 @@ void WIPX_Listen(qboolean state)
 
 int WIPX_OpenSocket(int port)
 {
-	int handle;
-	int newsocket;
+	int                 handle;
+	int                 newsocket;
 	struct sockaddr_ipx address;
-	u_long _true = 1;
+	u_long              _true = 1;
 
 	for (handle = 0; handle < IPXSOCKETS; handle++)
 		if (ipxsocket[handle] == 0)
@@ -159,7 +157,7 @@ int WIPX_OpenSocket(int port)
 	if (bind(newsocket, reinterpret_cast<const sockaddr *>(&address), sizeof address) == 0)
 	{
 		ipxsocket[handle] = newsocket;
-		sequence[handle] = 0;
+		sequence[handle]  = 0;
 		return handle;
 	}
 
@@ -173,8 +171,8 @@ ErrorReturn:
 
 int WIPX_CloseSocket(int handle)
 {
-	auto socket = ipxsocket[handle];
-	auto ret = pclosesocket(socket);
+	auto socket       = ipxsocket[handle];
+	auto ret          = pclosesocket(socket);
 	ipxsocket[handle] = 0;
 	return ret;
 }
@@ -209,9 +207,9 @@ static byte packetBuffer[NET_DATAGRAMSIZE + 4];
 
 int WIPX_Read(int handle, byte* buf, int len, qsockaddr* addr)
 {
-	int addrlen = sizeof (struct qsockaddr);
-	auto socket = ipxsocket[handle];
-	auto ret = precvfrom(socket, reinterpret_cast<char*>(packetBuffer), len + 4, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
+	int  addrlen = sizeof(struct qsockaddr);
+	auto socket  = ipxsocket[handle];
+	auto ret     = precvfrom(socket, reinterpret_cast<char*>(packetBuffer), len + 4, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
 
 	if (ret == -1)
 	{
@@ -263,7 +261,7 @@ int WIPX_Write(int handle, byte* buf, int len, qsockaddr* addr)
 char* WIPX_AddrToString(qsockaddr* addr)
 {
 	static char buf[28];
-	auto addrptr = reinterpret_cast<sockaddr_ipx *>(addr);
+	auto        addrptr = reinterpret_cast<sockaddr_ipx *>(addr);
 	sprintf(buf, "%02x%02x%02x%02x:%02x%02x%02x%02x%02x%02x:%u",
 	        addrptr->sa_netnum[0] & 0xff,
 	        addrptr->sa_netnum[1] & 0xff,
@@ -276,7 +274,7 @@ char* WIPX_AddrToString(qsockaddr* addr)
 	        addrptr->sa_nodenum[4] & 0xff,
 	        addrptr->sa_nodenum[5] & 0xff,
 	        ntohs(addrptr->sa_socket)
-	);
+	       );
 	return buf;
 }
 
@@ -284,7 +282,7 @@ char* WIPX_AddrToString(qsockaddr* addr)
 
 int WIPX_StringToAddr(char* string, qsockaddr* addr)
 {
-	int val;
+	int  val;
 	char buf[3];
 
 	buf[2] = 0;
@@ -320,8 +318,8 @@ int WIPX_StringToAddr(char* string, qsockaddr* addr)
 
 int WIPX_GetSocketAddr(int handle, qsockaddr* addr)
 {
-	auto socket = ipxsocket[handle];
-	int addrlen = sizeof(struct qsockaddr);
+	auto socket  = ipxsocket[handle];
+	int  addrlen = sizeof(struct qsockaddr);
 
 	Q_memset(addr, 0, sizeof(struct qsockaddr));
 	if (pgetsockname(socket, reinterpret_cast<sockaddr *>(addr), &addrlen) != 0)

@@ -1,28 +1,23 @@
 #include "quakedef.h"
 
-
-/*
-
-*/
-
 struct prstack_t
 {
-	int s;
+	int          s;
 	dfunction_t* f;
 };
 
 #define	MAX_STACK_DEPTH		32
 prstack_t pr_stack[MAX_STACK_DEPTH];
-int pr_depth;
+int       pr_depth;
 
 #define	LOCALSTACK_SIZE		2048
 int localstack[LOCALSTACK_SIZE];
 int localstack_used;
 
 
-qboolean pr_trace;
+qboolean     pr_trace;
 dfunction_t* pr_xfunction;
-int pr_xstatement;
+int          pr_xstatement;
 
 
 int pr_argc;
@@ -116,7 +111,7 @@ char* pr_opnames[] =
 	"BITOR"
 };
 
-char* PR_GlobalString(int ofs);
+char* PR_GlobalString(int           ofs);
 char* PR_GlobalStringNoContents(int ofs);
 
 
@@ -174,7 +169,7 @@ void PR_StackTrace()
 	}
 
 	pr_stack[pr_depth].f = pr_xfunction;
-	for (auto i = pr_depth; i >= 0; i--)
+	for (auto i          = pr_depth; i >= 0; i--)
 	{
 		auto f = pr_stack[i].f;
 
@@ -201,14 +196,14 @@ void PR_Profile_f()
 	auto num = 0;
 	do
 	{
-		auto max = 0;
-		best = nullptr;
+		auto max    = 0;
+		best        = nullptr;
 		for (auto i = 0; i < progs->numfunctions; i++)
 		{
 			auto f = &pr_functions[i];
 			if (f->profile > max)
 			{
-				max = f->profile;
+				max  = f->profile;
 				best = f;
 			}
 		}
@@ -234,7 +229,7 @@ Aborts the currently executing function
 void PR_RunError(char* error, ...)
 {
 	va_list argptr;
-	char string[1024];
+	char    string[1024];
 
 	va_start (argptr,error);
 	vsprintf(string, error, argptr);
@@ -279,7 +274,7 @@ int PR_EnterFunction(dfunction_t* f)
 	if (localstack_used + c > LOCALSTACK_SIZE)
 		PR_RunError("PR_ExecuteProgram: locals stack overflow\n");
 
-	for (i = 0; i < c; i++)
+	for (i                              = 0; i < c; i++)
 		localstack[localstack_used + i] = reinterpret_cast<int *>(pr_globals)[f->parm_start + i];
 	localstack_used += c;
 
@@ -314,7 +309,7 @@ int PR_LeaveFunction()
 	if (localstack_used < 0)
 		PR_RunError("PR_ExecuteProgram: locals stack underflow\n");
 
-	for (auto i = 0; i < c; i++)
+	for (auto i                                                           = 0; i < c; i++)
 		reinterpret_cast<int *>(pr_globals)[pr_xfunction->parm_start + i] = localstack[localstack_used + i];
 
 	// up stack
@@ -331,9 +326,9 @@ PR_ExecuteProgram
 */
 void PR_ExecuteProgram(func_t fnum)
 {
-	eval_t* a;
+	eval_t*  a;
 	edict_t* ed;
-	eval_t* ptr;
+	eval_t*  ptr;
 
 	if (!fnum || fnum >= progs->numfunctions)
 	{
@@ -345,7 +340,7 @@ void PR_ExecuteProgram(func_t fnum)
 	auto f = &pr_functions[fnum];
 
 	auto runaway = 100000;
-	pr_trace = qfalse;
+	pr_trace     = qfalse;
 
 	// make a stack frame
 	auto exitdepth = pr_depth;
@@ -357,9 +352,9 @@ void PR_ExecuteProgram(func_t fnum)
 		s++; // next statement
 
 		auto st = &pr_statements[s];
-		a = reinterpret_cast<eval_t *>(&pr_globals[st->a]);
-		auto b = reinterpret_cast<eval_t *>(&pr_globals[st->b]);
-		auto c = reinterpret_cast<eval_t *>(&pr_globals[st->c]);
+		a       = reinterpret_cast<eval_t *>(&pr_globals[st->a]);
+		auto b  = reinterpret_cast<eval_t *>(&pr_globals[st->b]);
+		auto c  = reinterpret_cast<eval_t *>(&pr_globals[st->c]);
 
 		if (!--runaway)
 			PR_RunError("runaway loop error");
@@ -513,11 +508,11 @@ void PR_ExecuteProgram(func_t fnum)
 		case op_t::OP_STOREP_FLD: // integers
 		case op_t::OP_STOREP_S:
 		case op_t::OP_STOREP_FNC: // pointers
-			ptr = reinterpret_cast<eval_t *>(reinterpret_cast<byte *>(sv.edicts) + b->_int);
+			ptr       = reinterpret_cast<eval_t *>(reinterpret_cast<byte *>(sv.edicts) + b->_int);
 			ptr->_int = a->_int;
 			break;
 		case op_t::OP_STOREP_V:
-			ptr = reinterpret_cast<eval_t *>(reinterpret_cast<byte *>(sv.edicts) + b->_int);
+			ptr            = reinterpret_cast<eval_t *>(reinterpret_cast<byte *>(sv.edicts) + b->_int);
 			ptr->vector[0] = a->vector[0];
 			ptr->vector[1] = a->vector[1];
 			ptr->vector[2] = a->vector[2];
@@ -542,7 +537,7 @@ void PR_ExecuteProgram(func_t fnum)
 #ifdef PARANOID
 		NUM_FOR_EDICT(ed);		// make sure it's in range
 #endif
-			a = reinterpret_cast<eval_t *>(reinterpret_cast<int *>(&ed->v) + b->_int);
+			a       = reinterpret_cast<eval_t *>(reinterpret_cast<int *>(&ed->v) + b->_int);
 			c->_int = a->_int;
 			break;
 
@@ -551,7 +546,7 @@ void PR_ExecuteProgram(func_t fnum)
 #ifdef PARANOID
 		NUM_FOR_EDICT(ed);		// make sure it's in range
 #endif
-			a = reinterpret_cast<eval_t *>(reinterpret_cast<int *>(&ed->v) + b->_int);
+			a            = reinterpret_cast<eval_t *>(reinterpret_cast<int *>(&ed->v) + b->_int);
 			c->vector[0] = a->vector[0];
 			c->vector[1] = a->vector[1];
 			c->vector[2] = a->vector[2];
@@ -590,7 +585,8 @@ void PR_ExecuteProgram(func_t fnum)
 				auto newf = &pr_functions[a->function];
 
 				if (newf->first_statement < 0)
-				{ // negative statements are built in functions
+				{
+					// negative statements are built in functions
 					auto i = -newf->first_statement;
 					if (i >= pr_numbuiltins)
 						PR_RunError("Bad builtin call number");
@@ -604,7 +600,7 @@ void PR_ExecuteProgram(func_t fnum)
 
 		case op_t::OP_DONE:
 		case op_t::OP_RETURN:
-			pr_globals[OFS_RETURN] = pr_globals[st->a];
+			pr_globals[OFS_RETURN]     = pr_globals[st->a];
 			pr_globals[OFS_RETURN + 1] = pr_globals[st->a + 1];
 			pr_globals[OFS_RETURN + 2] = pr_globals[st->a + 2];
 

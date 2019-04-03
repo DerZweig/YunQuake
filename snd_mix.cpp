@@ -8,9 +8,9 @@
 
 #define	PAINTBUFFER_SIZE	512
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
-int snd_scaletable[32][256];
-int *snd_p, snd_linear_count, snd_vol;
-short* snd_out;
+int                   snd_scaletable[32][256];
+int *                 snd_p, snd_linear_count, snd_vol;
+short*                snd_out;
 
 void Snd_WriteLinearBlastStereo16()
 {
@@ -38,14 +38,14 @@ void S_TransferStereo16(int endtime)
 {
 	DWORD* pbuf;
 #ifdef _WIN32
-	DWORD dwSize, dwSize2;
-	DWORD* pbuf2;
+	DWORD   dwSize, dwSize2;
+	DWORD*  pbuf2;
 	HRESULT hresult;
 #endif
 
 	snd_vol = volume.value * 256;
 
-	snd_p = reinterpret_cast<int *>(paintbuffer);
+	snd_p             = reinterpret_cast<int *>(paintbuffer);
 	auto lpaintedtime = paintedtime;
 
 #ifdef _WIN32
@@ -106,11 +106,11 @@ void S_TransferStereo16(int endtime)
 
 void S_TransferPaintBuffer(int endtime)
 {
-	int val;
+	int    val;
 	DWORD* pbuf;
 #ifdef _WIN32
-	DWORD dwSize, dwSize2;
-	DWORD* pbuf2;
+	DWORD   dwSize, dwSize2;
+	DWORD*  pbuf2;
 	HRESULT hresult;
 #endif
 
@@ -120,12 +120,12 @@ void S_TransferPaintBuffer(int endtime)
 		return;
 	}
 
-	auto p = reinterpret_cast<int *>(paintbuffer);
-	auto count = (endtime - paintedtime) * shm->channels;
+	auto p        = reinterpret_cast<int *>(paintbuffer);
+	auto count    = (endtime - paintedtime) * shm->channels;
 	auto out_mask = shm->samples - 1;
-	auto out_idx = paintedtime * shm->channels & out_mask;
-	auto step = 3 - shm->channels;
-	int snd_vol = volume.value * 256;
+	auto out_idx  = paintedtime * shm->channels & out_mask;
+	auto step     = 3 - shm->channels;
+	int  snd_vol  = volume.value * 256;
 
 #ifdef _WIN32
 	if (pDSBuf)
@@ -167,9 +167,9 @@ void S_TransferPaintBuffer(int endtime)
 			if (val > 0x7fff)
 				val = 0x7fff;
 			else if (val < static_cast<short>(0x8000))
-				val = static_cast<short>(0x8000);
+				val      = static_cast<short>(0x8000);
 			out[out_idx] = val;
-			out_idx = out_idx + 1 & out_mask;
+			out_idx      = out_idx + 1 & out_mask;
 		}
 	}
 	else if (shm->samplebits == 8)
@@ -182,9 +182,9 @@ void S_TransferPaintBuffer(int endtime)
 			if (val > 0x7fff)
 				val = 0x7fff;
 			else if (val < static_cast<short>(0x8000))
-				val = static_cast<short>(0x8000);
+				val      = static_cast<short>(0x8000);
 			out[out_idx] = (val >> 8) + 128;
-			out_idx = out_idx + 1 & out_mask;
+			out_idx      = out_idx + 1 & out_mask;
 		}
 	}
 
@@ -210,7 +210,7 @@ CHANNEL MIXING
 ===============================================================================
 */
 
-void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int endtime);
+void SND_PaintChannelFrom8(channel_t*  ch, sfxcache_t* sc, int endtime);
 void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int endtime);
 
 void S_PaintChannels(int endtime)
@@ -228,8 +228,8 @@ void S_PaintChannels(int endtime)
 		Q_memset(paintbuffer, 0, (end - paintedtime) * sizeof(portable_samplepair_t));
 
 		// paint in the channels.
-		auto ch = channels;
-		for (auto i = 0; i < total_channels; i++ , ch++)
+		auto      ch = channels;
+		for (auto i  = 0; i < total_channels; i++, ch++)
 		{
 			if (!ch->sfx)
 				continue;
@@ -242,7 +242,8 @@ void S_PaintChannels(int endtime)
 			auto ltime = paintedtime;
 
 			while (ltime < end)
-			{ // paint up to end
+			{
+				// paint up to end
 				if (ch->end < end)
 					count = ch->end - ltime;
 				else
@@ -267,7 +268,8 @@ void S_PaintChannels(int endtime)
 						ch->end = ltime + sc->length - ch->pos;
 					}
 					else
-					{ // channel just stopped
+					{
+						// channel just stopped
 						ch->sfx = nullptr;
 						break;
 					}
@@ -283,8 +285,8 @@ void S_PaintChannels(int endtime)
 
 void SND_InitScaletable()
 {
-	for (auto i = 0; i < 32; i++)
-		for (auto j = 0; j < 256; j++)
+	for (auto     i              = 0; i < 32; i++)
+		for (auto j              = 0; j < 256; j++)
 			snd_scaletable[i][j] = static_cast<signed char>(j) * i * 8;
 }
 
@@ -298,7 +300,7 @@ void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count)
 
 	auto lscale = snd_scaletable[ch->leftvol >> 3];
 	auto rscale = snd_scaletable[ch->rightvol >> 3];
-	auto sfx = static_cast<unsigned char *>(sc->data) + ch->pos;
+	auto sfx    = static_cast<unsigned char *>(sc->data) + ch->pos;
 
 	for (auto i = 0; i < count; i++)
 	{
@@ -313,14 +315,14 @@ void SND_PaintChannelFrom8(channel_t* ch, sfxcache_t* sc, int count)
 
 void SND_PaintChannelFrom16(channel_t* ch, sfxcache_t* sc, int count)
 {
-	auto leftvol = ch->leftvol;
+	auto leftvol  = ch->leftvol;
 	auto rightvol = ch->rightvol;
-	auto sfx = reinterpret_cast<signed short *>(sc->data) + ch->pos;
+	auto sfx      = reinterpret_cast<signed short *>(sc->data) + ch->pos;
 
 	for (auto i = 0; i < count; i++)
 	{
-		int data = sfx[i];
-		auto left = data * leftvol >> 8;
+		int  data  = sfx[i];
+		auto left  = data * leftvol >> 8;
 		auto right = data * rightvol >> 8;
 		paintbuffer[i].left += left;
 		paintbuffer[i].right += right;

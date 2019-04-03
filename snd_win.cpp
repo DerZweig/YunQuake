@@ -34,9 +34,9 @@ static int snd_sent, snd_completed;
  */
 
 HANDLE hData;
-HPSTR lpData, lpData2;
+HPSTR  lpData, lpData2;
 
-HGLOBAL hWaveHdr;
+HGLOBAL   hWaveHdr;
 LPWAVEHDR lpWaveHdr;
 
 HWAVEOUT hWaveOut;
@@ -47,13 +47,13 @@ DWORD gSndBufSize;
 
 MMTIME mmstarttime;
 
-LPDIRECTSOUND pDS;
+LPDIRECTSOUND       pDS;
 LPDIRECTSOUNDBUFFER pDSBuf, pDSPBuf;
 
 HINSTANCE hInstDS;
 
 sndinitstat SNDDMA_InitDirect();
-qboolean SNDDMA_InitWav();
+qboolean    SNDDMA_InitWav();
 
 
 /*
@@ -141,16 +141,16 @@ void FreeSound()
 		}
 	}
 
-	pDS = nullptr;
-	pDSBuf = nullptr;
-	pDSPBuf = nullptr;
-	hWaveOut = nullptr;
-	hData = nullptr;
-	hWaveHdr = nullptr;
-	lpData = nullptr;
-	lpWaveHdr = nullptr;
+	pDS         = nullptr;
+	pDSBuf      = nullptr;
+	pDSPBuf     = nullptr;
+	hWaveOut    = nullptr;
+	hData       = nullptr;
+	hWaveHdr    = nullptr;
+	lpData      = nullptr;
+	lpWaveHdr   = nullptr;
 	dsound_init = qfalse;
-	wav_init = qfalse;
+	wav_init    = qfalse;
 }
 
 
@@ -164,29 +164,29 @@ Direct-Sound support
 sndinitstat SNDDMA_InitDirect()
 {
 	DSBUFFERDESC dsbuf;
-	DSBCAPS dsbcaps;
-	DWORD dwSize, dwWrite;
-	DSCAPS dscaps;
+	DSBCAPS      dsbcaps;
+	DWORD        dwSize, dwWrite;
+	DSCAPS       dscaps;
 	WAVEFORMATEX format;
-	HRESULT hresult;
+	HRESULT      hresult;
 
 	// ReSharper disable once CppCStyleCast
 	memset((void *)&sn, 0, sizeof sn);
 
 	shm = &sn;
 
-	shm->channels = 2;
+	shm->channels   = 2;
 	shm->samplebits = 16;
-	shm->speed = 11025;
+	shm->speed      = 11025;
 
 	memset(&format, 0, sizeof format);
-	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = shm->channels;
+	format.wFormatTag     = WAVE_FORMAT_PCM;
+	format.nChannels      = shm->channels;
 	format.wBitsPerSample = shm->samplebits;
 	format.nSamplesPerSec = shm->speed;
-	format.nBlockAlign = format.nChannels
+	format.nBlockAlign    = format.nChannels
 		* format.wBitsPerSample / 8;
-	format.cbSize = 0;
+	format.cbSize          = 0;
 	format.nAvgBytesPerSec = format.nSamplesPerSec
 		* format.nBlockAlign;
 
@@ -224,7 +224,7 @@ sndinitstat SNDDMA_InitDirect()
 		               MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY)
 		{
 			Con_SafePrintf("DirectSoundCreate failure\n"
-				"  hardware already in use\n");
+			               "  hardware already in use\n");
 			return sndinitstat::SIS_NOTAVAIL;
 		}
 	}
@@ -253,13 +253,13 @@ sndinitstat SNDDMA_InitDirect()
 	// get access to the primary buffer, if possible, so we can set the
 	// sound hardware format
 	memset(&dsbuf, 0, sizeof dsbuf);
-	dsbuf.dwSize = sizeof(DSBUFFERDESC);
-	dsbuf.dwFlags = DSBCAPS_PRIMARYBUFFER;
+	dsbuf.dwSize        = sizeof(DSBUFFERDESC);
+	dsbuf.dwFlags       = DSBCAPS_PRIMARYBUFFER;
 	dsbuf.dwBufferBytes = 0;
-	dsbuf.lpwfxFormat = nullptr;
+	dsbuf.lpwfxFormat   = nullptr;
 
 	memset(&dsbcaps, 0, sizeof dsbcaps);
-	dsbcaps.dwSize = sizeof dsbcaps;
+	dsbcaps.dwSize     = sizeof dsbcaps;
 	primary_format_set = qfalse;
 
 	if (!COM_CheckParm("-snoforceformat"))
@@ -287,10 +287,10 @@ sndinitstat SNDDMA_InitDirect()
 	{
 		// create the secondary buffer we'll actually work with
 		memset(&dsbuf, 0, sizeof dsbuf);
-		dsbuf.dwSize = sizeof(DSBUFFERDESC);
-		dsbuf.dwFlags = DSBCAPS_CTRLFREQUENCY | DSBCAPS_LOCSOFTWARE;
+		dsbuf.dwSize        = sizeof(DSBUFFERDESC);
+		dsbuf.dwFlags       = DSBCAPS_CTRLFREQUENCY | DSBCAPS_LOCSOFTWARE;
 		dsbuf.dwBufferBytes = SECONDARY_BUFFER_SIZE;
-		dsbuf.lpwfxFormat = &format;
+		dsbuf.lpwfxFormat   = &format;
 
 		memset(&dsbcaps, 0, sizeof dsbcaps);
 		dsbcaps.dwSize = sizeof dsbcaps;
@@ -302,9 +302,9 @@ sndinitstat SNDDMA_InitDirect()
 			return sndinitstat::SIS_FAILURE;
 		}
 
-		shm->channels = format.nChannels;
+		shm->channels   = format.nChannels;
 		shm->samplebits = format.wBitsPerSample;
-		shm->speed = format.nSamplesPerSec;
+		shm->speed      = format.nSamplesPerSec;
 
 		if (DS_OK != pDSBuf->GetCaps(&dsbcaps))
 		{
@@ -378,13 +378,13 @@ sndinitstat SNDDMA_InitDirect()
 	pDSBuf->GetCurrentPosition(&mmstarttime.u.sample, &dwWrite);
 	pDSBuf->Play(0, 0, DSBPLAY_LOOPING);
 
-	shm->soundalive = qtrue;
-	shm->splitbuffer = qfalse;
-	shm->samples = gSndBufSize / (shm->samplebits / 8);
-	shm->samplepos = 0;
+	shm->soundalive       = qtrue;
+	shm->splitbuffer      = qfalse;
+	shm->samples          = gSndBufSize / (shm->samplebits / 8);
+	shm->samplepos        = 0;
 	shm->submission_chunk = 1;
-	shm->buffer = reinterpret_cast<unsigned char *>(lpData);
-	sample16 = shm->samplebits / 8 - 1;
+	shm->buffer           = reinterpret_cast<unsigned char *>(lpData);
+	sample16              = shm->samplebits / 8 - 1;
 
 	dsound_init = qtrue;
 
@@ -402,25 +402,25 @@ Crappy windows multimedia base
 qboolean SNDDMA_InitWav()
 {
 	WAVEFORMATEX format;
-	HRESULT hr;
+	HRESULT      hr;
 
-	snd_sent = 0;
+	snd_sent      = 0;
 	snd_completed = 0;
 
 	shm = &sn;
 
-	shm->channels = 2;
+	shm->channels   = 2;
 	shm->samplebits = 16;
-	shm->speed = 11025;
+	shm->speed      = 11025;
 
 	memset(&format, 0, sizeof format);
-	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = shm->channels;
+	format.wFormatTag     = WAVE_FORMAT_PCM;
+	format.nChannels      = shm->channels;
 	format.wBitsPerSample = shm->samplebits;
 	format.nSamplesPerSec = shm->speed;
-	format.nBlockAlign = format.nChannels
+	format.nBlockAlign    = format.nChannels
 		* format.wBitsPerSample / 8;
-	format.cbSize = 0;
+	format.cbSize          = 0;
 	format.nAvgBytesPerSec = format.nSamplesPerSec
 		* format.nBlockAlign;
 
@@ -440,7 +440,7 @@ qboolean SNDDMA_InitWav()
 		               MB_RETRYCANCEL | MB_SETFOREGROUND | MB_ICONEXCLAMATION) != IDRETRY)
 		{
 			Con_SafePrintf("waveOutOpen failure;\n"
-				"  hardware already in use\n");
+			               "  hardware already in use\n");
 			return qfalse;
 		}
 	}
@@ -452,7 +452,7 @@ qboolean SNDDMA_InitWav()
 
 	*/
 	gSndBufSize = WAV_BUFFERS * WAV_BUFFER_SIZE;
-	hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_SHARE, gSndBufSize);
+	hData       = GlobalAlloc(GMEM_MOVEABLE | GMEM_SHARE, gSndBufSize);
 	if (!hData)
 	{
 		Con_SafePrintf("Sound: Out of memory.\n");
@@ -498,7 +498,7 @@ qboolean SNDDMA_InitWav()
 	for (auto i = 0; i < WAV_BUFFERS; i++)
 	{
 		lpWaveHdr[i].dwBufferLength = WAV_BUFFER_SIZE;
-		lpWaveHdr[i].lpData = lpData + i * WAV_BUFFER_SIZE;
+		lpWaveHdr[i].lpData         = lpData + i * WAV_BUFFER_SIZE;
 
 		if (waveOutPrepareHeader(hWaveOut, lpWaveHdr + i, sizeof(WAVEHDR)) !=
 			MMSYSERR_NOERROR)
@@ -509,13 +509,13 @@ qboolean SNDDMA_InitWav()
 		}
 	}
 
-	shm->soundalive = qtrue;
-	shm->splitbuffer = qfalse;
-	shm->samples = gSndBufSize / (shm->samplebits / 8);
-	shm->samplepos = 0;
+	shm->soundalive       = qtrue;
+	shm->splitbuffer      = qfalse;
+	shm->samples          = gSndBufSize / (shm->samplebits / 8);
+	shm->samplepos        = 0;
 	shm->submission_chunk = 1;
-	shm->buffer = reinterpret_cast<unsigned char *>(lpData);
-	sample16 = shm->samplebits / 8 - 1;
+	shm->buffer           = reinterpret_cast<unsigned char *>(lpData);
+	sample16              = shm->samplebits / 8 - 1;
 
 	wav_init = qtrue;
 
@@ -609,8 +609,8 @@ how many sample are required to fill it up.
 int SNDDMA_GetDMAPos()
 {
 	MMTIME mmtime;
-	auto s = 0;
-	DWORD dwWrite;
+	auto   s = 0;
+	DWORD  dwWrite;
 
 	if (dsound_init)
 	{

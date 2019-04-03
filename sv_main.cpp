@@ -1,6 +1,6 @@
 #include "quakedef.h"
 
-server_t sv;
+server_t        sv;
 server_static_t svs;
 
 char localmodels[MAX_MODELS][5]; // inline model names for precache
@@ -14,7 +14,6 @@ SV_Init
 */
 void SV_Init()
 {
-	
 	Cvar_RegisterVariable(&sv_maxvelocity);
 	Cvar_RegisterVariable(&sv_gravity);
 	Cvar_RegisterVariable(&sv_friction);
@@ -152,7 +151,7 @@ This will be sent on the initial connection and upon each server load.
 void SV_SendServerinfo(client_t* client)
 {
 	char** s;
-	char message[2048];
+	char   message[2048];
 
 	MSG_WriteByte(&client->message, svc_print);
 	sprintf(message, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, VERSION, pr_crc);
@@ -192,7 +191,7 @@ void SV_SendServerinfo(client_t* client)
 	MSG_WriteByte(&client->message, 1);
 
 	client->sendsignon = qtrue;
-	client->spawned = qfalse; // need prespawn, spawn, etc
+	client->spawned    = qfalse; // need prespawn, spawn, etc
 }
 
 /*
@@ -224,11 +223,11 @@ void SV_ConnectClient(int clientnum)
 	client->netconnection = netconnection;
 
 	strcpy(client->name, "unconnected");
-	client->active = qtrue;
-	client->spawned = qfalse;
-	client->edict = ent;
-	client->message.data = client->msgbuf;
-	client->message.maxsize = sizeof client->msgbuf;
+	client->active                = qtrue;
+	client->spawned               = qfalse;
+	client->edict                 = ent;
+	client->message.data          = client->msgbuf;
+	client->message.maxsize       = sizeof client->msgbuf;
 	client->message.allowoverflow = qtrue; // we can catch it
 
 #ifdef IDGODS
@@ -243,7 +242,7 @@ void SV_ConnectClient(int clientnum)
 	{
 		// call the progs to get default spawn parms for the new client
 		PR_ExecuteProgram(pr_global_struct->SetNewParms);
-		for (auto i = 0; i < NUM_SPAWN_PARMS; i++)
+		for (auto i                = 0; i < NUM_SPAWN_PARMS; i++)
 			client->spawn_parms[i] = (&pr_global_struct->parm1)[i];
 	}
 
@@ -317,7 +316,7 @@ crosses a waterline.
 =============================================================================
 */
 
-int fatbytes;
+int  fatbytes;
 byte fatpvs[MAX_MAP_LEAFS / 8];
 
 void SV_AddToFatPVS(vec3_t org, mnode_t* node)
@@ -331,21 +330,22 @@ void SV_AddToFatPVS(vec3_t org, mnode_t* node)
 		{
 			if (node->contents != CONTENTS_SOLID)
 			{
-				auto pvs = Mod_LeafPVS(reinterpret_cast<mleaf_t *>(node), sv.worldmodel);
-				for (auto i = 0; i < fatbytes; i++)
+				auto      pvs = Mod_LeafPVS(reinterpret_cast<mleaf_t *>(node), sv.worldmodel);
+				for (auto i   = 0; i < fatbytes; i++)
 					fatpvs[i] |= pvs[i];
 			}
 			return;
 		}
 
-		plane = node->plane;
+		plane  = node->plane;
 		auto d = DotProduct (org, plane->normal) - plane->dist;
 		if (d > 8)
 			node = node->children[0];
 		else if (d < -8)
 			node = node->children[1];
 		else
-		{ // go down both
+		{
+			// go down both
 			SV_AddToFatPVS(org, node->children[0]);
 			node = node->children[1];
 		}
@@ -379,8 +379,8 @@ SV_WriteEntitiesToClient
 */
 void SV_WriteEntitiesToClient(edict_t* clent, sizebuf_t* msg)
 {
-	int i;
-	vec3_t org;
+	int      i;
+	vec3_t   org;
 	edict_t* ent;
 
 	// find the client's PVS
@@ -388,8 +388,8 @@ void SV_WriteEntitiesToClient(edict_t* clent, sizebuf_t* msg)
 	auto pvs = SV_FatPVS(org);
 
 	// send over all entities (excpet the client) that touch the pvs
-	ent = NEXT_EDICT(sv.edicts);
-	for (auto e = 1; e < sv.num_edicts; e++ , ent = NEXT_EDICT(ent))
+	ent         = NEXT_EDICT(sv.edicts);
+	for (auto e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore if not touching a PV leaf
 		if (ent != clent) // clent is ALLWAYS sent
@@ -502,8 +502,8 @@ void SV_CleanupEnts()
 {
 	edict_t* ent;
 
-	ent = NEXT_EDICT(sv.edicts);
-	for (auto e = 1; e < sv.num_edicts; e++ , ent = NEXT_EDICT(ent))
+	ent         = NEXT_EDICT(sv.edicts);
+	for (auto e = 1; e < sv.num_edicts; e++, ent = NEXT_EDICT(ent))
 	{
 		ent->v.effects = static_cast<int>(ent->v.effects) & ~EF_MUZZLEFLASH;
 	}
@@ -650,10 +650,10 @@ SV_SendClientDatagram
 */
 qboolean SV_SendClientDatagram(client_t* client)
 {
-	byte buf[MAX_DATAGRAM];
+	byte      buf[MAX_DATAGRAM];
 	sizebuf_t msg;
 
-	msg.data = buf;
+	msg.data    = buf;
 	msg.maxsize = sizeof buf;
 	msg.cursize = 0;
 
@@ -672,7 +672,7 @@ qboolean SV_SendClientDatagram(client_t* client)
 	// send the datagram
 	if (NET_SendUnreliableMessage(client->netconnection, &msg) == -1)
 	{
-		SV_DropClient(qtrue);// if the message couldn't send, kick off
+		SV_DropClient(qtrue); // if the message couldn't send, kick off
 		return qfalse;
 	}
 
@@ -686,15 +686,15 @@ SV_UpdateToReliableMessages
 */
 void SV_UpdateToReliableMessages()
 {
-	int i, j;
+	int       i, j;
 	client_t* client;
 
 	// check for changes to be sent over the reliable streams
-	for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
 		if (host_client->old_frags != host_client->edict->v.frags)
 		{
-			for (j = 0 , client = svs.clients; j < svs.maxclients; j++ , client++)
+			for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 			{
 				if (!client->active)
 					continue;
@@ -707,7 +707,7 @@ void SV_UpdateToReliableMessages()
 		}
 	}
 
-	for (j = 0 , client = svs.clients; j < svs.maxclients; j++ , client++)
+	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
 		if (!client->active)
 			continue;
@@ -729,9 +729,9 @@ message buffer
 void SV_SendNop(client_t* client)
 {
 	sizebuf_t msg;
-	byte buf[4];
+	byte      buf[4];
 
-	msg.data = buf;
+	msg.data    = buf;
 	msg.maxsize = sizeof buf;
 	msg.cursize = 0;
 
@@ -755,7 +755,7 @@ void SV_SendClientMessages()
 	SV_UpdateToReliableMessages();
 
 	// build individual updates
-	for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
 		if (!host_client->active)
 			continue;
@@ -807,7 +807,7 @@ void SV_SendClientMessages()
 					SV_DropClient(qtrue); // if the message couldn't send, kick off
 				SZ_Clear(&host_client->message);
 				host_client->last_message = realtime;
-				host_client->sendsignon = qfalse;
+				host_client->sendsignon   = qfalse;
 			}
 		}
 	}
@@ -872,15 +872,15 @@ void SV_CreateBaseline()
 		VectorCopy (svent->v.origin, svent->baseline.origin);
 		VectorCopy (svent->v.angles, svent->baseline.angles);
 		svent->baseline.frame = svent->v.frame;
-		svent->baseline.skin = svent->v.skin;
+		svent->baseline.skin  = svent->v.skin;
 		if (entnum > 0 && entnum <= svs.maxclients)
 		{
-			svent->baseline.colormap = entnum;
+			svent->baseline.colormap   = entnum;
 			svent->baseline.modelindex = SV_ModelIndex("progs/player.mdl");
 		}
 		else
 		{
-			svent->baseline.colormap = 0;
+			svent->baseline.colormap   = 0;
 			svent->baseline.modelindex =
 				SV_ModelIndex(pr_strings + svent->v.model);
 		}
@@ -913,10 +913,10 @@ Tell all the clients that the server is changing levels
 */
 void SV_SendReconnect()
 {
-	byte data[128];
+	byte      data[128];
 	sizebuf_t msg;
 
-	msg.data = data;
+	msg.data    = data;
 	msg.cursize = 0;
 	msg.maxsize = sizeof data;
 
@@ -943,7 +943,7 @@ void SV_SaveSpawnparms()
 
 	svs.serverflags = pr_global_struct->serverflags;
 
-	for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
 		if (!host_client->active)
 			continue;
@@ -951,7 +951,7 @@ void SV_SaveSpawnparms()
 		// call the progs to get default spawn parms for the new client
 		pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
 		PR_ExecuteProgram(pr_global_struct->SetChangeParms);
-		for (auto j = 0; j < NUM_SPAWN_PARMS; j++)
+		for (auto j                     = 0; j < NUM_SPAWN_PARMS; j++)
 			host_client->spawn_parms[j] = (&pr_global_struct->parm1)[j];
 	}
 }
@@ -969,7 +969,7 @@ extern float scr_centertime_off;
 void SV_SpawnServer(char* server)
 {
 	edict_t* ent;
-	int i;
+	int      i;
 
 	// let's not have any servers with no name
 	if (hostname.string[0] == 0)
@@ -1019,25 +1019,25 @@ void SV_SpawnServer(char* server)
 
 	sv.datagram.maxsize = sizeof sv.datagram_buf;
 	sv.datagram.cursize = 0;
-	sv.datagram.data = sv.datagram_buf;
+	sv.datagram.data    = sv.datagram_buf;
 
 	sv.reliable_datagram.maxsize = sizeof sv.reliable_datagram_buf;
 	sv.reliable_datagram.cursize = 0;
-	sv.reliable_datagram.data = sv.reliable_datagram_buf;
+	sv.reliable_datagram.data    = sv.reliable_datagram_buf;
 
 	sv.signon.maxsize = sizeof sv.signon_buf;
 	sv.signon.cursize = 0;
-	sv.signon.data = sv.signon_buf;
+	sv.signon.data    = sv.signon_buf;
 
 	// leave slots at start for clients only
 	sv.num_edicts = svs.maxclients + 1;
-	for (i = 0; i < svs.maxclients; i++)
+	for (i        = 0; i < svs.maxclients; i++)
 	{
-		ent = EDICT_NUM(i + 1);
+		ent                  = EDICT_NUM(i + 1);
 		svs.clients[i].edict = ent;
 	}
 
-	sv.state = server_state_t::ss_loading;
+	sv.state  = server_state_t::ss_loading;
 	sv.paused = qfalse;
 
 	sv.time = 1.0;
@@ -1062,10 +1062,10 @@ void SV_SpawnServer(char* server)
 
 	sv.model_precache[0] = pr_strings;
 	sv.model_precache[1] = sv.modelname;
-	for (i = 1; i < sv.worldmodel->numsubmodels; i++)
+	for (i               = 1; i < sv.worldmodel->numsubmodels; i++)
 	{
 		sv.model_precache[1 + i] = localmodels[i];
-		sv.models[i + 1] = Mod_ForName(localmodels[i], qfalse);
+		sv.models[i + 1]         = Mod_ForName(localmodels[i], qfalse);
 	}
 
 	//
@@ -1073,11 +1073,11 @@ void SV_SpawnServer(char* server)
 	//	
 	ent = EDICT_NUM(0);
 	memset(&ent->v, 0, progs->entityfields * 4);
-	ent->free = qfalse;
-	ent->v.model = sv.worldmodel->name - pr_strings;
+	ent->free         = qfalse;
+	ent->v.model      = sv.worldmodel->name - pr_strings;
 	ent->v.modelindex = 1; // world model
-	ent->v.solid = SOLID_BSP;
-	ent->v.movetype = MOVETYPE_PUSH;
+	ent->v.solid      = SOLID_BSP;
+	ent->v.movetype   = MOVETYPE_PUSH;
 
 	if (coop.value)
 		pr_global_struct->coop = coop.value;
@@ -1105,7 +1105,7 @@ void SV_SpawnServer(char* server)
 	SV_CreateBaseline();
 
 	// send serverinfo to all connected clients
-	for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		if (host_client->active)
 			SV_SendServerinfo(host_client);
 

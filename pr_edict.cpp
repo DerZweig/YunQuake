@@ -1,33 +1,33 @@
 #include "quakedef.h"
 
-dprograms_t* progs;
-dfunction_t* pr_functions;
-char* pr_strings;
-ddef_t* pr_fielddefs;
-ddef_t* pr_globaldefs;
+dprograms_t*  progs;
+dfunction_t*  pr_functions;
+char*         pr_strings;
+ddef_t*       pr_fielddefs;
+ddef_t*       pr_globaldefs;
 dstatement_t* pr_statements;
 globalvars_t* pr_global_struct;
-float* pr_globals; // same as pr_global_struct
-int pr_edict_size; // in bytes
+float*        pr_globals; // same as pr_global_struct
+int           pr_edict_size; // in bytes
 
 unsigned short pr_crc;
 
-int type_size[8] = {1,sizeof(string_t) / 4,1,3,1,1,sizeof(func_t) / 4,sizeof(void *) / 4};
+int type_size[8] = {1, sizeof(string_t) / 4, 1, 3, 1, 1, sizeof(func_t) / 4, sizeof(void *) / 4};
 
-ddef_t* ED_FieldAtOfs(int ofs);
+ddef_t*  ED_FieldAtOfs(int   ofs);
 qboolean ED_ParseEpair(void* base, ddef_t* key, char* s);
 
-cvar_t nomonsters = {"nomonsters", "0"};
-cvar_t gamecfg = {"gamecfg", "0"};
-cvar_t scratch1 = {"scratch1", "0"};
-cvar_t scratch2 = {"scratch2", "0"};
-cvar_t scratch3 = {"scratch3", "0"};
-cvar_t scratch4 = {"scratch4", "0"};
+cvar_t nomonsters   = {"nomonsters", "0"};
+cvar_t gamecfg      = {"gamecfg", "0"};
+cvar_t scratch1     = {"scratch1", "0"};
+cvar_t scratch2     = {"scratch2", "0"};
+cvar_t scratch3     = {"scratch3", "0"};
+cvar_t scratch4     = {"scratch4", "0"};
 cvar_t savedgamecfg = {"savedgamecfg", "0", qtrue};
-cvar_t saved1 = {"saved1", "0", qtrue};
-cvar_t saved2 = {"saved2", "0", qtrue};
-cvar_t saved3 = {"saved3", "0", qtrue};
-cvar_t saved4 = {"saved4", "0", qtrue};
+cvar_t saved1       = {"saved1", "0", qtrue};
+cvar_t saved2       = {"saved2", "0", qtrue};
+cvar_t saved3       = {"saved3", "0", qtrue};
+cvar_t saved4       = {"saved4", "0", qtrue};
 
 #define	MAX_FIELD_LEN	64
 #define GEFV_CACHESIZE	2
@@ -35,7 +35,7 @@ cvar_t saved4 = {"saved4", "0", qtrue};
 struct gefv_cache
 {
 	ddef_t* pcache;
-	char field[MAX_FIELD_LEN];
+	char    field[MAX_FIELD_LEN];
 };
 
 static gefv_cache gefvCache[GEFV_CACHESIZE] = {{nullptr, ""}, {nullptr, ""}};
@@ -66,7 +66,7 @@ angles and bad trails.
 */
 edict_t* ED_Alloc()
 {
-	int i;
+	int      i;
 	edict_t* e;
 
 	for (i = svs.maxclients + 1; i < sv.num_edicts; i++)
@@ -103,17 +103,17 @@ void ED_Free(edict_t* ed)
 {
 	SV_UnlinkEdict(ed); // unlink from world bsp
 
-	ed->free = qtrue;
-	ed->v.model = 0;
+	ed->free         = qtrue;
+	ed->v.model      = 0;
 	ed->v.takedamage = 0;
 	ed->v.modelindex = 0;
-	ed->v.colormap = 0;
-	ed->v.skin = 0;
-	ed->v.frame = 0;
+	ed->v.colormap   = 0;
+	ed->v.skin       = 0;
+	ed->v.frame      = 0;
 	VectorCopy (vec3_origin, ed->v.origin);
 	VectorCopy (vec3_origin, ed->v.angles);
 	ed->v.nextthink = -1;
-	ed->v.solid = 0;
+	ed->v.solid     = 0;
 
 	ed->freetime = sv.time;
 }
@@ -205,7 +205,7 @@ dfunction_t* ED_FindFunction(char* name)
 
 eval_t* GetEdictFieldValue(edict_t* ed, char* field)
 {
-	ddef_t* def;
+	ddef_t*     def;
 	static auto rep = 0;
 
 	for (auto i = 0; i < GEFV_CACHESIZE; i++)
@@ -406,7 +406,7 @@ void ED_Print(edict_t* ed)
 	Con_Printf("\nEDICT %i:\n", NUM_FOR_EDICT(ed));
 	for (auto i = 1; i < progs->numfielddefs; i++)
 	{
-		auto d = &pr_fielddefs[i];
+		auto d    = &pr_fielddefs[i];
 		auto name = pr_strings + d->s_name;
 		if (name[strlen(name) - 2] == '_')
 			continue; // skip _x, _y, _z vars
@@ -452,7 +452,7 @@ void ED_Write(FILE* f, edict_t* ed)
 
 	for (auto i = 1; i < progs->numfielddefs; i++)
 	{
-		auto d = &pr_fielddefs[i];
+		auto d    = &pr_fielddefs[i];
 		auto name = pr_strings + d->s_name;
 		if (name[strlen(name) - 2] == '_')
 			continue; // skip _x, _y, _z vars
@@ -461,7 +461,7 @@ void ED_Write(FILE* f, edict_t* ed)
 
 		// if the value is still all 0, skip the field
 		auto type = d->type & ~DEF_SAVEGLOBAL;
-		for (j = 0; j < type_size[type]; j++)
+		for (j    = 0; j < type_size[type]; j++)
 			if (v[j])
 				break;
 		if (j == type_size[type])
@@ -524,8 +524,8 @@ void ED_Count()
 	int solid;
 	int step;
 
-	auto active = models = solid = step = 0;
-	for (auto i = 0; i < sv.num_edicts; i++)
+	auto      active = models = solid = step = 0;
+	for (auto i      = 0; i < sv.num_edicts; i++)
 	{
 		auto ent = EDICT_NUM(i);
 		if (ent->free)
@@ -565,8 +565,8 @@ void ED_WriteGlobals(FILE* f)
 	fprintf(f, "{\n");
 	for (auto i = 0; i < progs->numglobaldefs; i++)
 	{
-		auto def = &pr_globaldefs[i];
-		int type = def->type;
+		auto def  = &pr_globaldefs[i];
+		int  type = def->type;
 		if (!(def->type & DEF_SAVEGLOBAL))
 			continue;
 		type &= ~DEF_SAVEGLOBAL;
@@ -633,9 +633,9 @@ ED_NewString
 */
 char* ED_NewString(char* string)
 {
-	int l = strlen(string) + 1;
+	int  l        = strlen(string) + 1;
 	auto newvalue = static_cast<char*>(Hunk_Alloc(l));
-	auto new_p = newvalue;
+	auto new_p    = newvalue;
 
 	for (auto i = 0; i < l; i++)
 	{
@@ -665,7 +665,7 @@ returns qfalse if error
 */
 qboolean ED_ParseEpair(void* base, ddef_t* key, char* s)
 {
-	char string[128];
+	char    string[128];
 	ddef_t* def;
 
 	auto d = static_cast<void *>(static_cast<int *>(base) + key->ofs);
@@ -683,15 +683,15 @@ qboolean ED_ParseEpair(void* base, ddef_t* key, char* s)
 	case etype_t::ev_vector:
 		{
 			strcpy(string, s);
-			auto v = string;
-			auto w = string;
+			auto      v = string;
+			auto      w = string;
 			for (auto i = 0; i < 3; i++)
 			{
 				while (*v && *v != ' ')
 					v++;
-				*v = 0;
+				*v                         = 0;
 				static_cast<float *>(d)[i] = atof(w);
-				w = v = v + 1;
+				w                          = v = v + 1;
 			}
 		}
 		break;
@@ -740,7 +740,7 @@ Used for initial level load and for savegames.
 char* ED_ParseEdict(char* data, edict_t* ent)
 {
 	qboolean anglehack;
-	char keyname[256];
+	char     keyname[256];
 
 	auto init = qfalse;
 
@@ -841,8 +841,8 @@ void ED_LoadFromFile(char* data)
 {
 	edict_t* ent;
 
-	ent = nullptr;
-	auto inhibit = 0;
+	ent                    = nullptr;
+	auto inhibit           = 0;
 	pr_global_struct->time = sv.time;
 
 	// parse ents
@@ -859,7 +859,7 @@ void ED_LoadFromFile(char* data)
 			ent = EDICT_NUM(0);
 		else
 			ent = ED_Alloc();
-		data = ED_ParseEdict(data, ent);
+		data    = ED_ParseEdict(data, ent);
 
 		// remove things from different skill levels or deathmatch
 		if (deathmatch.value)
@@ -920,7 +920,7 @@ void PR_LoadProgs()
 	int i;
 
 	// flush the non-C variable lookup cache
-	for (i = 0; i < GEFV_CACHESIZE; i++)
+	for (i                    = 0; i < GEFV_CACHESIZE; i++)
 		gefvCache[i].field[0] = 0;
 
 	CRC_Init(&pr_crc);
@@ -934,7 +934,7 @@ void PR_LoadProgs()
 		CRC_ProcessByte(&pr_crc, reinterpret_cast<byte *>(progs)[i]);
 
 	// byte swap the header
-	for (i = 0; i < sizeof*progs / 4; i++)
+	for (i                                = 0; i < sizeof*progs / 4; i++)
 		reinterpret_cast<int *>(progs)[i] = LittleLong(reinterpret_cast<int *>(progs)[i]);
 
 	if (progs->version != PROG_VERSION)
@@ -942,39 +942,39 @@ void PR_LoadProgs()
 	if (progs->crc != PROGHEADER_CRC)
 		Sys_Error("progs.dat system vars have been modified, progdefs.h is out of date");
 
-	pr_functions = reinterpret_cast<dfunction_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_functions);
-	pr_strings = reinterpret_cast<char *>(progs) + progs->ofs_strings;
-	pr_globaldefs = reinterpret_cast<ddef_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_globaldefs);
-	pr_fielddefs = reinterpret_cast<ddef_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_fielddefs);
-	pr_statements = reinterpret_cast<dstatement_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_statements);
+	pr_functions     = reinterpret_cast<dfunction_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_functions);
+	pr_strings       = reinterpret_cast<char *>(progs) + progs->ofs_strings;
+	pr_globaldefs    = reinterpret_cast<ddef_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_globaldefs);
+	pr_fielddefs     = reinterpret_cast<ddef_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_fielddefs);
+	pr_statements    = reinterpret_cast<dstatement_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_statements);
 	pr_global_struct = reinterpret_cast<globalvars_t *>(reinterpret_cast<byte *>(progs) + progs->ofs_globals);
-	pr_globals = reinterpret_cast<float *>(pr_global_struct);
+	pr_globals       = reinterpret_cast<float *>(pr_global_struct);
 
-	pr_edict_size = progs->entityfields * 4 + sizeof (edict_t) - sizeof(entvars_t);
+	pr_edict_size = progs->entityfields * 4 + sizeof(edict_t) - sizeof(entvars_t);
 
 	// byte swap the lumps
 	for (i = 0; i < progs->numstatements; i++)
 	{
 		pr_statements[i].op = static_cast<op_t>(LittleShort(static_cast<short>(pr_statements[i].op)));
-		pr_statements[i].a = LittleShort(pr_statements[i].a);
-		pr_statements[i].b = LittleShort(pr_statements[i].b);
-		pr_statements[i].c = LittleShort(pr_statements[i].c);
+		pr_statements[i].a  = LittleShort(pr_statements[i].a);
+		pr_statements[i].b  = LittleShort(pr_statements[i].b);
+		pr_statements[i].c  = LittleShort(pr_statements[i].c);
 	}
 
 	for (i = 0; i < progs->numfunctions; i++)
 	{
 		pr_functions[i].first_statement = LittleLong(pr_functions[i].first_statement);
-		pr_functions[i].parm_start = LittleLong(pr_functions[i].parm_start);
-		pr_functions[i].s_name = LittleLong(pr_functions[i].s_name);
-		pr_functions[i].s_file = LittleLong(pr_functions[i].s_file);
-		pr_functions[i].numparms = LittleLong(pr_functions[i].numparms);
-		pr_functions[i].locals = LittleLong(pr_functions[i].locals);
+		pr_functions[i].parm_start      = LittleLong(pr_functions[i].parm_start);
+		pr_functions[i].s_name          = LittleLong(pr_functions[i].s_name);
+		pr_functions[i].s_file          = LittleLong(pr_functions[i].s_file);
+		pr_functions[i].numparms        = LittleLong(pr_functions[i].numparms);
+		pr_functions[i].locals          = LittleLong(pr_functions[i].locals);
 	}
 
 	for (i = 0; i < progs->numglobaldefs; i++)
 	{
-		pr_globaldefs[i].type = LittleShort(pr_globaldefs[i].type);
-		pr_globaldefs[i].ofs = LittleShort(pr_globaldefs[i].ofs);
+		pr_globaldefs[i].type   = LittleShort(pr_globaldefs[i].type);
+		pr_globaldefs[i].ofs    = LittleShort(pr_globaldefs[i].ofs);
 		pr_globaldefs[i].s_name = LittleLong(pr_globaldefs[i].s_name);
 	}
 
@@ -983,11 +983,11 @@ void PR_LoadProgs()
 		pr_fielddefs[i].type = LittleShort(pr_fielddefs[i].type);
 		if (pr_fielddefs[i].type & DEF_SAVEGLOBAL)
 			Sys_Error("PR_LoadProgs: pr_fielddefs[i].type & DEF_SAVEGLOBAL");
-		pr_fielddefs[i].ofs = LittleShort(pr_fielddefs[i].ofs);
+		pr_fielddefs[i].ofs    = LittleShort(pr_fielddefs[i].ofs);
 		pr_fielddefs[i].s_name = LittleLong(pr_fielddefs[i].s_name);
 	}
 
-	for (i = 0; i < progs->numglobals; i++)
+	for (i                                     = 0; i < progs->numglobals; i++)
 		reinterpret_cast<int *>(pr_globals)[i] = LittleLong(reinterpret_cast<int *>(pr_globals)[i]);
 }
 
@@ -1027,7 +1027,7 @@ edict_t* EDICT_NUM(int n)
 int NUM_FOR_EDICT(edict_t* e)
 {
 	auto b = reinterpret_cast<byte *>(e) - reinterpret_cast<byte *>(sv.edicts);
-	b = b / pr_edict_size;
+	b      = b / pr_edict_size;
 
 	if (b < 0 || b >= sv.num_edicts)
 		Sys_Error("NUM_FOR_EDICT: bad pointer");

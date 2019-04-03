@@ -1,8 +1,8 @@
 #include "quakedef.h"
 
-int wad_numlumps;
+int         wad_numlumps;
 lumpinfo_t* wad_lumps;
-byte* wad_base;
+byte*       wad_base;
 
 void SwapPic(qpic_t* pic);
 
@@ -45,7 +45,7 @@ W_LoadWadFile
 void W_LoadWadFile(char* filename)
 {
 	lumpinfo_t* lump_p;
-	unsigned i;
+	unsigned    i;
 
 	wad_base = COM_LoadHunkFile(filename);
 	if (!wad_base)
@@ -59,14 +59,14 @@ void W_LoadWadFile(char* filename)
 		|| header->identification[3] != '2')
 		Sys_Error("Wad file %s doesn't have WAD2 id\n", filename);
 
-	wad_numlumps = LittleLong(header->numlumps);
+	wad_numlumps      = LittleLong(header->numlumps);
 	auto infotableofs = LittleLong(header->infotableofs);
-	wad_lumps = reinterpret_cast<lumpinfo_t *>(wad_base + infotableofs);
+	wad_lumps         = reinterpret_cast<lumpinfo_t *>(wad_base + infotableofs);
 
-	for (i = 0 , lump_p = wad_lumps; i < wad_numlumps; i++ , lump_p++)
+	for (i = 0, lump_p = wad_lumps; i < wad_numlumps; i++, lump_p++)
 	{
 		lump_p->filepos = LittleLong(lump_p->filepos);
-		lump_p->size = LittleLong(lump_p->size);
+		lump_p->size    = LittleLong(lump_p->size);
 		W_CleanupName(lump_p->name, lump_p->name);
 		if (lump_p->type == TYP_QPIC)
 			SwapPic(reinterpret_cast<qpic_t *>(wad_base + lump_p->filepos));
@@ -81,13 +81,13 @@ W_GetLumpinfo
 */
 lumpinfo_t* W_GetLumpinfo(char* name)
 {
-	int i;
+	int         i;
 	lumpinfo_t* lump_p;
-	char clean[16];
+	char        clean[16];
 
 	W_CleanupName(name, clean);
 
-	for (lump_p = wad_lumps , i = 0; i < wad_numlumps; i++ , lump_p++)
+	for (lump_p = wad_lumps, i = 0; i < wad_numlumps; i++, lump_p++)
 	{
 		if (!strcmp(clean, lump_p->name))
 			return lump_p;
@@ -122,6 +122,6 @@ automatic byte swapping
 
 void SwapPic(qpic_t* pic)
 {
-	pic->width = LittleLong(pic->width);
+	pic->width  = LittleLong(pic->width);
 	pic->height = LittleLong(pic->height);
 }

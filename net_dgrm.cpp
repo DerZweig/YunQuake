@@ -8,11 +8,11 @@
 static int net_landriverlevel;
 
 /* statistic counters */
-int packetsSent = 0;
-int packetsReSent = 0;
-int packetsReceived = 0;
+int packetsSent            = 0;
+int packetsReSent          = 0;
+int packetsReceived        = 0;
 int receivedDuplicateCount = 0;
-int shortPacketCount = 0;
+int shortPacketCount       = 0;
 int droppedDatagrams;
 
 static int myDriverLevel;
@@ -21,13 +21,13 @@ struct
 {
 	unsigned int length;
 	unsigned int sequence;
-	byte data[MAX_DATAGRAM];
-} packetBuffer;
+	byte         data[MAX_DATAGRAM];
+}                packetBuffer;
 
 extern m_state_t m_return_state;
 extern m_state_t m_state;
-extern qboolean m_return_onerror;
-extern char m_return_reason[32];
+extern qboolean  m_return_onerror;
+extern char      m_return_reason[32];
 
 
 #ifdef DEBUG
@@ -42,8 +42,6 @@ char *StrAddr (qsockaddr *addr)
 	return buf;
 }
 #endif
-
-
 
 
 int Datagram_SendMessage(qsocket_t* sock, sizebuf_t* data)
@@ -68,17 +66,17 @@ int Datagram_SendMessage(qsocket_t* sock, sizebuf_t* data)
 	if (data->cursize <= MAX_DATAGRAM)
 	{
 		dataLen = data->cursize;
-		eom = NETFLAG_EOM;
+		eom     = NETFLAG_EOM;
 	}
 	else
 	{
 		dataLen = MAX_DATAGRAM;
-		eom = 0;
+		eom     = 0;
 	}
 
 	auto packetLen = NET_HEADERSIZE + dataLen;
 
-	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
+	packetBuffer.length   = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(sock->sendSequence++);
 	Q_memcpy(packetBuffer.data, sock->sendMessage, dataLen);
 
@@ -101,16 +99,16 @@ int SendMessageNext(qsocket_t* sock)
 	if (sock->sendMessageLength <= MAX_DATAGRAM)
 	{
 		dataLen = sock->sendMessageLength;
-		eom = NETFLAG_EOM;
+		eom     = NETFLAG_EOM;
 	}
 	else
 	{
 		dataLen = MAX_DATAGRAM;
-		eom = 0;
+		eom     = 0;
 	}
 	auto packetLen = NET_HEADERSIZE + dataLen;
 
-	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
+	packetBuffer.length   = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(sock->sendSequence++);
 	Q_memcpy(packetBuffer.data, sock->sendMessage, dataLen);
 
@@ -133,16 +131,16 @@ int ReSendMessage(qsocket_t* sock)
 	if (sock->sendMessageLength <= MAX_DATAGRAM)
 	{
 		dataLen = sock->sendMessageLength;
-		eom = NETFLAG_EOM;
+		eom     = NETFLAG_EOM;
 	}
 	else
 	{
 		dataLen = MAX_DATAGRAM;
-		eom = 0;
+		eom     = 0;
 	}
 	auto packetLen = NET_HEADERSIZE + dataLen;
 
-	packetBuffer.length = BigLong(packetLen | (NETFLAG_DATA | eom));
+	packetBuffer.length   = BigLong(packetLen | (NETFLAG_DATA | eom));
 	packetBuffer.sequence = BigLong(sock->sendSequence - 1);
 	Q_memcpy(packetBuffer.data, sock->sendMessage, dataLen);
 
@@ -184,7 +182,7 @@ int Datagram_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data)
 
 	int packetLen = NET_HEADERSIZE + data->cursize;
 
-	packetBuffer.length = BigLong(packetLen | NETFLAG_UNRELIABLE);
+	packetBuffer.length   = BigLong(packetLen | NETFLAG_UNRELIABLE);
 	packetBuffer.sequence = BigLong(sock->unreliableSendSequence++);
 	Q_memcpy(packetBuffer.data, data->data, data->cursize);
 
@@ -198,7 +196,7 @@ int Datagram_SendUnreliableMessage(qsocket_t* sock, sizebuf_t* data)
 
 int Datagram_GetMessage(qsocket_t* sock)
 {
-	auto ret = 0;
+	auto             ret = 0;
 	struct qsockaddr readaddr;
 
 	if (!sock->canSend)
@@ -237,7 +235,7 @@ int Datagram_GetMessage(qsocket_t* sock)
 			continue;
 		}
 
-		length = BigLong(packetBuffer.length);
+		length     = BigLong(packetBuffer.length);
 		auto flags = length & ~NETFLAG_LENGTH_MASK;
 		length &= NETFLAG_LENGTH_MASK;
 
@@ -299,14 +297,14 @@ int Datagram_GetMessage(qsocket_t* sock)
 			else
 			{
 				sock->sendMessageLength = 0;
-				sock->canSend = qtrue;
+				sock->canSend           = qtrue;
 			}
 			continue;
 		}
 
 		if (flags & NETFLAG_DATA)
 		{
-			packetBuffer.length = BigLong(NET_HEADERSIZE | NETFLAG_ACK);
+			packetBuffer.length   = BigLong(NET_HEADERSIZE | NETFLAG_ACK);
 			packetBuffer.sequence = BigLong(sequence);
 			sfunc.Write(sock->socket, reinterpret_cast<byte *>(&packetBuffer), NET_HEADERSIZE, &readaddr);
 
@@ -391,18 +389,18 @@ void NET_Stats_f()
 
 
 static qboolean testInProgress = qfalse;
-static int testPollCount;
-static int testDriver;
-static int testSocket;
+static int      testPollCount;
+static int      testDriver;
+static int      testSocket;
 
-static void Test_Poll();
+static void   Test_Poll();
 PollProcedure testPollProcedure = {nullptr, 0.0, Test_Poll};
 
 static void Test_Poll()
 {
 	struct qsockaddr clientaddr;
-	char name[32];
-	char address[64];
+	char             name[32];
+	char             address[64];
 
 	net_landriverlevel = testDriver;
 
@@ -427,10 +425,10 @@ static void Test_Poll()
 		if (MSG_ReadByte() != CCREP_PLAYER_INFO)
 			Sys_Error("Unexpected repsonse to Player Info request\n");
 
-		MSG_ReadByte();//playerNumber
+		MSG_ReadByte(); //playerNumber
 		Q_strcpy(name, MSG_ReadString());
-		auto colors = MSG_ReadLong();
-		auto frags = MSG_ReadLong();
+		auto colors      = MSG_ReadLong();
+		auto frags       = MSG_ReadLong();
 		auto connectTime = MSG_ReadLong();
 		Q_strcpy(address, MSG_ReadString());
 
@@ -451,8 +449,8 @@ static void Test_Poll()
 
 static void Test_f()
 {
-	int n;
-	auto max = MAX_SCOREBOARD;
+	int              n;
+	auto             max = MAX_SCOREBOARD;
 	struct qsockaddr sendaddr;
 
 	if (testInProgress)
@@ -468,7 +466,7 @@ static void Test_f()
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
 				net_landriverlevel = hostcache[n].ldriver;
-				max = hostcache[n].maxusers;
+				max                = hostcache[n].maxusers;
 				Q_memcpy(&sendaddr, &hostcache[n].addr, sizeof(struct qsockaddr));
 				break;
 			}
@@ -494,8 +492,8 @@ JustDoIt:
 		return;
 
 	testInProgress = qtrue;
-	testPollCount = 20;
-	testDriver = net_landriverlevel;
+	testPollCount  = 20;
+	testDriver     = net_landriverlevel;
 
 	for (n = 0; n < max; n++)
 	{
@@ -513,20 +511,20 @@ JustDoIt:
 
 
 static qboolean test2InProgress = qfalse;
-static int test2Driver;
-static int test2Socket;
+static int      test2Driver;
+static int      test2Socket;
 
-static void Test2_Poll();
+static void   Test2_Poll();
 PollProcedure test2PollProcedure = {nullptr, 0.0, Test2_Poll};
 
 static void Test2_Poll()
 {
 	struct qsockaddr clientaddr;
-	char name[256];
-	char value[256];
+	char             name[256];
+	char             value[256];
 
 	net_landriverlevel = test2Driver;
-	name[0] = 0;
+	name[0]            = 0;
 
 	auto len = dfunc.Read(test2Socket, net_message.data, net_message.maxsize, &clientaddr);
 	if (len < sizeof(int))
@@ -576,7 +574,7 @@ Done:
 
 static void Test2_f()
 {
-	int n;
+	int              n;
 	struct qsockaddr sendaddr;
 
 	if (test2InProgress)
@@ -617,7 +615,7 @@ JustDoIt:
 		return;
 
 	test2InProgress = qtrue;
-	test2Driver = net_landriverlevel;
+	test2Driver     = net_landriverlevel;
 
 	SZ_Clear(&net_message);
 	// save space for the header, filled in later
@@ -736,12 +734,12 @@ static qsocket_t* _Datagram_CheckNewConnections()
 
 	if (command == CCREQ_PLAYER_INFO)
 	{
-		int clientNumber;
+		int       clientNumber;
 		client_t* client;
 
 		auto playerNumber = MSG_ReadByte();
 		auto activeNumber = -1;
-		for (clientNumber = 0 , client = svs.clients; clientNumber < svs.maxclients; clientNumber++ , client++)
+		for (clientNumber = 0, client = svs.clients; clientNumber < svs.maxclients; clientNumber++, client++)
 		{
 			if (client->active)
 			{
@@ -895,9 +893,9 @@ static qsocket_t* _Datagram_CheckNewConnections()
 	}
 
 	// everything is allocated, just fill in the details	
-	sock->socket = newsock;
+	sock->socket    = newsock;
 	sock->landriver = net_landriverlevel;
-	sock->addr = clientaddr;
+	sock->addr      = clientaddr;
 	Q_strcpy(sock->address, dfunc.AddrToString(&clientaddr));
 
 	// send him back the info about the server connection he has been allocated
@@ -929,8 +927,8 @@ qsocket_t* Datagram_CheckNewConnections()
 
 static void _Datagram_SearchForHosts(qboolean xmit)
 {
-	int ret;
-	int n;
+	int              ret;
+	int              n;
 	struct qsockaddr readaddr;
 	struct qsockaddr myaddr;
 
@@ -989,7 +987,7 @@ static void _Datagram_SearchForHosts(qboolean xmit)
 		hostCacheCount++;
 		Q_strcpy(hostcache[n].name, MSG_ReadString());
 		Q_strcpy(hostcache[n].map, MSG_ReadString());
-		hostcache[n].users = MSG_ReadByte();
+		hostcache[n].users    = MSG_ReadByte();
 		hostcache[n].maxusers = MSG_ReadByte();
 		if (MSG_ReadByte() != NET_PROTOCOL_VERSION)
 		{
@@ -999,7 +997,7 @@ static void _Datagram_SearchForHosts(qboolean xmit)
 			Q_strcat(hostcache[n].name, hostcache[n].cname);
 		}
 		Q_memcpy(&hostcache[n].addr, &readaddr, sizeof(struct qsockaddr));
-		hostcache[n].driver = net_driverlevel;
+		hostcache[n].driver  = net_driverlevel;
 		hostcache[n].ldriver = net_landriverlevel;
 		Q_strcpy(hostcache[n].cname, dfunc.AddrToString(&readaddr));
 
@@ -1013,7 +1011,7 @@ static void _Datagram_SearchForHosts(qboolean xmit)
 				i = Q_strlen(hostcache[n].name);
 				if (i < 15 && hostcache[n].name[i - 1] > '8')
 				{
-					hostcache[n].name[i] = '0';
+					hostcache[n].name[i]     = '0';
 					hostcache[n].name[i + 1] = 0;
 				}
 				else
@@ -1040,8 +1038,8 @@ static qsocket_t* _Datagram_Connect(char* host)
 {
 	struct qsockaddr sendaddr;
 	struct qsockaddr readaddr;
-	auto ret = 0;
-	char* reason;
+	auto             ret = 0;
+	char*            reason;
 
 	// see if we can resolve the host name
 	if (dfunc.GetAddrFromName(host, &sendaddr) == -1)
@@ -1054,7 +1052,7 @@ static qsocket_t* _Datagram_Connect(char* host)
 	auto sock = NET_NewQSocket();
 	if (sock == nullptr)
 		goto ErrorReturn2;
-	sock->socket = newsock;
+	sock->socket    = newsock;
 	sock->landriver = net_landriverlevel;
 
 	// connect to the host
@@ -1192,8 +1190,8 @@ ErrorReturn2:
 	dfunc.CloseSocket(newsock);
 	if (m_return_onerror)
 	{
-		key_dest = keydest_t::key_menu;
-		m_state = m_return_state;
+		key_dest         = keydest_t::key_menu;
+		m_state          = m_return_state;
 		m_return_onerror = qfalse;
 	}
 	return nullptr;

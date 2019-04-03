@@ -40,7 +40,8 @@ void R_RemoveEfrags(entity_t* ent)
 			if (!walk)
 				break;
 			if (walk == ef)
-			{ // remove this fragment
+			{
+				// remove this fragment
 				*prev = ef->leafnext;
 				break;
 			}
@@ -48,10 +49,10 @@ void R_RemoveEfrags(entity_t* ent)
 		}
 
 		auto old = ef;
-		ef = ef->entnext;
+		ef       = ef->entnext;
 
 		// put it on the free list
-		old->entnext = cl.free_efrags;
+		old->entnext   = cl.free_efrags;
 		cl.free_efrags = old;
 	}
 
@@ -93,12 +94,12 @@ void R_SplitEntityOnNode(mnode_t* node)
 		ef->entity = r_addent;
 
 		// add the entity link	
-		*lastlink = ef;
-		lastlink = &ef->entnext;
+		*lastlink   = ef;
+		lastlink    = &ef->entnext;
 		ef->entnext = nullptr;
 
 		// set the leaf links
-		ef->leaf = leaf;
+		ef->leaf     = leaf;
 		ef->leafnext = leaf->efrags;
 		leaf->efrags = ef;
 
@@ -108,7 +109,7 @@ void R_SplitEntityOnNode(mnode_t* node)
 	// NODE_MIXED
 
 	splitplane = node->plane;
-	int sides = BOX_ON_PLANE_SIDE(r_emins, r_emaxs, splitplane);
+	int sides  = BOX_ON_PLANE_SIDE(r_emins, r_emaxs, splitplane);
 
 	if (sides == 3)
 	{
@@ -139,7 +140,7 @@ void R_AddEfrags(entity_t* ent)
 
 	r_addent = ent;
 
-	lastlink = &ent->efrag;
+	lastlink        = &ent->efrag;
 	r_pefragtopnode = nullptr;
 
 	auto entmodel = ent->model;
@@ -169,7 +170,7 @@ void R_StoreEfrags(efrag_t** ppefrag)
 
 	while ((pefrag = *ppefrag) != nullptr)
 	{
-		auto pent = pefrag->entity;
+		auto pent    = pefrag->entity;
 		auto clmodel = pent->model;
 
 		switch (clmodel->type)

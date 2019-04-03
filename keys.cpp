@@ -9,28 +9,28 @@ key up events are sent even if in console mode
 
 #define		MAXCMDLINE	256
 char key_lines[32][MAXCMDLINE];
-int key_linepos;
-int shift_down = qfalse;
-int key_lastpress;
+int  key_linepos;
+int  shift_down = qfalse;
+int  key_lastpress;
 
-int edit_line = 0;
+int edit_line    = 0;
 int history_line = 0;
 
 keydest_t key_dest;
 
 int key_count; // incremented every key event
 
-char* keybindings[256];
+char*    keybindings[256];
 qboolean consolekeys[256]; // if qtrue, can't be rebound while in console
 qboolean menubound[256]; // if qtrue, can't be rebound while in menu
-int keyshift[256]; // key to map to if shift held down in console
-int key_repeats[256]; // if > 1, it is autorepeating
+int      keyshift[256]; // key to map to if shift held down in console
+int      key_repeats[256]; // if > 1, it is autorepeating
 qboolean keydown[256];
 
 struct keyname_t
 {
 	char* name;
-	int keynum;
+	int   keynum;
 };
 
 keyname_t keynames[] =
@@ -118,7 +118,7 @@ keyname_t keynames[] =
 
 	{"SEMICOLON", ';'}, // because a raw semicolon seperates commands
 
-	{nullptr,0}
+	{nullptr, 0}
 };
 
 /*
@@ -144,10 +144,10 @@ void Key_Console(int key)
 		Cbuf_AddText(key_lines[edit_line] + 1); // skip the >
 		Cbuf_AddText("\n");
 		Con_Printf("%s\n", key_lines[edit_line]);
-		edit_line = edit_line + 1 & 31;
-		history_line = edit_line;
+		edit_line               = edit_line + 1 & 31;
+		history_line            = edit_line;
 		key_lines[edit_line][0] = ']';
-		key_linepos = 1;
+		key_linepos             = 1;
 		if (cls.state == cactive_t::ca_disconnected)
 			SCR_UpdateScreen(); // force an update, because the command
 		// may take some time
@@ -155,14 +155,15 @@ void Key_Console(int key)
 	}
 
 	if (key == K_TAB)
-	{ // command completion
+	{
+		// command completion
 		auto cmd = Cmd_CompleteCommand(key_lines[edit_line] + 1);
 		if (!cmd)
 			cmd = Cvar_CompleteVariable(key_lines[edit_line] + 1);
 		if (cmd)
 		{
 			Q_strcpy(key_lines[edit_line] + 1, cmd);
-			key_linepos = Q_strlen(cmd) + 1;
+			key_linepos                       = Q_strlen(cmd) + 1;
 			key_lines[edit_line][key_linepos] = ' ';
 			key_linepos++;
 			key_lines[edit_line][key_linepos] = 0;
@@ -204,7 +205,7 @@ void Key_Console(int key)
 		if (history_line == edit_line)
 		{
 			key_lines[edit_line][0] = ']';
-			key_linepos = 1;
+			key_linepos             = 1;
 		}
 		else
 		{
@@ -255,7 +256,7 @@ void Key_Console(int key)
 
 //============================================================================
 
-char chat_buffer[32];
+char     chat_buffer[32];
 qboolean team_message = qfalse;
 
 void Key_Message(int key)
@@ -271,7 +272,7 @@ void Key_Message(int key)
 		Cbuf_AddText(chat_buffer);
 		Cbuf_AddText("\"\n");
 
-		key_dest = keydest_t::key_game;
+		key_dest       = keydest_t::key_game;
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
 		return;
@@ -279,7 +280,7 @@ void Key_Message(int key)
 
 	if (key == K_ESCAPE)
 	{
-		key_dest = keydest_t::key_game;
+		key_dest       = keydest_t::key_game;
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
 		return;
@@ -302,7 +303,7 @@ void Key_Message(int key)
 		return; // all full
 
 	chat_buffer[chat_bufferlen++] = key;
-	chat_buffer[chat_bufferlen] = 0;
+	chat_buffer[chat_bufferlen]   = 0;
 }
 
 //============================================================================
@@ -348,7 +349,8 @@ char* Key_KeynumToString(int keynum)
 	if (keynum == -1)
 		return "<KEY NOT FOUND>";
 	if (keynum > 32 && keynum < 127)
-	{ // printable ascii
+	{
+		// printable ascii
 		tinystr[0] = keynum;
 		tinystr[1] = 0;
 		return tinystr;
@@ -380,10 +382,10 @@ void Key_SetBinding(int keynum, char* binding)
 	}
 
 	// allocate memory for new binding
-	auto l = Q_strlen(binding);
+	auto l        = Q_strlen(binding);
 	auto newvalue = static_cast<char*>(Z_Malloc(l + 1));
 	Q_strcpy(newvalue, binding);
-	newvalue[l] = 0;
+	newvalue[l]         = 0;
 	keybindings[keynum] = newvalue;
 }
 
@@ -451,7 +453,7 @@ void Key_Bind_f()
 	}
 
 	// copy the rest of the command line
-	cmd[0] = 0; // start out with a null string
+	cmd[0]      = 0; // start out with a null string
 	for (auto i = 2; i < c; i++)
 	{
 		if (i > 2)
@@ -497,51 +499,51 @@ void Key_Init()
 	//
 	// init ascii characters in console mode
 	//
-	for (i = 32; i < 128; i++)
-		consolekeys[i] = qtrue;
-	consolekeys[K_ENTER] = qtrue;
-	consolekeys[K_TAB] = qtrue;
-	consolekeys[K_LEFTARROW] = qtrue;
+	for (i                    = 32; i < 128; i++)
+		consolekeys[i]        = qtrue;
+	consolekeys[K_ENTER]      = qtrue;
+	consolekeys[K_TAB]        = qtrue;
+	consolekeys[K_LEFTARROW]  = qtrue;
 	consolekeys[K_RIGHTARROW] = qtrue;
-	consolekeys[K_UPARROW] = qtrue;
-	consolekeys[K_DOWNARROW] = qtrue;
-	consolekeys[K_BACKSPACE] = qtrue;
-	consolekeys[K_PGUP] = qtrue;
-	consolekeys[K_PGDN] = qtrue;
-	consolekeys[K_SHIFT] = qtrue;
-	consolekeys[K_MWHEELUP] = qtrue;
+	consolekeys[K_UPARROW]    = qtrue;
+	consolekeys[K_DOWNARROW]  = qtrue;
+	consolekeys[K_BACKSPACE]  = qtrue;
+	consolekeys[K_PGUP]       = qtrue;
+	consolekeys[K_PGDN]       = qtrue;
+	consolekeys[K_SHIFT]      = qtrue;
+	consolekeys[K_MWHEELUP]   = qtrue;
 	consolekeys[K_MWHEELDOWN] = qtrue;
-	consolekeys['`'] = qfalse;
-	consolekeys['~'] = qfalse;
+	consolekeys['`']          = qfalse;
+	consolekeys['~']          = qfalse;
 
-	for (i = 0; i < 256; i++)
+	for (i          = 0; i < 256; i++)
 		keyshift[i] = i;
-	for (i = 'a'; i <= 'z'; i++)
+	for (i          = 'a'; i <= 'z'; i++)
 		keyshift[i] = i - 'a' + 'A';
-	keyshift['1'] = '!';
-	keyshift['2'] = '@';
-	keyshift['3'] = '#';
-	keyshift['4'] = '$';
-	keyshift['5'] = '%';
-	keyshift['6'] = '^';
-	keyshift['7'] = '&';
-	keyshift['8'] = '*';
-	keyshift['9'] = '(';
-	keyshift['0'] = ')';
-	keyshift['-'] = '_';
-	keyshift['='] = '+';
-	keyshift[','] = '<';
-	keyshift['.'] = '>';
-	keyshift['/'] = '?';
-	keyshift[';'] = ':';
-	keyshift['\''] = '"';
-	keyshift['['] = '{';
-	keyshift[']'] = '}';
-	keyshift['`'] = '~';
-	keyshift['\\'] = '|';
+	keyshift['1']   = '!';
+	keyshift['2']   = '@';
+	keyshift['3']   = '#';
+	keyshift['4']   = '$';
+	keyshift['5']   = '%';
+	keyshift['6']   = '^';
+	keyshift['7']   = '&';
+	keyshift['8']   = '*';
+	keyshift['9']   = '(';
+	keyshift['0']   = ')';
+	keyshift['-']   = '_';
+	keyshift['=']   = '+';
+	keyshift[',']   = '<';
+	keyshift['.']   = '>';
+	keyshift['/']   = '?';
+	keyshift[';']   = ':';
+	keyshift['\'']  = '"';
+	keyshift['[']   = '{';
+	keyshift[']']   = '}';
+	keyshift['`']   = '~';
+	keyshift['\\']  = '|';
 
-	menubound[K_ESCAPE] = qtrue;
-	for (i = 0; i < 12; i++)
+	menubound[K_ESCAPE]     = qtrue;
+	for (i                  = 0; i < 12; i++)
 		menubound[K_F1 + i] = qtrue;
 
 	//
@@ -563,7 +565,7 @@ Should NOT be called during an interrupt!
 void Key_Event(int key, qboolean down)
 {
 	char* kb;
-	char cmd[1024];
+	char  cmd[1024];
 
 	keydown[key] = down;
 
@@ -665,7 +667,8 @@ void Key_Event(int key, qboolean down)
 		if (kb)
 		{
 			if (kb[0] == '+')
-			{ // button commands add keynum as a parm
+			{
+				// button commands add keynum as a parm
 				sprintf(cmd, "%s %i\n", kb, key);
 				Cbuf_AddText(cmd);
 			}
@@ -714,7 +717,7 @@ void Key_ClearStates()
 {
 	for (auto i = 0; i < 256; i++)
 	{
-		keydown[i] = qfalse;
+		keydown[i]     = qfalse;
 		key_repeats[i] = 0;
 	}
 }

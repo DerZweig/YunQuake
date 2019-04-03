@@ -1,4 +1,5 @@
 #pragma once
+
 #define ALIAS_VERSION	6
 
 #define ALIAS_ONSEAM				0x0020
@@ -28,21 +29,21 @@ enum class aliasskintype_t
 
 struct mdl_t
 {
-	int ident;
-	int version;
-	vec3_t scale;
-	vec3_t scale_origin;
-	float boundingradius;
-	vec3_t eyeposition;
-	int numskins;
-	int skinwidth;
-	int skinheight;
-	int numverts;
-	int numtris;
-	int numframes;
+	int        ident;
+	int        version;
+	vec3_t     scale;
+	vec3_t     scale_origin;
+	float      boundingradius;
+	vec3_t     eyeposition;
+	int        numskins;
+	int        skinwidth;
+	int        skinheight;
+	int        numverts;
+	int        numtris;
+	int        numframes;
 	synctype_t synctype;
-	int flags;
-	float size;
+	int        flags;
+	float      size;
 };
 
 // TODO: could be shorts
@@ -75,12 +76,12 @@ struct daliasframe_t
 {
 	trivertx_t bboxmin; // lightnormal isn't used
 	trivertx_t bboxmax; // lightnormal isn't used
-	char name[16]; // frame name from grabbing
+	char       name[16]; // frame name from grabbing
 };
 
 struct daliasgroup_t
 {
-	int numframes;
+	int        numframes;
 	trivertx_t bboxmin; // lightnormal isn't used
 	trivertx_t bboxmax; // lightnormal isn't used
 };

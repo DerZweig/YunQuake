@@ -11,22 +11,22 @@ extern int vcrFile;
 static struct
 {
 	double time;
-	int op;
-	long session;
-} next;
+	int    op;
+	long   session;
+}          next;
 
 int VCR_Init()
 {
 	net_drivers[0].Init = VCR_Init;
 
-	net_drivers[0].SearchForHosts = VCR_SearchForHosts;
-	net_drivers[0].Connect = VCR_Connect;
+	net_drivers[0].SearchForHosts      = VCR_SearchForHosts;
+	net_drivers[0].Connect             = VCR_Connect;
 	net_drivers[0].CheckNewConnections = VCR_CheckNewConnections;
-	net_drivers[0].QGetMessage = VCR_GetMessage;
-	net_drivers[0].QSendMessage = VCR_SendMessage;
-	net_drivers[0].CanSendMessage = VCR_CanSendMessage;
-	net_drivers[0].Close = VCR_Close;
-	net_drivers[0].Shutdown = VCR_Shutdown;
+	net_drivers[0].QGetMessage         = VCR_GetMessage;
+	net_drivers[0].QSendMessage        = VCR_SendMessage;
+	net_drivers[0].CanSendMessage      = VCR_CanSendMessage;
+	net_drivers[0].Close               = VCR_Close;
+	net_drivers[0].Shutdown            = VCR_Shutdown;
 
 	Sys_FileRead(vcrFile, &next, sizeof next);
 	return 0;
@@ -134,7 +134,7 @@ qsocket_t* VCR_CheckNewConnections()
 		return nullptr;
 	}
 
-	auto sock = NET_NewQSocket();
+	auto sock                                    = NET_NewQSocket();
 	*reinterpret_cast<long *>(&sock->driverdata) = next.session;
 
 	Sys_FileRead(vcrFile, sock->address, NET_NAMELEN);

@@ -1,12 +1,13 @@
 #pragma once
+
 struct cvar_t
 {
-	char* name;
-	char* string;
+	char*    name;
+	char*    string;
 	qboolean archive; // set to qtrue to cause it to be saved to vars.rc
 	qboolean server; // notifies players when changed
-	float value;
-	cvar_t* next;
+	float    value;
+	cvar_t*  next;
 };
 
 void Cvar_RegisterVariable(cvar_t* variable);

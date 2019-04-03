@@ -1,4 +1,5 @@
 #pragma once
+
 #define	MAX_MAP_HULLS		4
 
 #define	MAX_MAP_MODELS		256
@@ -61,14 +62,14 @@ struct dmodel_t
 {
 	float mins[3], maxs[3];
 	float origin[3];
-	int headnode[MAX_MAP_HULLS];
-	int visleafs; // not including the solid leaf 0
-	int firstface, numfaces;
+	int   headnode[MAX_MAP_HULLS];
+	int   visleafs; // not including the solid leaf 0
+	int   firstface, numfaces;
 };
 
 struct dheader_t
 {
-	int version;
+	int    version;
 	lump_t lumps[HEADER_LUMPS];
 };
 
@@ -82,7 +83,7 @@ struct dmiptexlump_t
 
 struct miptex_t
 {
-	char name[16];
+	char     name[16];
 	unsigned width, height;
 	unsigned offsets[MIPLEVELS]; // four mip maps stored
 };
@@ -108,7 +109,7 @@ struct dplane_t
 {
 	float normal[3];
 	float dist;
-	int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
+	int   type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 };
 
 
@@ -131,17 +132,17 @@ struct dplane_t
 
 struct dnode_t
 {
-	int planenum;
-	short children[2]; // negative numbers are -(leafs+1), not nodes
-	short mins[3]; // for sphere culling
-	short maxs[3];
+	int            planenum;
+	short          children[2]; // negative numbers are -(leafs+1), not nodes
+	short          mins[3]; // for sphere culling
+	short          maxs[3];
 	unsigned short firstface;
 	unsigned short numfaces; // counting both sides
 };
 
 struct dclipnode_t
 {
-	int planenum;
+	int   planenum;
 	short children[2]; // negative numbers are contents
 };
 
@@ -149,8 +150,8 @@ struct dclipnode_t
 struct texinfo_t
 {
 	float vecs[2][4]; // [s/t][xyz offset]
-	int miptex;
-	int flags;
+	int   miptex;
+	int   flags;
 };
 
 #define	TEX_SPECIAL		1		// sky or slime, no lightmap or 256 subdivision
@@ -169,13 +170,13 @@ struct dface_t
 	short planenum;
 	short side;
 
-	int firstedge; // we must support > 64k edges
+	int   firstedge; // we must support > 64k edges
 	short numedges;
 	short texinfo;
 
 	// lighting info
 	byte styles[MAXLIGHTMAPS];
-	int lightofs; // start of [numstyles*surfsize] samples
+	int  lightofs; // start of [numstyles*surfsize] samples
 };
 
 

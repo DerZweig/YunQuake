@@ -9,15 +9,15 @@ HANDLE heventParentSend;
 HANDLE hStdout;
 HANDLE hStdin;
 
-DWORD RequestProc(DWORD dwNichts);
-LPVOID GetMappedBuffer(HANDLE hfileBuffer);
-void ReleaseMappedBuffer(LPVOID pBuffer);
-BOOL GetScreenBufferLines(int* piLines);
-BOOL SetScreenBufferLines(int iLines);
-BOOL ReadText(LPTSTR pszText, int iBeginLine, int iEndLine);
-BOOL WriteText(LPCTSTR szText);
-int CharToCode(char c);
-BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy);
+DWORD  RequestProc(DWORD          dwNichts);
+LPVOID GetMappedBuffer(HANDLE     hfileBuffer);
+void   ReleaseMappedBuffer(LPVOID pBuffer);
+BOOL   GetScreenBufferLines(int*  piLines);
+BOOL   SetScreenBufferLines(int   iLines);
+BOOL   ReadText(LPTSTR            pszText, int iBeginLine, int iEndLine);
+BOOL   WriteText(LPCTSTR          szText);
+int    CharToCode(char            c);
+BOOL   SetConsoleCXCY(HANDLE      hStdout, int cx, int cy);
 
 
 void InitConProc(HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
@@ -28,9 +28,9 @@ void InitConProc(HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
 	if (!hFile || !heventParent || !heventChild)
 		return;
 
-	hfileBuffer = hFile;
+	hfileBuffer      = hFile;
 	heventParentSend = heventParent;
-	heventChildSend = heventChild;
+	heventChildSend  = heventChild;
 
 	// so we'll know when to go away.
 	heventDone = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -55,7 +55,7 @@ void InitConProc(HANDLE hFile, HANDLE heventParent, HANDLE heventChild)
 
 	// save off the input/output handles.
 	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-	hStdin = GetStdHandle(STD_INPUT_HANDLE);
+	hStdin  = GetStdHandle(STD_INPUT_HANDLE);
 
 	// force 80 character width, at least 25 character height
 	SetConsoleCXCY(hStdout, 80, 25);
@@ -105,9 +105,9 @@ DWORD RequestProc(DWORD dwNichts)
 				// Param1 : Begin line
 				// Param2 : End line
 				auto iBeginLine = pBuffer[1];
-				auto iEndLine = pBuffer[2];
-				pBuffer[0] = ReadText(reinterpret_cast<LPTSTR>(pBuffer + 1), iBeginLine,
-				                      iEndLine);
+				auto iEndLine   = pBuffer[2];
+				pBuffer[0]      = ReadText(reinterpret_cast<LPTSTR>(pBuffer + 1), iBeginLine,
+				                           iEndLine);
 			}
 			break;
 
@@ -174,11 +174,11 @@ BOOL ReadText(LPTSTR pszText, int iBeginLine, int iEndLine)
 	coord.Y = iBeginLine;
 
 	auto bRet = ReadConsoleOutputCharacter(
-		hStdout,
-		pszText,
-		80 * (iEndLine - iBeginLine + 1),
-		coord,
-		&dwRead);
+	                                       hStdout,
+	                                       pszText,
+	                                       80 * (iEndLine - iBeginLine + 1),
+	                                       coord,
+	                                       &dwRead);
 
 	// Make sure it's null terminated.
 	if (bRet)
@@ -190,7 +190,7 @@ BOOL ReadText(LPTSTR pszText, int iBeginLine, int iEndLine)
 
 BOOL WriteText(LPCTSTR szText)
 {
-	DWORD dwWritten;
+	DWORD        dwWritten;
 	INPUT_RECORD rec;
 
 	auto sz = const_cast<LPTSTR>(szText);
@@ -203,28 +203,28 @@ BOOL WriteText(LPCTSTR szText)
 
 		char upper = toupper(*sz);
 
-		rec.EventType = KEY_EVENT;
-		rec.Event.KeyEvent.bKeyDown = TRUE;
-		rec.Event.KeyEvent.wRepeatCount = 1;
-		rec.Event.KeyEvent.wVirtualKeyCode = upper;
-		rec.Event.KeyEvent.wVirtualScanCode = CharToCode(*sz);
-		rec.Event.KeyEvent.uChar.AsciiChar = *sz;
+		rec.EventType                        = KEY_EVENT;
+		rec.Event.KeyEvent.bKeyDown          = TRUE;
+		rec.Event.KeyEvent.wRepeatCount      = 1;
+		rec.Event.KeyEvent.wVirtualKeyCode   = upper;
+		rec.Event.KeyEvent.wVirtualScanCode  = CharToCode(*sz);
+		rec.Event.KeyEvent.uChar.AsciiChar   = *sz;
 		rec.Event.KeyEvent.uChar.UnicodeChar = *sz;
 		rec.Event.KeyEvent.dwControlKeyState = isupper(*sz) ? 0x80 : 0x0;
 
 		WriteConsoleInput(
-			hStdin,
-			&rec,
-			1,
-			&dwWritten);
+		                  hStdin,
+		                  &rec,
+		                  1,
+		                  &dwWritten);
 
 		rec.Event.KeyEvent.bKeyDown = FALSE;
 
 		WriteConsoleInput(
-			hStdin,
-			&rec,
-			1,
-			&dwWritten);
+		                  hStdin,
+		                  &rec,
+		                  1,
+		                  &dwWritten);
 
 		sz++;
 	}
@@ -272,9 +272,9 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 		return FALSE;
 
 	// height
-	info.srWindow.Left = 0;
-	info.srWindow.Right = info.dwSize.X - 1;
-	info.srWindow.Top = 0;
+	info.srWindow.Left   = 0;
+	info.srWindow.Right  = info.dwSize.X - 1;
+	info.srWindow.Top    = 0;
 	info.srWindow.Bottom = cy - 1;
 
 	if (cy < info.dwSize.Y)
@@ -302,9 +302,9 @@ BOOL SetConsoleCXCY(HANDLE hStdout, int cx, int cy)
 		return FALSE;
 
 	// width
-	info.srWindow.Left = 0;
-	info.srWindow.Right = cx - 1;
-	info.srWindow.Top = 0;
+	info.srWindow.Left   = 0;
+	info.srWindow.Right  = cx - 1;
+	info.srWindow.Top    = 0;
 	info.srWindow.Bottom = info.dwSize.Y - 1;
 
 	if (cx < info.dwSize.X)

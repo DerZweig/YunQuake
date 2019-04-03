@@ -22,11 +22,11 @@ state bit 2 is edge triggered on the down to up transition
 */
 
 
-kbutton_t in_mlook, in_klook;
-kbutton_t in_left, in_right, in_forward, in_back;
+kbutton_t in_mlook,  in_klook;
+kbutton_t in_left,   in_right,    in_forward,  in_back;
 kbutton_t in_lookup, in_lookdown, in_moveleft, in_moveright;
-kbutton_t in_strafe, in_speed, in_use, in_jump, in_attack;
-kbutton_t in_up, in_down;
+kbutton_t in_strafe, in_speed,    in_use,      in_jump, in_attack;
+kbutton_t in_up,     in_down;
 
 int in_impulse;
 
@@ -67,9 +67,10 @@ void KeyUp(kbutton_t* b)
 	if (c[0])
 		k = atoi(c);
 	else
-	{ // typed manually at the console, assume for unsticking, so clear all
+	{
+		// typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
-		b->state = 4; // impulse up
+		b->state   = 4; // impulse up
 		return;
 	}
 
@@ -147,10 +148,10 @@ Returns 0.25 if a key was pressed and released during the frame,
 */
 float CL_KeyState(kbutton_t* key)
 {
-	bool impulsedown = key->state & 2;
-	bool impulseup = key->state & 4;
-	bool down = key->state & 1;
-	float val = 0;
+	bool  impulsedown = key->state & 2;
+	bool  impulseup   = key->state & 4;
+	bool  down        = key->state & 1;
+	float val         = 0;
 
 	if (impulsedown && !impulseup)
 		if (down)
@@ -181,17 +182,17 @@ float CL_KeyState(kbutton_t* key)
 
 //==========================================================================
 
-cvar_t cl_upspeed = {"cl_upspeed","200"};
-cvar_t cl_forwardspeed = {"cl_forwardspeed","200", qtrue};
-cvar_t cl_backspeed = {"cl_backspeed","200", qtrue};
-cvar_t cl_sidespeed = {"cl_sidespeed","350"};
+cvar_t cl_upspeed      = {"cl_upspeed", "200"};
+cvar_t cl_forwardspeed = {"cl_forwardspeed", "200", qtrue};
+cvar_t cl_backspeed    = {"cl_backspeed", "200", qtrue};
+cvar_t cl_sidespeed    = {"cl_sidespeed", "350"};
 
-cvar_t cl_movespeedkey = {"cl_movespeedkey","2.0"};
+cvar_t cl_movespeedkey = {"cl_movespeedkey", "2.0"};
 
-cvar_t cl_yawspeed = {"cl_yawspeed","140"};
-cvar_t cl_pitchspeed = {"cl_pitchspeed","150"};
+cvar_t cl_yawspeed   = {"cl_yawspeed", "140"};
+cvar_t cl_pitchspeed = {"cl_pitchspeed", "150"};
 
-cvar_t cl_anglespeedkey = {"cl_anglespeedkey","1.5"};
+cvar_t cl_anglespeedkey = {"cl_anglespeedkey", "1.5"};
 
 
 /*
@@ -223,7 +224,7 @@ void CL_AdjustAngles()
 		cl.viewangles[PITCH] += speed * cl_pitchspeed.value * CL_KeyState(&in_back);
 	}
 
-	auto up = CL_KeyState(&in_lookup);
+	auto up   = CL_KeyState(&in_lookup);
 	auto down = CL_KeyState(&in_lookdown);
 
 	cl.viewangles[PITCH] -= speed * cl_pitchspeed.value * up;
@@ -297,11 +298,11 @@ CL_SendMove
 void CL_SendMove(usercmd_t* cmd)
 {
 	sizebuf_t buf;
-	byte data[128];
+	byte      data[128];
 
 	buf.maxsize = 128;
 	buf.cursize = 0;
-	buf.data = data;
+	buf.data    = data;
 
 	cl.cmd = *cmd;
 

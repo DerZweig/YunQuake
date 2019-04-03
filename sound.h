@@ -1,5 +1,4 @@
-#ifndef __SOUND__
-#define __SOUND__
+#pragma once
 
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
@@ -12,17 +11,17 @@ struct portable_samplepair_t
 
 struct sfx_t
 {
-	char name[MAX_QPATH];
+	char         name[MAX_QPATH];
 	cache_user_t cache;
 };
 
 struct sfxcache_t
 {
-	int length;
-	int loopstart;
-	int speed;
-	int width;
-	int stereo;
+	int  length;
+	int  loopstart;
+	int  speed;
+	int  width;
+	int  stereo;
 	byte data[1]; // variable sized
 };
 
@@ -31,28 +30,28 @@ struct dma_t
 	qboolean gamealive;
 	qboolean soundalive;
 	qboolean splitbuffer;
-	int channels;
-	int samples; // mono samples in buffer
-	int submission_chunk; // don't mix less than this #
-	int samplepos; // in mono samples
-	int samplebits;
-	int speed;
-	byte* buffer;
+	int      channels;
+	int      samples; // mono samples in buffer
+	int      submission_chunk; // don't mix less than this #
+	int      samplepos; // in mono samples
+	int      samplebits;
+	int      speed;
+	byte*    buffer;
 };
 
 struct channel_t
 {
 	sfx_t* sfx; // sfx number
-	int leftvol; // 0-255 volume
-	int rightvol; // 0-255 volume
-	int end; // end time in global paintsamples
-	int pos; // sample position in sfx
-	int looping; // where to loop, -1 = no looping
-	int entnum; // to allow overriding a specific sound
-	int entchannel; //
+	int    leftvol; // 0-255 volume
+	int    rightvol; // 0-255 volume
+	int    end; // end time in global paintsamples
+	int    pos; // sample position in sfx
+	int    looping; // where to loop, -1 = no looping
+	int    entnum; // to allow overriding a specific sound
+	int    entchannel; //
 	vec3_t origin; // origin of sound effect
-	vec_t dist_mult; // distance multiplier (attenuation/clipK)
-	int master_vol; // 0-255 master volume
+	vec_t  dist_mult; // distance multiplier (attenuation/clipK)
+	int    master_vol; // 0-255 master volume
 };
 
 struct wavinfo_t
@@ -68,21 +67,21 @@ struct wavinfo_t
 void S_Init();
 void S_Startup();
 void S_Shutdown();
-void S_StartSound(int entnum, int entchannel, sfx_t* sfx, vec3_t origin, float fvol, float attenuation);
-void S_StaticSound(sfx_t* sfx, vec3_t origin, float vol, float attenuation);
-void S_StopSound(int entnum, int entchannel);
+void S_StartSound(int         entnum, int entchannel, sfx_t* sfx, vec3_t origin, float fvol, float attenuation);
+void S_StaticSound(sfx_t*     sfx, vec3_t origin, float      vol, float  attenuation);
+void S_StopSound(int          entnum, int entchannel);
 void S_StopAllSounds(qboolean clear);
 void S_ClearBuffer();
 void S_Update(vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
 void S_ExtraUpdate();
 
 sfx_t* S_PrecacheSound(char* sample);
-void S_TouchSound(char* sample);
-void S_ClearPrecache();
-void S_BeginPrecaching();
-void S_EndPrecaching();
-void S_PaintChannels(int endtime);
-void S_InitPaintChannels();
+void   S_TouchSound(char*    sample);
+void   S_ClearPrecache();
+void   S_BeginPrecaching();
+void   S_EndPrecaching();
+void   S_PaintChannels(int endtime);
+void   S_InitPaintChannels();
 
 // picks a channel based on priorities, empty slots, number of channels
 channel_t* SND_PickChannel(int entnum, int entchannel);
@@ -120,24 +119,23 @@ extern int total_channels;
 // number of times S_Update() is called per second.
 //
 
-extern qboolean fakedma;
-extern int fakedma_updates;
-extern int paintedtime;
-extern vec3_t listener_origin;
-extern vec3_t listener_forward;
-extern vec3_t listener_right;
-extern vec3_t listener_up;
+extern qboolean        fakedma;
+extern int             fakedma_updates;
+extern int             paintedtime;
+extern vec3_t          listener_origin;
+extern vec3_t          listener_forward;
+extern vec3_t          listener_right;
+extern vec3_t          listener_up;
 extern volatile dma_t* shm;
-extern volatile dma_t sn;
-extern vec_t sound_nominal_clip_dist;
-
+extern volatile dma_t  sn;
+extern vec_t           sound_nominal_clip_dist;
 
 
 extern qboolean snd_initialized;
 
 extern int snd_blocked;
 
-void S_LocalSound(char* s);
+void        S_LocalSound(char* s);
 sfxcache_t* S_LoadSound(sfx_t* s);
 
 wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength);
@@ -147,5 +145,3 @@ void SNDDMA_Submit();
 
 void S_AmbientOff();
 void S_AmbientOn();
-
-#endif

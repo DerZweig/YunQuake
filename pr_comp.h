@@ -1,6 +1,7 @@
 #pragma once
+
 using func_t = int;
-using string_t = int ;
+using string_t = int;
 
 enum class etype_t
 {
@@ -110,7 +111,7 @@ enum class op_t : uint16_t
 
 struct dstatement_t
 {
-	op_t op;
+	op_t  op;
 	short a, b, c;
 };
 
@@ -119,7 +120,7 @@ struct ddef_t
 	unsigned short type; // if DEF_SAVEGLOBGAL bit is set
 	// the variable needs to be saved in savegames
 	unsigned short ofs;
-	int s_name;
+	int            s_name;
 };
 
 #define	DEF_SAVEGLOBAL	(1<<15)
@@ -137,7 +138,7 @@ struct dfunction_t
 	int s_name;
 	int s_file; // source file defined in
 
-	int numparms;
+	int  numparms;
 	byte parm_size[MAX_PARMS];
 };
 

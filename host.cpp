@@ -19,7 +19,7 @@ double host_frametime;
 double host_time;
 double realtime; // without any filtering or bounding
 double oldrealtime; // last frame run
-int host_framecount;
+int    host_framecount;
 
 int host_hunklevel;
 
@@ -32,28 +32,28 @@ jmp_buf host_abortserver;
 byte* host_basepal;
 byte* host_colormap;
 
-cvar_t host_framerate = {"host_framerate","0"}; // set for slow motion
-cvar_t host_speeds = {"host_speeds","0"}; // set for running times
+cvar_t host_framerate = {"host_framerate", "0"}; // set for slow motion
+cvar_t host_speeds    = {"host_speeds", "0"}; // set for running times
 
-cvar_t sys_ticrate = {"sys_ticrate","0.05"};
-cvar_t serverprofile = {"serverprofile","0"};
+cvar_t sys_ticrate   = {"sys_ticrate", "0.05"};
+cvar_t serverprofile = {"serverprofile", "0"};
 
-cvar_t fraglimit = {"fraglimit","0",qfalse,qtrue};
-cvar_t timelimit = {"timelimit","0",qfalse,qtrue};
-cvar_t teamplay = {"teamplay","0",qfalse,qtrue};
+cvar_t fraglimit = {"fraglimit", "0", qfalse, qtrue};
+cvar_t timelimit = {"timelimit", "0", qfalse, qtrue};
+cvar_t teamplay  = {"teamplay", "0", qfalse, qtrue};
 
-cvar_t samelevel = {"samelevel","0"};
-cvar_t noexit = {"noexit","0",qfalse,qtrue};
+cvar_t samelevel = {"samelevel", "0"};
+cvar_t noexit    = {"noexit", "0", qfalse, qtrue};
 
-cvar_t developer = {"developer","0"};
+cvar_t developer = {"developer", "0"};
 
-cvar_t skill = {"skill","1"}; // 0 - 3
-cvar_t deathmatch = {"deathmatch","0"}; // 0, 1, or 2
-cvar_t coop = {"coop","0"}; // 0 or 1
+cvar_t skill      = {"skill", "1"}; // 0 - 3
+cvar_t deathmatch = {"deathmatch", "0"}; // 0, 1, or 2
+cvar_t coop       = {"coop", "0"}; // 0 or 1
 
-cvar_t pausable = {"pausable","1"};
+cvar_t pausable = {"pausable", "1"};
 
-cvar_t temp1 = {"temp1","0"};
+cvar_t temp1 = {"temp1", "0"};
 
 
 /*
@@ -64,7 +64,7 @@ Host_EndGame
 void Host_EndGame(char* message, ...)
 {
 	va_list argptr;
-	char string[1024];
+	char    string[1024];
 
 	va_start (argptr,message);
 	vsprintf(string, message, argptr);
@@ -94,8 +94,8 @@ This shuts down both the client and server
 */
 void Host_Error(char* error, ...)
 {
-	va_list argptr;
-	char string[1024];
+	va_list     argptr;
+	char        string[1024];
 	static auto inerror = qfalse;
 
 	if (inerror)
@@ -164,7 +164,7 @@ void Host_FindMaxClients()
 	svs.maxclientslimit = svs.maxclients;
 	if (svs.maxclientslimit < 4)
 		svs.maxclientslimit = 4;
-	svs.clients = static_cast<client_t*>(Hunk_AllocName(svs.maxclientslimit * sizeof(client_t), "clients"));
+	svs.clients             = static_cast<client_t*>(Hunk_AllocName(svs.maxclientslimit * sizeof(client_t), "clients"));
 
 	if (svs.maxclients > 1)
 		Cvar_SetValue("deathmatch", 1.0);
@@ -247,7 +247,7 @@ FIXME: make this just a stuffed echo?
 void SV_ClientPrintf(char* fmt, ...)
 {
 	va_list argptr;
-	char string[1024];
+	char    string[1024];
 
 	va_start (argptr,fmt);
 	vsprintf(string, fmt, argptr);
@@ -267,7 +267,7 @@ Sends text to all active clients
 void SV_BroadcastPrintf(char* fmt, ...)
 {
 	va_list argptr;
-	char string[1024];
+	char    string[1024];
 
 	va_start (argptr,fmt);
 	vsprintf(string, fmt, argptr);
@@ -293,7 +293,7 @@ Send text over to the client to be executed
 void Host_ClientCommands(char* fmt, ...)
 {
 	va_list argptr;
-	char string[1024];
+	char    string[1024];
 
 	va_start (argptr,fmt);
 	vsprintf(string, fmt, argptr);
@@ -313,7 +313,7 @@ if (crash = qtrue), don't bother sending signofs
 */
 void SV_DropClient(qboolean crash)
 {
-	int i;
+	int       i;
 	client_t* client;
 
 	if (!crash)
@@ -329,7 +329,7 @@ void SV_DropClient(qboolean crash)
 		{
 			// call the prog function for removing a client
 			// this will set the body to a dead frame, among other things
-			auto saveSelf = pr_global_struct->self;
+			auto saveSelf          = pr_global_struct->self;
 			pr_global_struct->self = EDICT_TO_PROG(host_client->edict);
 			PR_ExecuteProgram(pr_global_struct->ClientDisconnect);
 			pr_global_struct->self = saveSelf;
@@ -343,13 +343,13 @@ void SV_DropClient(qboolean crash)
 	host_client->netconnection = nullptr;
 
 	// free the client (the body stays around)
-	host_client->active = qfalse;
-	host_client->name[0] = 0;
+	host_client->active    = qfalse;
+	host_client->name[0]   = 0;
 	host_client->old_frags = -999999;
 	net_activeconnections--;
 
 	// send notification to all clients
-	for (i = 0 , client = svs.clients; i < svs.maxclients; i++ , client++)
+	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
 		if (!client->active)
 			continue;
@@ -374,10 +374,10 @@ This only happens at the end of a game, not between levels
 */
 void Host_ShutdownServer(qboolean crash)
 {
-	int i;
-	int count;
+	int       i;
+	int       count;
 	sizebuf_t buf;
-	char message[4];
+	char      message[4];
 
 	if (!sv.active)
 		return;
@@ -392,8 +392,8 @@ void Host_ShutdownServer(qboolean crash)
 	auto start = Sys_FloatTime();
 	do
 	{
-		count = 0;
-		for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+		count  = 0;
+		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		{
 			if (host_client->active && host_client->message.cursize)
 			{
@@ -415,7 +415,7 @@ void Host_ShutdownServer(qboolean crash)
 	while (count);
 
 	// make sure all the clients know we're disconnecting
-	buf.data = reinterpret_cast<byte*>(message);
+	buf.data    = reinterpret_cast<byte*>(message);
 	buf.maxsize = 4;
 	buf.cursize = 0;
 	MSG_WriteByte(&buf, svc_disconnect);
@@ -423,7 +423,7 @@ void Host_ShutdownServer(qboolean crash)
 	if (count)
 		Con_Printf("Host_ShutdownServer: NET_SendToAll failed for %u clients\n", count);
 
-	for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		if (host_client->active)
 			SV_DropClient(crash);
 
@@ -474,12 +474,13 @@ qboolean Host_FilterTime(float time)
 		return qfalse; // framerate is too high
 
 	host_frametime = realtime - oldrealtime;
-	oldrealtime = realtime;
+	oldrealtime    = realtime;
 
 	if (host_framerate.value > 0)
 		host_frametime = host_framerate.value;
 	else
-	{ // don't allow really long or short frames
+	{
+		// don't allow really long or short frames
 		if (host_frametime > 0.1)
 			host_frametime = 0.1;
 		if (host_frametime < 0.001)
@@ -630,7 +631,7 @@ void _Host_Frame(float time)
 	if (host_speeds.value)
 	{
 		int pass1 = (time1 - time3) * 1000;
-		time3 = Sys_FloatTime();
+		time3     = Sys_FloatTime();
 		int pass2 = (time2 - time1) * 1000;
 		int pass3 = (time3 - time2) * 1000;
 		Con_Printf("%3i tot %3i server %3i gfx %3i snd\n", pass1 + pass2 + pass3, pass1, pass2, pass3);
@@ -642,7 +643,7 @@ void _Host_Frame(float time)
 void Host_Frame(float time)
 {
 	static double timetotal;
-	static int timecount;
+	static int    timecount;
 
 	if (!serverprofile.value)
 	{
@@ -660,10 +661,10 @@ void Host_Frame(float time)
 	if (timecount < 1000)
 		return;
 
-	int m = timetotal * 1000 / timecount;
-	timecount = 0;
-	timetotal = 0;
-	auto c = 0;
+	int m       = timetotal * 1000 / timecount;
+	timecount   = 0;
+	timetotal   = 0;
+	auto      c = 0;
 	for (auto i = 0; i < svs.maxclients; i++)
 	{
 		if (svs.clients[i].active)
@@ -698,9 +699,9 @@ void Host_InitVCR(quakeparms_t* parms)
 			Sys_Error("Invalid signature in vcr file\n");
 
 		Sys_FileRead(vcrFile, &com_argc, sizeof(int));
-		com_argv = new char*[com_argc]();
+		com_argv    = new char*[com_argc]();
 		com_argv[0] = parms->argv[0];
-		for (i = 0; i < com_argc; i++)
+		for (i      = 0; i < com_argc; i++)
 		{
 			Sys_FileRead(vcrFile, &len, sizeof(int));
 			auto p = new char[len]();

@@ -1,5 +1,4 @@
 #pragma once
-#pragma warning( disable : 4229 )  // mgraph gets this
 
 #include <windows.h>
 #define WM_MOUSEWHEEL                   0x020A
@@ -9,11 +8,11 @@
 #endif
 
 extern HINSTANCE global_hInstance;
-extern int global_nCmdShow;
+extern int       global_nCmdShow;
 
 #ifndef SERVERONLY
 
-extern LPDIRECTSOUND pDS;
+extern LPDIRECTSOUND       pDS;
 extern LPDIRECTSOUNDBUFFER pDSBuf;
 
 extern DWORD gSndBufSize;
@@ -34,7 +33,7 @@ enum class modestate_t
 
 extern modestate_t modestate;
 
-extern HWND mainwindow;
+extern HWND     mainwindow;
 extern qboolean ActiveApp, Minimized;
 
 
@@ -49,7 +48,7 @@ void IN_MouseEvent(int mstate);
 extern qboolean winsock_lib_initialized;
 
 
-extern int window_center_x, window_center_y;
+extern int  window_center_x, window_center_y;
 extern RECT window_rect;
 
 extern qboolean mouseinitialized;
@@ -64,19 +63,19 @@ void S_UnblockSound();
 
 void VID_SetDefaultMode();
 
-extern int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
-extern int (PASCAL FAR *pWSACleanup)();
-extern int (PASCAL FAR *pWSAGetLastError)();
-extern SOCKET (PASCAL FAR *psocket)(int af, int type, int protocol);
-extern int (PASCAL FAR *pioctlsocket)(SOCKET s, long cmd, u_long FAR * argp);
-extern int (PASCAL FAR *psetsockopt)(SOCKET s, int level, int optname, const char FAR * optval, int optlen);
-extern int (PASCAL FAR *precvfrom)(SOCKET s, char FAR * buf, int len, int flags, sockaddr FAR * from, int FAR * fromlen);
-extern int (PASCAL FAR *psendto)(SOCKET s, const char FAR * buf, int len, int flags, const sockaddr FAR * to, int tolen);
-extern int (PASCAL FAR *pclosesocket)(SOCKET s);
-extern int (PASCAL FAR *pgethostname)(char FAR * name, int namelen);
+extern int (PASCAL FAR *          pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
+extern int (PASCAL FAR *          pWSACleanup)();
+extern int (PASCAL FAR *          pWSAGetLastError)();
+extern SOCKET (PASCAL FAR *       psocket)(int                     af, int             type, int         protocol);
+extern int (PASCAL FAR *          pioctlsocket)(SOCKET             s, long             cmd, u_long FAR * argp);
+extern int (PASCAL FAR *          psetsockopt)(SOCKET              s, int              level, int        optname, const char FAR * optval, int                 optlen);
+extern int (PASCAL FAR *          precvfrom)(SOCKET                s, char FAR *       buf, int          len, int                  flags, sockaddr FAR *       from, int FAR * fromlen);
+extern int (PASCAL FAR *          psendto)(SOCKET                  s, const char FAR * buf, int          len, int                  flags, const sockaddr FAR * to, int         tolen);
+extern int (PASCAL FAR *          pclosesocket)(SOCKET             s);
+extern int (PASCAL FAR *          pgethostname)(char FAR *         name, int namelen);
 extern hostent FAR * (PASCAL FAR *pgethostbyname)(const char FAR * name);
-extern hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr, int len, int type);
-extern int (PASCAL FAR *pgetsockname)(SOCKET s, sockaddr FAR * name, int FAR * namelen);
+extern hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr, int         len, int        type);
+extern int (PASCAL FAR *          pgetsockname)(SOCKET             s, sockaddr FAR * name, int FAR * namelen);
 
 #define CCOM_WRITE_TEXT		0x2
 #define CCOM_GET_TEXT		0x3

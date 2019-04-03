@@ -1,4 +1,5 @@
 #pragma once
+
 void Cbuf_Init();
 // allocates an initial text buffer that will grow as needed
 
@@ -34,7 +35,8 @@ using xcommand_t = void (*)();
 
 enum class cmd_source_t
 {
-	src_client, // came in over a net connection as a clc_stringcmd
+	src_client,
+	// came in over a net connection as a clc_stringcmd
 	// host_client will be valid during this state.
 	src_command // from the command buffer
 };
@@ -55,7 +57,7 @@ char* Cmd_CompleteCommand(char* partial);
 // attempts to match a partial command for automatic command line completion
 // returns nullptr if nothing fits
 
-int Cmd_Argc();
+int   Cmd_Argc();
 char* Cmd_Argv(int arg);
 char* Cmd_Args();
 // The functions that execute commands get their parameters with these

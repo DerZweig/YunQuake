@@ -1,7 +1,5 @@
 #include "quakedef.h"
 
-
-
 int current_skill;
 
 void Mod_Print();
@@ -36,9 +34,9 @@ Host_Status_f
 void Host_Status_f()
 {
 	client_t* client;
-	int hours;
-	int j;
-	void (*print)(char* fmt, ...);
+	int       hours;
+	int       j;
+	void (*   print)(char* fmt, ...);
 
 	if (cmd_source == cmd_source_t::src_command)
 	{
@@ -60,7 +58,7 @@ void Host_Status_f()
 		print("ipx:     %s\n", my_ipx_address);
 	print("map:     %s\n", sv.name);
 	print("players: %i active (%i max)\n\n", net_activeconnections, svs.maxclients);
-	for (j = 0 , client = svs.clients; j < svs.maxclients; j++ , client++)
+	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
 		if (!client->active)
 			continue;
@@ -139,13 +137,13 @@ void Host_Noclip_f()
 
 	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
 	{
-		noclip_anglehack = qtrue;
+		noclip_anglehack      = qtrue;
 		sv_player->v.movetype = MOVETYPE_NOCLIP;
 		SV_ClientPrintf("noclip ON\n");
 	}
 	else
 	{
-		noclip_anglehack = qfalse;
+		noclip_anglehack      = qfalse;
 		sv_player->v.movetype = MOVETYPE_WALK;
 		SV_ClientPrintf("noclip OFF\n");
 	}
@@ -190,7 +188,7 @@ Host_Ping_f
 */
 void Host_Ping_f()
 {
-	int i;
+	int       i;
 	client_t* client;
 
 	if (cmd_source == cmd_source_t::src_command)
@@ -200,12 +198,12 @@ void Host_Ping_f()
 	}
 
 	SV_ClientPrintf("Client ping times:\n");
-	for (i = 0 , client = svs.clients; i < svs.maxclients; i++ , client++)
+	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
 		if (!client->active)
 			continue;
-		float total = 0;
-		for (auto j = 0; j < NUM_PING_TIMES; j++)
+		float     total = 0;
+		for (auto j     = 0; j < NUM_PING_TIMES; j++)
 			total += client->ping_times[j];
 		total /= NUM_PING_TIMES;
 		SV_ClientPrintf("%4i %s\n", static_cast<int>(total * 1000), client->name);
@@ -232,7 +230,7 @@ command from the console.  Active clients are kicked off.
 */
 void Host_Map_f()
 {
-	int i;
+	int  i;
 	char name[MAX_QPATH];
 
 	if (cmd_source != cmd_source_t::src_command)
@@ -247,7 +245,7 @@ void Host_Map_f()
 	SCR_BeginLoadingPlaque();
 
 	cls.mapstring[0] = 0;
-	for (i = 0; i < Cmd_Argc(); i++)
+	for (i           = 0; i < Cmd_Argc(); i++)
 	{
 		strcat(cls.mapstring, Cmd_Argv(i));
 		strcat(cls.mapstring, " ");
@@ -377,10 +375,10 @@ Writes a SAVEGAME_COMMENT_LENGTH character comment describing the current
 */
 void Host_SavegameComment(char* text)
 {
-	int i;
+	int  i;
 	char kills[20];
 
-	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
+	for (i      = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
 		text[i] = ' ';
 	memcpy(text, cl.levelname, strlen(cl.levelname));
 	sprintf(kills, "kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
@@ -388,7 +386,7 @@ void Host_SavegameComment(char* text)
 	// convert space to _ to make stdio happy
 	for (i = 0; i < SAVEGAME_COMMENT_LENGTH; i++)
 		if (text[i] == ' ')
-			text[i] = '_';
+			text[i]               = '_';
 	text[SAVEGAME_COMMENT_LENGTH] = '\0';
 }
 
@@ -401,7 +399,7 @@ Host_Savegame_f
 void Host_Savegame_f()
 {
 	char name[256];
-	int i;
+	int  i;
 	char comment[SAVEGAME_COMMENT_LENGTH + 1];
 
 	if (cmd_source != cmd_source_t::src_command)
@@ -495,13 +493,13 @@ Host_Loadgame_f
 */
 void Host_Loadgame_f()
 {
-	char name[MAX_OSPATH];
-	char mapname[MAX_QPATH];
+	char  name[MAX_OSPATH];
+	char  mapname[MAX_QPATH];
 	float time;
 	float tfloat;
-	char str[32768];
-	int i;
-	int version;
+	char  str[32768];
+	int   i;
+	int   version;
 	float spawn_parms[NUM_SPAWN_PARMS];
 
 	if (cmd_source != cmd_source_t::src_command)
@@ -556,7 +554,7 @@ void Host_Loadgame_f()
 		Con_Printf("Couldn't load map\n");
 		return;
 	}
-	sv.paused = qtrue; // pause until all clients connect
+	sv.paused   = qtrue; // pause until all clients connect
 	sv.loadgame = qtrue;
 
 	// load the light styles
@@ -586,7 +584,7 @@ void Host_Loadgame_f()
 		}
 		if (i == sizeof str - 1)
 			Sys_Error("Loadgame buffer overflow");
-		str[i] = 0;
+		str[i]     = 0;
 		auto start = COM_Parse(str);
 		if (!com_token[0])
 			break; // end of file
@@ -594,11 +592,13 @@ void Host_Loadgame_f()
 			Sys_Error("First token isn't a brace");
 
 		if (entnum == -1)
-		{ // parse the global vars
+		{
+			// parse the global vars
 			ED_ParseGlobals(start);
 		}
 		else
-		{ // parse an edict
+		{
+			// parse an edict
 
 			auto ent = EDICT_NUM(entnum);
 			memset(&ent->v, 0, progs->entityfields * 4);
@@ -614,11 +614,11 @@ void Host_Loadgame_f()
 	}
 
 	sv.num_edicts = entnum;
-	sv.time = time;
+	sv.time       = time;
 
 	fclose(f);
 
-	for (i = 0; i < NUM_SPAWN_PARMS; i++)
+	for (i                          = 0; i < NUM_SPAWN_PARMS; i++)
 		svs.clients->spawn_parms[i] = spawn_parms[i];
 
 	if (cls.state != cactive_t::ca_dedicated)
@@ -684,15 +684,15 @@ void Host_Version_f()
 void Host_Say(qboolean teamonly)
 {
 	client_t* client;
-	char text[64];
-	auto fromServer = qfalse;
+	char      text[64];
+	auto      fromServer = qfalse;
 
 	if (cmd_source == cmd_source_t::src_command)
 	{
 		if (cls.state == cactive_t::ca_dedicated)
 		{
 			fromServer = qtrue;
-			teamonly = qfalse;
+			teamonly   = qfalse;
 		}
 		else
 		{
@@ -727,7 +727,7 @@ void Host_Say(qboolean teamonly)
 	strcat(text, p);
 	strcat(text, "\n");
 
-	for (j = 0 , client = svs.clients; j < svs.maxclients; j++ , client++)
+	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
 		if (!client || !client->active || !client->spawned)
 			continue;
@@ -757,7 +757,7 @@ void Host_Say_Team_f()
 void Host_Tell_f()
 {
 	client_t* client;
-	char text[64];
+	char      text[64];
 
 	if (cmd_source == cmd_source_t::src_command)
 	{
@@ -789,7 +789,7 @@ void Host_Tell_f()
 	strcat(text, "\n");
 
 	auto save = host_client;
-	for (j = 0 , client = svs.clients; j < svs.maxclients; j++ , client++)
+	for (j    = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
 		if (!client->active || !client->spawned)
 			continue;
@@ -824,7 +824,7 @@ void Host_Color_f()
 		top = bottom = atoi(Cmd_Argv(1));
 	else
 	{
-		top = atoi(Cmd_Argv(1));
+		top    = atoi(Cmd_Argv(1));
 		bottom = atoi(Cmd_Argv(2));
 	}
 
@@ -845,7 +845,7 @@ void Host_Color_f()
 		return;
 	}
 
-	host_client->colors = playercolor;
+	host_client->colors        = playercolor;
 	host_client->edict->v.team = bottom + 1;
 
 	// send notification to all clients
@@ -947,9 +947,9 @@ Host_Spawn_f
 */
 void Host_Spawn_f()
 {
-	int i;
+	int       i;
 	client_t* client;
-	edict_t* ent;
+	edict_t*  ent;
 
 	if (cmd_source == cmd_source_t::src_command)
 	{
@@ -965,7 +965,8 @@ void Host_Spawn_f()
 
 	// run the entrance script
 	if (sv.loadgame)
-	{ // loaded games are fully inited allready
+	{
+		// loaded games are fully inited allready
 		// if this is the last client to be connected, unpause
 		sv.paused = qfalse;
 	}
@@ -976,12 +977,12 @@ void Host_Spawn_f()
 
 		memset(&ent->v, 0, progs->entityfields * 4);
 		ent->v.colormap = NUM_FOR_EDICT(ent);
-		ent->v.team = (host_client->colors & 15) + 1;
-		ent->v.netname = host_client->name - pr_strings;
+		ent->v.team     = (host_client->colors & 15) + 1;
+		ent->v.netname  = host_client->name - pr_strings;
 
 		// copy spawn parms out of the client_t
 
-		for (i = 0; i < NUM_SPAWN_PARMS; i++)
+		for (i                            = 0; i < NUM_SPAWN_PARMS; i++)
 			(&pr_global_struct->parm1)[i] = host_client->spawn_parms[i];
 
 		// call the spawn function
@@ -1004,7 +1005,7 @@ void Host_Spawn_f()
 	MSG_WriteByte(&host_client->message, svc_time);
 	MSG_WriteFloat(&host_client->message, sv.time);
 
-	for (i = 0 , client = svs.clients; i < svs.maxclients; i++ , client++)
+	for (i = 0, client = svs.clients; i < svs.maxclients; i++, client++)
 	{
 		MSG_WriteByte(&host_client->message, svc_updatename);
 		MSG_WriteByte(&host_client->message, i);
@@ -1094,8 +1095,8 @@ void Host_Kick_f()
 {
 	char* who;
 	char* message = nullptr;
-	int i;
-	auto byNumber = qfalse;
+	int   i;
+	auto  byNumber = qfalse;
 
 	if (cmd_source == cmd_source_t::src_command)
 	{
@@ -1118,11 +1119,11 @@ void Host_Kick_f()
 		if (!svs.clients[i].active)
 			return;
 		host_client = &svs.clients[i];
-		byNumber = qtrue;
+		byNumber    = qtrue;
 	}
 	else
 	{
-		for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+		for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 		{
 			if (!host_client->active)
 				continue;
@@ -1365,7 +1366,7 @@ void Host_Viewmodel_f()
 		return;
 	}
 
-	e->v.frame = 0;
+	e->v.frame                                           = 0;
 	cl.model_precache[static_cast<int>(e->v.modelindex)] = m;
 }
 

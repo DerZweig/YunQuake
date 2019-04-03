@@ -7,13 +7,13 @@ void Cmd_ForwardToServer();
 struct cmdalias_t
 {
 	cmdalias_t* next;
-	char name[MAX_ALIAS_NAME];
-	char* value;
+	char        name[MAX_ALIAS_NAME];
+	char*       value;
 };
 
 cmdalias_t* cmd_alias;
 
-int trashtest;
+int  trashtest;
 int* trashspot;
 
 qboolean cmd_wait;
@@ -118,7 +118,7 @@ Cbuf_Execute
 */
 void Cbuf_Execute()
 {
-	int i;
+	int  i;
 	char line[1024];
 
 	while (cmd_text.cursize)
@@ -127,7 +127,7 @@ void Cbuf_Execute()
 		auto text = reinterpret_cast<char *>(cmd_text.data);
 
 		auto quotes = 0;
-		for (i = 0; i < cmd_text.cursize; i++)
+		for (i      = 0; i < cmd_text.cursize; i++)
 		{
 			if (text[i] == '"')
 				quotes++;
@@ -158,7 +158,8 @@ void Cbuf_Execute()
 		Cmd_ExecuteString(line, cmd_source_t::src_command);
 
 		if (cmd_wait)
-		{ // skip out while text still remains in buffer, leaving it
+		{
+			// skip out while text still remains in buffer, leaving it
 			// for next frame
 			cmd_wait = qfalse;
 			break;
@@ -206,8 +207,8 @@ void Cmd_StuffCmds_f()
 		return;
 
 	auto text = static_cast<char*>(Z_Malloc(s + 1));
-	text[0] = 0;
-	for (i = 1; i < com_argc; i++)
+	text[0]   = 0;
+	for (i    = 1; i < com_argc; i++)
 	{
 		if (!com_argv[i])
 			continue; // NEXTSTEP nulls out -NXHost
@@ -218,7 +219,7 @@ void Cmd_StuffCmds_f()
 
 	// pull out the commands
 	auto build = static_cast<char*>(Z_Malloc(s + 1));
-	build[0] = 0;
+	build[0]   = 0;
 
 	for (i = 0; i < s - 1; i++)
 	{
@@ -227,18 +228,18 @@ void Cmd_StuffCmds_f()
 			i++;
 			auto j = i;
 
-			while(text[j] != '+' && text[j] != '-' && text[j] != 0)
+			while (text[j] != '+' && text[j] != '-' && text[j] != 0)
 			{
 				++j;
 			}
 
-			auto c = text[j];
+			auto c  = text[j];
 			text[j] = 0;
 
 			Q_strcat(build, text + i);
 			Q_strcat(build, "\n");
 			text[j] = c;
-			i = j - 1;
+			i       = j - 1;
 		}
 	}
 
@@ -264,7 +265,7 @@ void Cmd_Exec_f()
 	}
 
 	auto mark = Hunk_LowMark();
-	auto f = reinterpret_cast<char *>(COM_LoadHunkFile(Cmd_Argv(1)));
+	auto f    = reinterpret_cast<char *>(COM_LoadHunkFile(Cmd_Argv(1)));
 	if (!f)
 	{
 		Con_Printf("couldn't exec %s\n", Cmd_Argv(1));
@@ -309,7 +310,7 @@ char* CopyString(char* in)
 void Cmd_Alias_f()
 {
 	cmdalias_t* a;
-	char cmd[1024];
+	char        cmd[1024];
 
 	if (Cmd_Argc() == 1)
 	{
@@ -338,15 +339,15 @@ void Cmd_Alias_f()
 
 	if (!a)
 	{
-		a = static_cast<cmdalias_t*>(Z_Malloc(sizeof(cmdalias_t)));
-		a->next = cmd_alias;
+		a         = static_cast<cmdalias_t*>(Z_Malloc(sizeof(cmdalias_t)));
+		a->next   = cmd_alias;
 		cmd_alias = a;
 	}
 	strcpy(a->name, s);
 
 	// copy the rest of the command line
-	cmd[0] = 0; // start out with a null string
-	auto c = Cmd_Argc();
+	cmd[0]      = 0; // start out with a null string
+	auto      c = Cmd_Argc();
 	for (auto i = 2; i < c; i++)
 	{
 		strcat(cmd, Cmd_Argv(i));
@@ -369,17 +370,17 @@ void Cmd_Alias_f()
 struct cmd_function_t
 {
 	cmd_function_t* next;
-	char* name;
-	xcommand_t function;
+	char*           name;
+	xcommand_t      function;
 };
 
 
 #define	MAX_ARGS		80
 
-static int cmd_argc;
+static int   cmd_argc;
 static char* cmd_argv[MAX_ARGS];
 static char* cmd_null_string = "";
-static char* cmd_args = nullptr;
+static char* cmd_args        = nullptr;
 
 cmd_source_t cmd_source;
 
@@ -462,7 +463,8 @@ void Cmd_TokenizeString(char* text)
 		}
 
 		if (*text == '\n')
-		{ // a newline seperates commands in the buffer
+		{
+			// a newline seperates commands in the buffer
 			break;
 		}
 
@@ -515,10 +517,10 @@ void Cmd_AddCommand(char* cmd_name, xcommand_t function)
 		}
 	}
 
-	cmd = static_cast<cmd_function_t*>(Hunk_Alloc(sizeof(cmd_function_t)));
-	cmd->name = cmd_name;
+	cmd           = static_cast<cmd_function_t*>(Hunk_Alloc(sizeof(cmd_function_t)));
+	cmd->name     = cmd_name;
 	cmd->function = function;
-	cmd->next = cmd_functions;
+	cmd->next     = cmd_functions;
 	cmd_functions = cmd;
 }
 

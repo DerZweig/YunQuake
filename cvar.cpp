@@ -1,7 +1,7 @@
 #include "quakedef.h"
 
 cvar_t* cvar_vars;
-char* cvar_null_string = "";
+char*   cvar_null_string = "";
 
 /*
 ============
@@ -75,7 +75,8 @@ void Cvar_Set(char* var_name, char* value)
 {
 	auto var = Cvar_FindVar(var_name);
 	if (!var)
-	{ // there is an error in C code if this happens
+	{
+		// there is an error in C code if this happens
 		Con_Printf("Cvar_Set: variable %s not found\n", var_name);
 		return;
 	}
@@ -132,14 +133,14 @@ void Cvar_RegisterVariable(cvar_t* variable)
 	}
 
 	// copy the value off, because future sets will Z_Free it
-	auto oldstr = variable->string;
+	auto oldstr      = variable->string;
 	variable->string = static_cast<char*>(Z_Malloc(Q_strlen(variable->string) + 1));
 	Q_strcpy(variable->string, oldstr);
 	variable->value = Q_atof(variable->string);
 
 	// link the variable in
 	variable->next = cvar_vars;
-	cvar_vars = variable;
+	cvar_vars      = variable;
 }
 
 /*

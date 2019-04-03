@@ -1,8 +1,6 @@
 #include "quakedef.h"
 
 
-
-
 /*
 ==================
 R_InitTextures
@@ -11,8 +9,8 @@ R_InitTextures
 void R_InitTextures()
 {
 	// create a simple checkerboard texture for the default
-	r_notexture_mip = static_cast<texture_t*>(Hunk_AllocName(sizeof(texture_t) + 16 * 16 + 8 * 8 + 4 * 4 + 2 * 2, "notexture"));
-	r_notexture_mip->width = r_notexture_mip->height = 16;
+	r_notexture_mip             = static_cast<texture_t*>(Hunk_AllocName(sizeof(texture_t) + 16 * 16 + 8 * 8 + 4 * 4 + 2 * 2, "notexture"));
+	r_notexture_mip->width      = r_notexture_mip->height = 16;
 	r_notexture_mip->offsets[0] = sizeof(texture_t);
 	r_notexture_mip->offsets[1] = r_notexture_mip->offsets[0] + 16 * 16;
 	r_notexture_mip->offsets[2] = r_notexture_mip->offsets[1] + 8 * 8;
@@ -20,9 +18,9 @@ void R_InitTextures()
 
 	for (auto m = 0; m < 4; m++)
 	{
-		auto dest = reinterpret_cast<byte *>(r_notexture_mip) + r_notexture_mip->offsets[m];
-		for (auto y = 0; y < 16 >> m; y++)
-			for (auto x = 0; x < 16 >> m; x++)
+		auto          dest = reinterpret_cast<byte *>(r_notexture_mip) + r_notexture_mip->offsets[m];
+		for (auto     y    = 0; y < 16 >> m; y++)
+			for (auto x    = 0; x < 16 >> m; x++)
 			{
 				if (y < 8 >> m ^ x < 8 >> m)
 					*dest++ = 0;
@@ -34,14 +32,14 @@ void R_InitTextures()
 
 byte dottexture[8][8] =
 {
-	{0,1,1,0,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{0,1,1,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
+	{0, 1, 1, 0, 0, 0, 0, 0},
+	{1, 1, 1, 1, 0, 0, 0, 0},
+	{1, 1, 1, 1, 0, 0, 0, 0},
+	{0, 1, 1, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0},
+	{0, 0, 0, 0, 0, 0, 0, 0},
 };
 
 void R_InitParticleTexture()
@@ -87,9 +85,9 @@ void R_Envmap_f()
 	glReadBuffer(GL_FRONT);
 	envmap = qtrue;
 
-	r_refdef.vrect.x = 0;
-	r_refdef.vrect.y = 0;
-	r_refdef.vrect.width = 256;
+	r_refdef.vrect.x      = 0;
+	r_refdef.vrect.y      = 0;
+	r_refdef.vrect.width  = 256;
 	r_refdef.vrect.height = 256;
 
 	r_refdef.viewangles[0] = 0;
@@ -200,18 +198,18 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin(int playernum)
 {
-	byte translate[256];
+	byte     translate[256];
 	unsigned translate32[256];
-	int i;
-	byte* original;
+	int      i;
+	byte*    original;
 	unsigned pixels[512 * 256];
 
 	GL_DisableMultitexture();
 
-	auto top = cl.scores[playernum].colors & 0xf0;
+	auto top    = cl.scores[playernum].colors & 0xf0;
 	auto bottom = (cl.scores[playernum].colors & 15) << 4;
 
-	for (i = 0; i < 256; i++)
+	for (i           = 0; i < 256; i++)
 		translate[i] = i;
 
 	for (i = 0; i < 16; i++)
@@ -231,14 +229,14 @@ void R_TranslatePlayerSkin(int playernum)
 	// locate the original skin pixels
 	//
 	currententity = &cl_entities[1 + playernum];
-	auto model = currententity->model;
+	auto model    = currententity->model;
 	if (!model)
 		return; // player doesn't have a model yet
 	if (model->type != modtype_t::mod_alias)
 		return; // only translate skins on alias models
 
 	auto paliashdr = static_cast<aliashdr_t *>(Mod_Extradata(model));
-	auto s = paliashdr->skinwidth * paliashdr->skinheight;
+	auto s         = paliashdr->skinwidth * paliashdr->skinheight;
 	if (currententity->skinnum < 0 || currententity->skinnum >= paliashdr->numskins)
 	{
 		Con_Printf("(%d): Invalid player skin #%d\n", playernum, currententity->skinnum);
@@ -249,30 +247,30 @@ void R_TranslatePlayerSkin(int playernum)
 	if (s & 3)
 		Sys_Error("R_TranslateSkin: s&3");
 
-	auto inwidth = paliashdr->skinwidth;
+	auto inwidth  = paliashdr->skinwidth;
 	auto inheight = paliashdr->skinheight;
 
 	// because this happens during gameplay, do it fast
 	// instead of sending it through gl_upload 8
 	GL_Bind(playertextures + playernum);
 
-	unsigned scaled_width = gl_max_size.value < 512 ? gl_max_size.value : 512;
+	unsigned scaled_width  = gl_max_size.value < 512 ? gl_max_size.value : 512;
 	unsigned scaled_height = gl_max_size.value < 256 ? gl_max_size.value : 256;
 
 	// allow users to crunch sizes down even more if they want
 	scaled_width >>= static_cast<int>(gl_playermip.value);
 	scaled_height >>= static_cast<int>(gl_playermip.value);
 
-	for (i = 0; i < 256; i++)
+	for (i             = 0; i < 256; i++)
 		translate32[i] = d_8to24table[translate[i]];
 
-	auto out = pixels;
+	auto out      = pixels;
 	auto fracstep = inwidth * 0x10000 / scaled_width;
-	for (i = 0; i < scaled_height; i++ , out += scaled_width)
+	for (i        = 0; i < scaled_height; i++, out += scaled_width)
 	{
-		auto inrow = original + inwidth * (i * inheight / scaled_height);
-		auto frac = fracstep >> 1;
-		for (auto j = 0; j < scaled_width; j += 4)
+		auto      inrow = original + inwidth * (i * inheight / scaled_height);
+		auto      frac  = fracstep >> 1;
+		for (auto j     = 0; j < scaled_width; j += 4)
 		{
 			out[j] = translate32[inrow[frac >> 16]];
 			frac += fracstep;
@@ -301,7 +299,7 @@ void R_NewMap()
 {
 	int i;
 
-	for (i = 0; i < 256; i++)
+	for (i                   = 0; i < 256; i++)
 		d_lightstylevalue[i] = 264; // normal light value
 
 	memset(&r_worldentity, 0, sizeof r_worldentity);
@@ -309,7 +307,7 @@ void R_NewMap()
 
 	// clear out efrags in case the level hasn't been reloaded
 	// FIXME: is this one short?
-	for (i = 0; i < cl.worldmodel->numleafs; i++)
+	for (i                             = 0; i < cl.worldmodel->numleafs; i++)
 		cl.worldmodel->leafs[i].efrags = nullptr;
 
 	r_viewleaf = nullptr;
@@ -318,16 +316,16 @@ void R_NewMap()
 	GL_BuildLightmaps();
 
 	// identify sky texture
-	skytexturenum = -1;
+	skytexturenum    = -1;
 	mirrortexturenum = -1;
-	for (i = 0; i < cl.worldmodel->numtextures; i++)
+	for (i           = 0; i < cl.worldmodel->numtextures; i++)
 	{
 		if (!cl.worldmodel->textures[i])
 			continue;
 		if (!Q_strncmp(cl.worldmodel->textures[i]->name, "sky", 3))
 			skytexturenum = i;
 		if (!Q_strncmp(cl.worldmodel->textures[i]->name, "window02_1", 10))
-			mirrortexturenum = i;
+			mirrortexturenum                     = i;
 		cl.worldmodel->textures[i]->texturechain = nullptr;
 	}
 }
@@ -345,8 +343,8 @@ void R_TimeRefresh_f()
 	glDrawBuffer(GL_FRONT);
 	glFinish();
 
-	float start = Sys_FloatTime();
-	for (auto i = 0; i < 128; i++)
+	float     start = Sys_FloatTime();
+	for (auto i     = 0; i < 128; i++)
 	{
 		r_refdef.viewangles[1] = i / 128.0 * 360.0;
 		R_RenderView();
@@ -354,7 +352,7 @@ void R_TimeRefresh_f()
 
 	glFinish();
 	float stop = Sys_FloatTime();
-	auto time = stop - start;
+	auto  time = stop - start;
 	Con_Printf("%f seconds (%f fps)\n", time, 128 / time);
 
 	glDrawBuffer(GL_BACK);

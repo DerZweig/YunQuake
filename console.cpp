@@ -15,13 +15,13 @@ float con_cursorspeed = 4;
 
 qboolean con_forcedup; // because no entities to refresh
 
-int con_totallines; // total lines in console scrollback
-int con_backscroll; // lines up from bottom to display
-int con_current; // where next message will be printed
-int con_x; // offset in current line for next print
+int   con_totallines; // total lines in console scrollback
+int   con_backscroll; // lines up from bottom to display
+int   con_current; // where next message will be printed
+int   con_x; // offset in current line for next print
 char* con_text = nullptr;
 
-cvar_t con_notifytime = {"con_notifytime","3"}; //seconds
+cvar_t con_notifytime = {"con_notifytime", "3"}; //seconds
 
 #define	NUM_CON_TIMES 4
 float con_times[NUM_CON_TIMES]; // realtime time the line was generated
@@ -33,8 +33,8 @@ qboolean con_debuglog;
 
 #define		MAXCMDLINE	256
 extern char key_lines[32][MAXCMDLINE];
-extern int edit_line;
-extern int key_linepos;
+extern int  edit_line;
+extern int  key_linepos;
 
 
 qboolean con_initialized;
@@ -54,9 +54,9 @@ void Con_ToggleConsole_f()
 	{
 		if (cls.state == cactive_t::ca_connected)
 		{
-			key_dest = keydest_t::key_game;
+			key_dest                = keydest_t::key_game;
 			key_lines[edit_line][1] = 0; // clear any typing
-			key_linepos = 1;
+			key_linepos             = 1;
 		}
 		else
 		{
@@ -89,7 +89,7 @@ Con_ClearNotify
 */
 void Con_ClearNotify()
 {
-	for (auto i = 0; i < NUM_CON_TIMES; i++)
+	for (auto i      = 0; i < NUM_CON_TIMES; i++)
 		con_times[i] = 0;
 }
 
@@ -103,7 +103,7 @@ extern qboolean team_message;
 
 void Con_MessageMode_f()
 {
-	key_dest = keydest_t::key_message;
+	key_dest     = keydest_t::key_message;
 	team_message = qfalse;
 }
 
@@ -115,7 +115,7 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f()
 {
-	key_dest = keydest_t::key_message;
+	key_dest     = keydest_t::key_message;
 	team_message = qtrue;
 }
 
@@ -138,18 +138,18 @@ void Con_CheckResize()
 
 	if (width < 1) // video hasn't been initialized yet
 	{
-		width = 38;
-		con_linewidth = width;
+		width          = 38;
+		con_linewidth  = width;
 		con_totallines = CON_TEXTSIZE / con_linewidth;
 		Q_memset(con_text, ' ', CON_TEXTSIZE);
 	}
 	else
 	{
-		auto oldwidth = con_linewidth;
-		con_linewidth = width;
+		auto oldwidth      = con_linewidth;
+		con_linewidth      = width;
 		auto oldtotallines = con_totallines;
-		con_totallines = CON_TEXTSIZE / con_linewidth;
-		auto numlines = oldtotallines;
+		con_totallines     = CON_TEXTSIZE / con_linewidth;
+		auto numlines      = oldtotallines;
 
 		if (con_totallines < numlines)
 			numlines = con_totallines;
@@ -176,7 +176,7 @@ void Con_CheckResize()
 	}
 
 	con_backscroll = 0;
-	con_current = con_totallines - 1;
+	con_current    = con_totallines - 1;
 }
 
 
@@ -188,7 +188,7 @@ Con_Init
 void Con_Init()
 {
 #define MAXGAMEDIRLEN	1000
-	char temp[MAXGAMEDIRLEN + 1];
+	char  temp[MAXGAMEDIRLEN + 1];
 	char* t2 = "/qconsole.log";
 
 	con_debuglog = COM_CheckParm("-condebug");
@@ -246,9 +246,9 @@ If no console is visible, the notify window will pop up.
 */
 void Con_Print(char* txt)
 {
-	int c, l;
+	int        c, l;
 	static int cr;
-	int mask;
+	int        mask;
 
 	con_backscroll = 0;
 
@@ -304,11 +304,11 @@ void Con_Print(char* txt)
 
 		case '\r':
 			con_x = 0;
-			cr = 1;
+			cr    = 1;
 			break;
 
 		default: // display character and advance
-			auto y = con_current % con_totallines;
+			auto y                              = con_current % con_totallines;
 			con_text[y * con_linewidth + con_x] = c | mask;
 			con_x++;
 			if (con_x >= con_linewidth)
@@ -326,7 +326,7 @@ Con_DebugLog
 */
 void Con_DebugLog(char* file, char* fmt, ...)
 {
-	va_list argptr;
+	va_list     argptr;
 	static char data[1024];
 
 	va_start(argptr, fmt);
@@ -349,8 +349,8 @@ Handles cursor positioning, line wrapping, etc
 // FIXME: make a buffer size safe vsprintf?
 void Con_Printf(char* fmt, ...)
 {
-	va_list argptr;
-	char msg[MAXPRINTMSG];
+	va_list         argptr;
+	char            msg[MAXPRINTMSG];
 	static qboolean inupdate;
 
 	va_start (argptr,fmt);
@@ -397,7 +397,7 @@ A Con_Printf that only shows up if the "developer" cvar is set
 void Con_DPrintf(char* fmt, ...)
 {
 	va_list argptr;
-	char msg[MAXPRINTMSG];
+	char    msg[MAXPRINTMSG];
 
 	if (!developer.value)
 		return; // don't confuse non-developers with techie stuff...
@@ -420,13 +420,13 @@ Okay to call even when the screen can't be updated
 void Con_SafePrintf(char* fmt, ...)
 {
 	va_list argptr;
-	char msg[1024];
+	char    msg[1024];
 
 	va_start (argptr,fmt);
 	vsprintf(msg, fmt, argptr);
 	va_end (argptr);
 
-	int temp = scr_disabled_for_loading;
+	int temp                 = scr_disabled_for_loading;
 	scr_disabled_for_loading = qtrue;
 	Con_Printf("%s", msg);
 	scr_disabled_for_loading = temp;
@@ -462,7 +462,7 @@ void Con_DrawInput()
 	text[key_linepos] = 10 + (static_cast<int>(realtime * con_cursorspeed) & 1);
 
 	// fill out remainder with spaces
-	for (i = key_linepos + 1; i < con_linewidth; i++)
+	for (i      = key_linepos + 1; i < con_linewidth; i++)
 		text[i] = ' ';
 
 	//	prestep if horizontally scrolling
@@ -487,10 +487,10 @@ Draws the last few lines of output transparently over the game top
 */
 void Con_DrawNotify()
 {
-	int x;
+	int         x;
 	extern char chat_buffer[];
 
-	auto v = 0;
+	auto      v = 0;
 	for (auto i = con_current - NUM_CON_TIMES + 1; i <= con_current; i++)
 	{
 		if (i < 0)
@@ -554,13 +554,13 @@ void Con_DrawConsole(int lines, qboolean drawinput)
 	con_vislines = lines;
 
 	auto rows = lines - 16 >> 3; // rows of text to draw
-	auto y = lines - 16 - (rows << 3); // may start slightly negative
+	auto y    = lines - 16 - (rows << 3); // may start slightly negative
 
-	for (auto i = con_current - rows + 1; i <= con_current; i++ , y += 8)
+	for (auto i = con_current - rows + 1; i <= con_current; i++, y += 8)
 	{
 		auto j = i - con_backscroll;
 		if (j < 0)
-			j = 0;
+			j     = 0;
 		auto text = con_text + j % con_totallines * con_linewidth;
 
 		for (auto x = 0; x < con_linewidth; x++)
@@ -589,7 +589,7 @@ void Con_NotifyBox(char* text)
 	Con_Printf("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
 	key_count = -2; // wait for a key down and up
-	key_dest = keydest_t::key_console;
+	key_dest  = keydest_t::key_console;
 
 	do
 	{

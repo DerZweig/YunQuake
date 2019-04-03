@@ -2,35 +2,34 @@
 #include "winquake.h"
 
 
-
 #define MAXHOSTNAMELEN		256
 
-static int net_acceptsocket = -1; // socket for fielding new connections
-static int net_controlsocket;
-static int net_broadcastsocket = 0;
+static int              net_acceptsocket = -1; // socket for fielding new connections
+static int              net_controlsocket;
+static int              net_broadcastsocket = 0;
 static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
 
 qboolean winsock_lib_initialized;
 
-int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
-int (PASCAL FAR *pWSACleanup)();
-int (PASCAL FAR *pWSAGetLastError)();
-SOCKET (PASCAL FAR *psocket)(int af, int type, int protocol);
-int (PASCAL FAR *pioctlsocket)(SOCKET s, long cmd, u_long FAR * argp);
-int (PASCAL FAR *psetsockopt)(SOCKET s, int level, int optname, const char FAR * optval, int optlen);
-int (PASCAL FAR *precvfrom)(SOCKET s, char FAR * buf, int len, int flags, sockaddr FAR * from, int FAR * fromlen);
-int (PASCAL FAR *psendto)(SOCKET s, const char FAR * buf, int len, int flags, const sockaddr FAR * to, int tolen);
-int (PASCAL FAR *pclosesocket)(SOCKET s);
-int (PASCAL FAR *pgethostname)(char FAR * name, int namelen);
+int (PASCAL FAR *          pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
+int (PASCAL FAR *          pWSACleanup)();
+int (PASCAL FAR *          pWSAGetLastError)();
+SOCKET (PASCAL FAR *       psocket)(int                     af, int             type, int         protocol);
+int (PASCAL FAR *          pioctlsocket)(SOCKET             s, long             cmd, u_long FAR * argp);
+int (PASCAL FAR *          psetsockopt)(SOCKET              s, int              level, int        optname, const char FAR * optval, int                 optlen);
+int (PASCAL FAR *          precvfrom)(SOCKET                s, char FAR *       buf, int          len, int                  flags, sockaddr FAR *       from, int FAR * fromlen);
+int (PASCAL FAR *          psendto)(SOCKET                  s, const char FAR * buf, int          len, int                  flags, const sockaddr FAR * to, int         tolen);
+int (PASCAL FAR *          pclosesocket)(SOCKET             s);
+int (PASCAL FAR *          pgethostname)(char FAR *         name, int namelen);
 hostent FAR * (PASCAL FAR *pgethostbyname)(const char FAR * name);
-hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr, int len, int type);
-int (PASCAL FAR *pgetsockname)(SOCKET s, sockaddr FAR * name, int FAR * namelen);
+hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr, int         len, int        type);
+int (PASCAL FAR *          pgetsockname)(SOCKET             s, sockaddr FAR * name, int FAR * namelen);
 
 #include "net_wins.h"
 
-int winsock_initialized = 0;
+int     winsock_initialized = 0;
 WSADATA winsockdata;
 
 //=============================================================================
@@ -88,8 +87,8 @@ void WINS_GetLocalAddress()
 
 int WINS_Init()
 {
-	int i;
-	char buff[MAXHOSTNAMELEN];
+	int   i;
+	char  buff[MAXHOSTNAMELEN];
 	char* p;
 
 	// initialize the Winsock function vectors (we do this instead of statically linking
@@ -105,19 +104,19 @@ int WINS_Init()
 
 	winsock_lib_initialized = qtrue;
 
-	pWSAStartup = reinterpret_cast<decltype(pWSAStartup)>(GetProcAddress(hInst, "WSAStartup"));
-	pWSACleanup = static_cast<decltype(pWSACleanup)>(GetProcAddress(hInst, "WSACleanup"));
+	pWSAStartup      = reinterpret_cast<decltype(pWSAStartup)>(GetProcAddress(hInst, "WSAStartup"));
+	pWSACleanup      = static_cast<decltype(pWSACleanup)>(GetProcAddress(hInst, "WSACleanup"));
 	pWSAGetLastError = static_cast<decltype(pWSAGetLastError)>(GetProcAddress(hInst, "WSAGetLastError"));
-	psocket = reinterpret_cast<decltype(psocket)>(GetProcAddress(hInst, "socket"));
-	pioctlsocket = reinterpret_cast<decltype(pioctlsocket)>(GetProcAddress(hInst, "ioctlsocket"));
-	psetsockopt = reinterpret_cast<decltype(psetsockopt)>(GetProcAddress(hInst, "setsockopt"));
-	precvfrom = reinterpret_cast<decltype(precvfrom)>(GetProcAddress(hInst, "recvfrom"));
-	psendto = reinterpret_cast<decltype(psendto)>(GetProcAddress(hInst, "sendto"));
-	pclosesocket = reinterpret_cast<decltype(pclosesocket)>(GetProcAddress(hInst, "closesocket"));
-	pgethostname = reinterpret_cast<decltype(pgethostname)>(GetProcAddress(hInst, "gethostname"));
-	pgethostbyname = reinterpret_cast<decltype(pgethostbyname)>(GetProcAddress(hInst, "gethostbyname"));
-	pgethostbyaddr = reinterpret_cast<decltype(pgethostbyaddr)>(GetProcAddress(hInst, "gethostbyaddr"));
-	pgetsockname = reinterpret_cast<decltype(pgetsockname)>(GetProcAddress(hInst, "getsockname"));
+	psocket          = reinterpret_cast<decltype(psocket)>(GetProcAddress(hInst, "socket"));
+	pioctlsocket     = reinterpret_cast<decltype(pioctlsocket)>(GetProcAddress(hInst, "ioctlsocket"));
+	psetsockopt      = reinterpret_cast<decltype(psetsockopt)>(GetProcAddress(hInst, "setsockopt"));
+	precvfrom        = reinterpret_cast<decltype(precvfrom)>(GetProcAddress(hInst, "recvfrom"));
+	psendto          = reinterpret_cast<decltype(psendto)>(GetProcAddress(hInst, "sendto"));
+	pclosesocket     = reinterpret_cast<decltype(pclosesocket)>(GetProcAddress(hInst, "closesocket"));
+	pgethostname     = reinterpret_cast<decltype(pgethostname)>(GetProcAddress(hInst, "gethostname"));
+	pgethostbyname   = reinterpret_cast<decltype(pgethostbyname)>(GetProcAddress(hInst, "gethostbyname"));
+	pgethostbyaddr   = reinterpret_cast<decltype(pgethostbyaddr)>(GetProcAddress(hInst, "gethostbyaddr"));
+	pgetsockname     = reinterpret_cast<decltype(pgetsockname)>(GetProcAddress(hInst, "getsockname"));
 
 	if (!pWSAStartup || !pWSACleanup || !pWSAGetLastError ||
 		!psocket || !pioctlsocket || !psetsockopt ||
@@ -201,9 +200,9 @@ int WINS_Init()
 		return -1;
 	}
 
-	reinterpret_cast<sockaddr_in *>(&broadcastaddr)->sin_family = AF_INET;
+	reinterpret_cast<sockaddr_in *>(&broadcastaddr)->sin_family      = AF_INET;
 	reinterpret_cast<sockaddr_in *>(&broadcastaddr)->sin_addr.s_addr = INADDR_BROADCAST;
-	reinterpret_cast<sockaddr_in *>(&broadcastaddr)->sin_port = htons(static_cast<unsigned short>(net_hostport));
+	reinterpret_cast<sockaddr_in *>(&broadcastaddr)->sin_port        = htons(static_cast<unsigned short>(net_hostport));
 
 	Con_Printf("Winsock TCP/IP Initialized\n");
 	tcpipAvailable = qtrue;
@@ -247,9 +246,9 @@ void WINS_Listen(qboolean state)
 
 int WINS_OpenSocket(int port)
 {
-	int newsocket;
+	int                newsocket;
 	struct sockaddr_in address;
-	u_long _true = 1;
+	u_long             _true = 1;
 
 	if ((newsocket = psocket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		return -1;
@@ -257,9 +256,9 @@ int WINS_OpenSocket(int port)
 	if (pioctlsocket(newsocket, FIONBIO, &_true) == -1)
 		goto ErrorReturn;
 
-	address.sin_family = AF_INET;
+	address.sin_family      = AF_INET;
 	address.sin_addr.s_addr = myAddr;
-	address.sin_port = htons(static_cast<unsigned short>(port));
+	address.sin_port        = htons(static_cast<unsigned short>(port));
 	if (bind(newsocket, reinterpret_cast<const sockaddr *>(&address), sizeof address) == 0)
 		return newsocket;
 
@@ -291,10 +290,10 @@ the local network components to fill in the rest
 static int PartialIPAddress(char* in, qsockaddr* hostaddr)
 {
 	char buff[256];
-	int port;
+	int  port;
 
 	buff[0] = '.';
-	auto b = buff;
+	auto b  = buff;
 	strcpy(buff + 1, in);
 	if (buff[1] == '.')
 		b++;
@@ -325,8 +324,8 @@ static int PartialIPAddress(char* in, qsockaddr* hostaddr)
 	else
 		port = net_hostport;
 
-	hostaddr->sa_family = AF_INET;
-	reinterpret_cast<sockaddr_in *>(hostaddr)->sin_port = htons(static_cast<short>(port));
+	hostaddr->sa_family                                        = AF_INET;
+	reinterpret_cast<sockaddr_in *>(hostaddr)->sin_port        = htons(static_cast<short>(port));
 	reinterpret_cast<sockaddr_in *>(hostaddr)->sin_addr.s_addr = myAddr & htonl(mask) | htonl(addr);
 
 	return 0;
@@ -359,8 +358,8 @@ int WINS_CheckNewConnections()
 
 int WINS_Read(int socket, byte* buf, int len, qsockaddr* addr)
 {
-	int addrlen = sizeof (struct qsockaddr);
-	auto ret = precvfrom(socket, reinterpret_cast<char*>(buf), len, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
+	int  addrlen = sizeof(struct qsockaddr);
+	auto ret     = precvfrom(socket, reinterpret_cast<char*>(buf), len, 0, reinterpret_cast<sockaddr *>(addr), &addrlen);
 
 	if (ret == -1)
 	{
@@ -437,9 +436,9 @@ int WINS_StringToAddr(char* string, qsockaddr* addr)
 	sscanf(string, "%d.%d.%d.%d:%d", &ha1, &ha2, &ha3, &ha4, &hp);
 	auto ipaddr = ha1 << 24 | ha2 << 16 | ha3 << 8 | ha4;
 
-	addr->sa_family = AF_INET;
+	addr->sa_family                                        = AF_INET;
 	reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr = htonl(ipaddr);
-	reinterpret_cast<sockaddr_in *>(addr)->sin_port = htons(static_cast<unsigned short>(hp));
+	reinterpret_cast<sockaddr_in *>(addr)->sin_port        = htons(static_cast<unsigned short>(hp));
 	return 0;
 }
 
@@ -484,8 +483,8 @@ int WINS_GetAddrFromName(char* name, qsockaddr* addr)
 	if (!hostentry)
 		return -1;
 
-	addr->sa_family = AF_INET;
-	reinterpret_cast<sockaddr_in *>(addr)->sin_port = htons(static_cast<unsigned short>(net_hostport));
+	addr->sa_family                                        = AF_INET;
+	reinterpret_cast<sockaddr_in *>(addr)->sin_port        = htons(static_cast<unsigned short>(net_hostport));
 	reinterpret_cast<sockaddr_in *>(addr)->sin_addr.s_addr = *reinterpret_cast<int *>(hostentry->h_addr_list[0]);
 
 	return 0;

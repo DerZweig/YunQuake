@@ -1,4 +1,5 @@
 #pragma once
+
 #define	CMP_NONE		0
 #define	CMP_LZSS		1
 
@@ -14,7 +15,7 @@
 
 struct qpic_t
 {
-	int width, height;
+	int  width, height;
 	byte data[4]; // variably sized
 };
 
@@ -22,29 +23,29 @@ struct qpic_t
 struct wadinfo_t
 {
 	char identification[4]; // should be WAD2 or 2DAW
-	int numlumps;
-	int infotableofs;
+	int  numlumps;
+	int  infotableofs;
 };
 
 struct lumpinfo_t
 {
-	int filepos;
-	int disksize;
-	int size; // uncompressed
+	int  filepos;
+	int  disksize;
+	int  size; // uncompressed
 	char type;
 	char compression;
 	char pad1, pad2;
 	char name[16]; // must be null terminated
 };
 
-extern int wad_numlumps;
+extern int         wad_numlumps;
 extern lumpinfo_t* wad_lumps;
-extern byte* wad_base;
+extern byte*       wad_base;
 
-void W_LoadWadFile(char* filename);
-void W_CleanupName(char* in, char* out);
+void        W_LoadWadFile(char* filename);
+void        W_CleanupName(char* in, char* out);
 lumpinfo_t* W_GetLumpinfo(char* name);
-void* W_GetLumpName(char* name);
-void* W_GetLumpNum(int num);
+void*       W_GetLumpName(char* name);
+void*       W_GetLumpNum(int    num);
 
 void SwapPic(qpic_t* pic);

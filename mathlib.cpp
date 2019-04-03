@@ -3,8 +3,8 @@
 
 void Sys_Error(char* error, ...);
 
-vec3_t vec3_origin = {0,0,0};
-int nanmask = 255 << 23;
+vec3_t vec3_origin = {0, 0, 0};
+int    nanmask     = 255 << 23;
 
 /*-----------------------------------------------------------------*/
 
@@ -32,23 +32,23 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
 */
 void PerpendicularVector(vec3_t dst, const vec3_t src)
 {
-	int pos;
-	int i;
-	auto minelem = 1.0F;
+	int    pos;
+	int    i;
+	auto   minelem = 1.0F;
 	vec3_t tempvec;
 
 	/*
 	** find the smallest magnitude axially aligned vector
 	*/
-	for (pos = 0 , i = 0; i < 3; i++)
+	for (pos = 0, i = 0; i < 3; i++)
 	{
 		if (fabs(src[i]) < minelem)
 		{
-			pos = i;
+			pos     = i;
 			minelem = fabs(src[i]);
 		}
 	}
-	tempvec[0] = tempvec[1] = tempvec[2] = 0.0F;
+	tempvec[0]   = tempvec[1] = tempvec[2] = 0.0F;
 	tempvec[pos] = 1.0F;
 
 	/*
@@ -69,11 +69,11 @@ void PerpendicularVector(vec3_t dst, const vec3_t src)
 
 void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees)
 {
-	float m[3][3];
-	float im[3][3];
-	float zrot[3][3];
-	float tmpmat[3][3];
-	float rot[3][3];
+	float  m[3][3];
+	float  im[3][3];
+	float  zrot[3][3];
+	float  tmpmat[3][3];
+	float  rot[3][3];
 	vec3_t vr, vup, vf;
 
 	vf[0] = dir[0];
@@ -218,24 +218,24 @@ if (sides == 0)
 void AngleVectors(vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 {
 	float angle = angles[YAW] * (M_PI * 2 / 360);
-	auto sy = sin(angle);
-	auto cy = cos(angle);
-	angle = angles[PITCH] * (M_PI * 2 / 360);
-	auto sp = sin(angle);
-	auto cp = cos(angle);
-	angle = angles[ROLL] * (M_PI * 2 / 360);
-	auto sr = sin(angle);
-	auto cr = cos(angle);
+	auto  sy    = sin(angle);
+	auto  cy    = cos(angle);
+	angle       = angles[PITCH] * (M_PI * 2 / 360);
+	auto sp     = sin(angle);
+	auto cp     = cos(angle);
+	angle       = angles[ROLL] * (M_PI * 2 / 360);
+	auto sr     = sin(angle);
+	auto cr     = cos(angle);
 
 	forward[0] = cp * cy;
 	forward[1] = cp * sy;
 	forward[2] = -sp;
-	right[0] = -1 * sr * sp * cy + -1 * cr * -sy;
-	right[1] = -1 * sr * sp * sy + -1 * cr * cy;
-	right[2] = -1 * sr * cp;
-	up[0] = cr * sp * cy + -sr * -sy;
-	up[1] = cr * sp * sy + -sr * cy;
-	up[2] = cr * cp;
+	right[0]   = -1 * sr * sp * cy + -1 * cr * -sy;
+	right[1]   = -1 * sr * sp * sy + -1 * cr * cy;
+	right[2]   = -1 * sr * cp;
+	up[0]      = cr * sp * cy + -sr * -sy;
+	up[1]      = cr * sp * sy + -sr * cy;
+	up[2]      = cr * cp;
 }
 
 int VectorCompare(vec3_t v1, vec3_t v2)
@@ -290,8 +290,8 @@ void CrossProduct(vec3_t v1, vec3_t v2, vec3_t cross)
 
 vec_t Length(vec3_t v)
 {
-	float length = 0;
-	for (auto i = 0; i < 3; i++)
+	float     length = 0;
+	for (auto i      = 0; i < 3; i++)
 		length += v[i] * v[i];
 	length = sqrt(length); // FIXME
 
@@ -301,7 +301,7 @@ vec_t Length(vec3_t v)
 float VectorNormalize(vec3_t v)
 {
 	auto length = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
-	length = sqrt(length); // FIXME
+	length      = sqrt(length); // FIXME
 
 	if (length)
 	{
@@ -411,9 +411,9 @@ quotient must fit in 32 bits.
 */
 
 void FloorDivMod(double numer, double denom, int* quotient,
-                 int* rem)
+                 int*   rem)
 {
-	int q, r;
+	int    q, r;
 	double x;
 
 #ifndef PARANOID
@@ -447,7 +447,7 @@ void FloorDivMod(double numer, double denom, int* quotient,
 	}
 
 	*quotient = q;
-	*rem = r;
+	*rem      = r;
 }
 
 

@@ -16,8 +16,8 @@ int c_yes, c_no;
 qboolean SV_CheckBottom(edict_t* ent)
 {
 	vec3_t mins, maxs, start, stop;
-	int x, y;
-	float bottom;
+	int    x,    y;
+	float  bottom;
 
 	VectorAdd (ent->v.origin, ent->v.mins, mins);
 	VectorAdd (ent->v.origin, ent->v.maxs, maxs);
@@ -25,8 +25,8 @@ qboolean SV_CheckBottom(edict_t* ent)
 	// if all of the points under the corners are solid world, don't bother
 	// with the tougher checks
 	// the corners must be within 16 of the midpoint
-	start[2] = mins[2] - 1;
-	for (x = 0; x <= 1; x++)
+	start[2]   = mins[2] - 1;
+	for (x     = 0; x <= 1; x++)
 		for (y = 0; y <= 1; y++)
 		{
 			start[0] = x ? maxs[0] : mins[0];
@@ -46,9 +46,9 @@ realcheck:
 	start[2] = mins[2];
 
 	// the midpoint must be within 16 of the bottom
-	start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5;
-	start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5;
-	stop[2] = start[2] - 2 * STEPSIZE;
+	start[0]   = stop[0] = (mins[0] + maxs[0]) * 0.5;
+	start[1]   = stop[1] = (mins[1] + maxs[1]) * 0.5;
+	stop[2]    = start[2] - 2 * STEPSIZE;
 	auto trace = SV_Move(start, vec3_origin, vec3_origin, stop, qtrue, ent);
 
 	if (trace.fraction == 1.0)
@@ -56,7 +56,7 @@ realcheck:
 	auto mid = bottom = trace.endpos[2];
 
 	// the corners must be within 16 of the midpoint	
-	for (x = 0; x <= 1; x++)
+	for (x     = 0; x <= 1; x++)
 		for (y = 0; y <= 1; y++)
 		{
 			start[0] = stop[0] = x ? maxs[0] : mins[0];
@@ -87,7 +87,7 @@ pr_global_struct->trace_normal is set to the normal of the blocking wall
 */
 qboolean SV_movestep(edict_t* ent, vec3_t move, qboolean relink)
 {
-	vec3_t oldorg, neworg, end;
+	vec3_t  oldorg, neworg, end;
 	trace_t trace;
 
 	// try the move	
@@ -169,7 +169,8 @@ qboolean SV_movestep(edict_t* ent, vec3_t move, qboolean relink)
 	if (!SV_CheckBottom(ent))
 	{
 		if (static_cast<int>(ent->v.flags) & FL_PARTIALGROUND)
-		{ // entity had floor mostly pulled out from underneath it
+		{
+			// entity had floor mostly pulled out from underneath it
 			// and is trying to correct
 			if (relink)
 				SV_LinkEdict(ent, qtrue);
@@ -213,7 +214,7 @@ qboolean SV_StepDirection(edict_t* ent, float yaw, float dist)
 	ent->v.ideal_yaw = yaw;
 	PF_changeyaw();
 
-	yaw = yaw * M_PI * 2 / 360;
+	yaw     = yaw * M_PI * 2 / 360;
 	move[0] = cos(yaw) * dist;
 	move[1] = sin(yaw) * dist;
 	move[2] = 0;
@@ -223,7 +224,8 @@ qboolean SV_StepDirection(edict_t* ent, float yaw, float dist)
 	{
 		auto delta = ent->v.angles[YAW] - ent->v.ideal_yaw;
 		if (delta > 45 && delta < 315)
-		{ // not turned far enough, so don't take the step
+		{
+			// not turned far enough, so don't take the step
 			VectorCopy (oldorigin, ent->v.origin);
 		}
 		SV_LinkEdict(ent, qtrue);
@@ -261,7 +263,7 @@ void SV_NewChaseDir(edict_t* actor, edict_t* enemy, float dist)
 	float d[3];
 	float tdir;
 
-	auto olddir = anglemod(static_cast<int>(actor->v.ideal_yaw / 45) * 45);
+	auto olddir     = anglemod(static_cast<int>(actor->v.ideal_yaw / 45) * 45);
 	auto turnaround = anglemod(olddir - 180);
 
 	auto deltax = enemy->v.origin[0] - actor->v.origin[0];
@@ -364,7 +366,7 @@ SV_MoveToGoal
 */
 void SV_MoveToGoal()
 {
-	auto ent = PROG_TO_EDICT(pr_global_struct->self);
+	auto ent  = PROG_TO_EDICT(pr_global_struct->self);
 	auto goal = PROG_TO_EDICT(ent->v.goalentity);
 	auto dist = G_FLOAT(OFS_PARM0);
 

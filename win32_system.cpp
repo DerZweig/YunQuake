@@ -11,16 +11,16 @@
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus
 
-int starttime;
+int      starttime;
 qboolean ActiveApp, Minimized;
 
-static double pfreq;
-static double curtime = 0.0;
-static double lastcurtime = 0.0;
-static int lowshift;
-qboolean isDedicated;
+static double   pfreq;
+static double   curtime     = 0.0;
+static double   lastcurtime = 0.0;
+static int      lowshift;
+qboolean        isDedicated;
 static qboolean sc_return_on_enter = qfalse;
-HANDLE hinput, houtput;
+HANDLE          hinput, houtput;
 
 static char* tracking_tag = "Clams & Mooses";
 
@@ -94,27 +94,27 @@ int filelength(FILE* f)
 
 int Sys_FileOpenRead(char* path, int* hndl)
 {
-	int retval;
+	int  retval;
 	auto i = findhandle();
 	auto f = fopen(path, "rb");
 
 	if (!f)
 	{
-		*hndl = -1;
+		*hndl  = -1;
 		retval = -1;
 	}
 	else
 	{
 		sys_handles[i] = f;
-		*hndl = i;
-		retval = filelength(f);
+		*hndl          = i;
+		retval         = filelength(f);
 	}
 
 
 	return retval;
 }
 
-int Sys_FileOpenAppend(char * path)
+int Sys_FileOpenAppend(char* path)
 {
 	auto i = findhandle();
 	auto f = fopen(path, "a");
@@ -163,7 +163,7 @@ int Sys_FileWrite(int handle, void* data, int count)
 
 int Sys_FileTime(char* path)
 {
-	int retval;
+	int  retval;
 	auto f = fopen(path, "rb");
 
 	if (f)
@@ -208,9 +208,9 @@ void Sys_Init()
 
 	// get 32 out of the 64 time bits such that we have around
 	// 1 microsecond resolution
-	auto lowpart = static_cast<unsigned int>(PerformanceFreq.LowPart);
+	auto lowpart  = static_cast<unsigned int>(PerformanceFreq.LowPart);
 	auto highpart = static_cast<unsigned int>(PerformanceFreq.HighPart);
-	lowshift = 0;
+	lowshift      = 0;
 
 	while (highpart || lowpart > 2000000.0)
 	{
@@ -228,12 +228,12 @@ void Sys_Init()
 
 void Sys_Error(char* error, ...)
 {
-	va_list argptr;
-	char text[1024], text2[1024];
-	char* text3 = "Press Enter to exit\n";
-	char* text4 = "***********************************\n";
-	char* text5 = "\n";
-	DWORD dummy;
+	va_list     argptr;
+	char        text[1024], text2[1024];
+	char*       text3 = "Press Enter to exit\n";
+	char*       text4 = "***********************************\n";
+	char*       text5 = "\n";
+	DWORD       dummy;
 	static auto in_sys_error0 = 0;
 	static auto in_sys_error1 = 0;
 	static auto in_sys_error2 = 0;
@@ -262,7 +262,7 @@ void Sys_Error(char* error, ...)
 		WriteFile(houtput, text4, strlen(text4), &dummy, nullptr);
 
 
-		auto starttime = Sys_FloatTime();
+		auto starttime     = Sys_FloatTime();
 		sc_return_on_enter = qtrue; // so Enter will get us out of here
 
 		while (!Sys_ConsoleInput() &&
@@ -307,8 +307,8 @@ void Sys_Error(char* error, ...)
 void Sys_Printf(char* fmt, ...)
 {
 	va_list argptr;
-	char text[1024];
-	DWORD dummy;
+	char    text[1024];
+	DWORD   dummy;
 
 	if (isDedicated)
 	{
@@ -344,10 +344,10 @@ Sys_FloatTime
 */
 double Sys_FloatTime()
 {
-	static int sametimecount;
+	static int          sametimecount;
 	static unsigned int oldtime;
-	static auto first = 1;
-	LARGE_INTEGER PerformanceCount;
+	static auto         first = 1;
+	LARGE_INTEGER       PerformanceCount;
 
 	QueryPerformanceCounter(&PerformanceCount);
 
@@ -357,7 +357,7 @@ double Sys_FloatTime()
 	if (first)
 	{
 		oldtime = temp;
-		first = 0;
+		first   = 0;
 	}
 	else
 	{
@@ -371,7 +371,7 @@ double Sys_FloatTime()
 			auto t2 = temp - oldtime;
 
 			auto time = static_cast<double>(t2) * pfreq;
-			oldtime = temp;
+			oldtime   = temp;
 
 			curtime += time;
 
@@ -424,12 +424,12 @@ void Sys_InitFloatTime()
 
 char* Sys_ConsoleInput()
 {
-	static char text[256];
-	static int len;
+	static char  text[256];
+	static int   len;
 	INPUT_RECORD recs[1024];
-	DWORD dummy;
-	DWORD numread;
-	DWORD numevents;
+	DWORD        dummy;
+	DWORD        numread;
+	DWORD        numevents;
 
 	if (!isDedicated)
 		return nullptr;
@@ -463,14 +463,14 @@ char* Sys_ConsoleInput()
 					if (len)
 					{
 						text[len] = 0;
-						len = 0;
+						len       = 0;
 						return text;
 					}
 					if (sc_return_on_enter)
 					{
 						// special case to allow exiting from the error handler on Enter
 						text[0] = '\r';
-						len = 0;
+						len     = 0;
 						return text;
 					}
 
@@ -489,7 +489,7 @@ char* Sys_ConsoleInput()
 					{
 						WriteFile(houtput, &ch, 1, &dummy, nullptr);
 						text[len] = ch;
-						len = len + 1 & 0xff;
+						len       = len + 1 & 0xff;
 					}
 
 					break;
@@ -550,27 +550,27 @@ void SleepUntilInput(int time)
 WinMain
 ==================
 */
-HINSTANCE global_hInstance;
-int global_nCmdShow;
-char* argv[MAX_NUM_ARGVS];
+HINSTANCE    global_hInstance;
+int          global_nCmdShow;
+char*        argv[MAX_NUM_ARGVS];
 static char* empty_string = "";
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	quakeparms_t parms;
-	double time;
-	double newtime;
+	double       time;
+	double       newtime;
 	MEMORYSTATUS lpBuffer;
-	static char cwd[1024];
-	int t;
+	static char  cwd[1024];
+	int          t;
 
 	/* previous instances do not exist in Win32 */
 	if (hPrevInstance)
 		return 0;
 
 	global_hInstance = hInstance;
-	global_nCmdShow = nCmdShow;
+	global_nCmdShow  = nCmdShow;
 
 	lpBuffer.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus(&lpBuffer);
@@ -581,11 +581,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	if (cwd[Q_strlen(cwd) - 1] == '/')
 		cwd[Q_strlen(cwd) - 1] = 0;
 
-	parms.basedir = cwd;
+	parms.basedir  = cwd;
 	parms.cachedir = nullptr;
 
 	parms.argc = 1;
-	argv[0] = empty_string;
+	argv[0]    = empty_string;
 
 	while (*lpCmdLine && parms.argc < MAX_NUM_ARGVS)
 	{
@@ -659,7 +659,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			Sys_Error("Couldn't create dedicated server console");
 		}
 
-		hinput = GetStdHandle(STD_INPUT_HANDLE);
+		hinput  = GetStdHandle(STD_INPUT_HANDLE);
 		houtput = GetStdHandle(STD_OUTPUT_HANDLE);
 
 		// give QHOST a chance to hook into the console
@@ -700,19 +700,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		if (isDedicated)
 		{
 			newtime = Sys_FloatTime();
-			time = newtime - oldtime;
+			time    = newtime - oldtime;
 
 			while (time < sys_ticrate.value)
 			{
 				Sys_Sleep();
 				newtime = Sys_FloatTime();
-				time = newtime - oldtime;
+				time    = newtime - oldtime;
 			}
 		}
 		else
 		{
 			// yield the CPU for a little while when paused, minimized, or not the focus
-			if (cl.paused && (!ActiveApp ) || Minimized || block_drawing)
+			if (cl.paused && (!ActiveApp) || Minimized || block_drawing)
 			{
 				SleepUntilInput(PAUSE_SLEEP);
 				scr_skipupdate = 1; // no point in bothering to draw
@@ -723,7 +723,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			}
 
 			newtime = Sys_FloatTime();
-			time = newtime - oldtime;
+			time    = newtime - oldtime;
 		}
 
 		Host_Frame(time);

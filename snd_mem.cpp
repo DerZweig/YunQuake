@@ -21,7 +21,7 @@ void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
 	auto stepscale = static_cast<float>(inrate) / shm->speed; // this is usually 0.5, 1, or 2
 
 	int outcount = sc->length / stepscale;
-	sc->length = outcount;
+	sc->length   = outcount;
 	if (sc->loopstart != -1)
 		sc->loopstart = sc->loopstart / stepscale;
 
@@ -30,22 +30,22 @@ void ResampleSfx(sfx_t* sfx, int inrate, int inwidth, byte* data)
 		sc->width = 1;
 	else
 		sc->width = inwidth;
-	sc->stereo = 0;
+	sc->stereo    = 0;
 
 	// resample / decimate to the current source rate
 
 	if (stepscale == 1 && inwidth == 1 && sc->width == 1)
 	{
 		// fast special case
-		for (i = 0; i < outcount; i++)
+		for (i                                           = 0; i < outcount; i++)
 			reinterpret_cast<signed char *>(sc->data)[i] = static_cast<int>(static_cast<unsigned char>(data[i]) - 128);
 	}
 	else
 	{
 		// general case
 		auto samplefrac = 0;
-		int fracstep = stepscale * 256;
-		for (i = 0; i < outcount; i++)
+		int  fracstep   = stepscale * 256;
+		for (i          = 0; i < outcount; i++)
 		{
 			auto srcsample = samplefrac >> 8;
 			samplefrac += fracstep;
@@ -101,7 +101,7 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 	}
 
 	auto stepscale = static_cast<float>(info.rate) / shm->speed;
-	int len = info.samples / stepscale;
+	int  len       = info.samples / stepscale;
 
 	len = len * info.width * info.channels;
 
@@ -109,11 +109,11 @@ sfxcache_t* S_LoadSound(sfx_t* s)
 	if (!sc)
 		return nullptr;
 
-	sc->length = info.samples;
+	sc->length    = info.samples;
 	sc->loopstart = info.loopstart;
-	sc->speed = info.rate;
-	sc->width = info.width;
-	sc->stereo = info.channels;
+	sc->speed     = info.rate;
+	sc->width     = info.width;
+	sc->stereo    = info.channels;
 
 	ResampleSfx(s, sc->speed, sc->width, data + info.dataofs);
 
@@ -134,13 +134,13 @@ byte* data_p;
 byte* iff_end;
 byte* last_chunk;
 byte* iff_data;
-int iff_chunk_len;
+int   iff_chunk_len;
 
 
 short GetLittleShort()
 {
 	short val = *data_p;
-	val = val + (*(data_p + 1) << 8);
+	val       = val + (*(data_p + 1) << 8);
 	data_p += 2;
 	return val;
 }
@@ -148,9 +148,9 @@ short GetLittleShort()
 int GetLittleLong()
 {
 	int val = *data_p;
-	val = val + (*(data_p + 1) << 8);
-	val = val + (*(data_p + 2) << 16);
-	val = val + (*(data_p + 3) << 24);
+	val     = val + (*(data_p + 1) << 8);
+	val     = val + (*(data_p + 2) << 16);
+	val     = val + (*(data_p + 3) << 24);
 	data_p += 4;
 	return val;
 }
@@ -162,7 +162,8 @@ void FindNextChunk(char* name)
 		data_p = last_chunk;
 
 		if (data_p >= iff_end)
-		{ // didn't find the chunk
+		{
+			// didn't find the chunk
 			data_p = nullptr;
 			return;
 		}
@@ -222,7 +223,7 @@ wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
 		return info;
 
 	iff_data = wav;
-	iff_end = wav + wavlength;
+	iff_end  = wav + wavlength;
 
 	// find "RIFF" chunk
 	FindChunk("RIFF");
@@ -251,7 +252,7 @@ wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
 	}
 
 	info.channels = GetLittleShort();
-	info.rate = GetLittleLong();
+	info.rate     = GetLittleLong();
 	data_p += 4 + 2;
 	info.width = GetLittleShort() / 8;
 
@@ -268,9 +269,10 @@ wavinfo_t GetWavinfo(char* name, byte* wav, int wavlength)
 		if (data_p)
 		{
 			if (!strncmp(reinterpret_cast<char*>(data_p + 28), "mark", 4))
-			{ // this is not a proper parse, but it works with cooledit...
+			{
+				// this is not a proper parse, but it works with cooledit...
 				data_p += 24;
-				auto i = GetLittleLong(); // samples in loop
+				auto i       = GetLittleLong(); // samples in loop
 				info.samples = info.loopstart + i;
 				//				Con_Printf("looped length: %i\n", i);
 			}

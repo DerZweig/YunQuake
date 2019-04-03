@@ -48,32 +48,32 @@ void M_GameOptions_Draw();
 void M_Search_Draw();
 void M_ServerList_Draw();
 
-void M_Main_Key(int key);
+void M_Main_Key(int         key);
 void M_SinglePlayer_Key(int key);
-void M_Load_Key(int key);
-void M_Save_Key(int key);
-void M_MultiPlayer_Key(int key);
-void M_Setup_Key(int key);
-void M_Net_Key(int key);
-void M_Options_Key(int key);
-void M_Keys_Key(int key);
-void M_Video_Key(int key);
-void M_Help_Key(int key);
-void M_Quit_Key(int key);
+void M_Load_Key(int         key);
+void M_Save_Key(int         key);
+void M_MultiPlayer_Key(int  key);
+void M_Setup_Key(int        key);
+void M_Net_Key(int          key);
+void M_Options_Key(int      key);
+void M_Keys_Key(int         key);
+void M_Video_Key(int        key);
+void M_Help_Key(int         key);
+void M_Quit_Key(int         key);
 void M_SerialConfig_Key(int key);
-void M_ModemConfig_Key(int key);
-void M_LanConfig_Key(int key);
-void M_GameOptions_Key(int key);
-void M_Search_Key(int key);
-void M_ServerList_Key(int key);
+void M_ModemConfig_Key(int  key);
+void M_LanConfig_Key(int    key);
+void M_GameOptions_Key(int  key);
+void M_Search_Key(int       key);
+void M_ServerList_Key(int   key);
 
 qboolean m_entersound; // play after drawing a frame, so caching
 // won't disrupt the sound
 qboolean m_recursiveDraw;
 
 m_state_t m_return_state;
-qboolean m_return_onerror;
-char m_return_reason [32];
+qboolean  m_return_onerror;
+char      m_return_reason [32];
 
 #define StartingGame	(m_multiplayer_cursor == 1)
 #define JoiningGame		(m_multiplayer_cursor == 0)
@@ -133,22 +133,22 @@ void M_BuildTranslationTable(int top, int bottom)
 {
 	int j;
 
-	for (j = 0; j < 256; j++)
+	for (j               = 0; j < 256; j++)
 		identityTable[j] = j;
-	auto dest = translationTable;
-	auto source = identityTable;
+	auto dest            = translationTable;
+	auto source          = identityTable;
 	memcpy(dest, source, 256);
 
 	if (top < 128) // the artists made some backwards ranges.  sigh.
 		memcpy(dest + TOP_RANGE, source + top, 16);
 	else
-		for (j = 0; j < 16; j++)
+		for (j                  = 0; j < 16; j++)
 			dest[TOP_RANGE + j] = source[top + 15 - j];
 
 	if (bottom < 128)
 		memcpy(dest + BOTTOM_RANGE, source + bottom, 16);
 	else
-		for (j = 0; j < 16; j++)
+		for (j                     = 0; j < 16; j++)
 			dest[BOTTOM_RANGE + j] = source[bottom + 15 - j];
 }
 
@@ -166,9 +166,9 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	// draw left side
 	auto cx = x;
 	auto cy = y;
-	auto p = Draw_CachePic("gfx/box_tl.lmp");
+	auto p  = Draw_CachePic("gfx/box_tl.lmp");
 	M_DrawTransPic(cx, cy, p);
-	p = Draw_CachePic("gfx/box_ml.lmp");
+	p      = Draw_CachePic("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
@@ -182,9 +182,9 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 	while (width > 0)
 	{
 		cy = y;
-		p = Draw_CachePic("gfx/box_tm.lmp");
+		p  = Draw_CachePic("gfx/box_tm.lmp");
 		M_DrawTransPic(cx, cy, p);
-		p = Draw_CachePic("gfx/box_mm.lmp");
+		p      = Draw_CachePic("gfx/box_mm.lmp");
 		for (n = 0; n < lines; n++)
 		{
 			cy += 8;
@@ -200,9 +200,9 @@ void M_DrawTextBox(int x, int y, int width, int lines)
 
 	// draw right side
 	cy = y;
-	p = Draw_CachePic("gfx/box_tr.lmp");
+	p  = Draw_CachePic("gfx/box_tr.lmp");
 	M_DrawTransPic(cx, cy, p);
-	p = Draw_CachePic("gfx/box_mr.lmp");
+	p      = Draw_CachePic("gfx/box_mr.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
@@ -233,7 +233,7 @@ void M_ToggleMenu_f()
 			return;
 		}
 		key_dest = keydest_t::key_game;
-		m_state = m_state_t::m_none;
+		m_state  = m_state_t::m_none;
 		return;
 	}
 	if (key_dest == keydest_t::key_console)
@@ -259,10 +259,10 @@ void M_Menu_Main_f()
 	if (key_dest != keydest_t::key_menu)
 	{
 		m_save_demonum = cls.demonum;
-		cls.demonum = -1;
+		cls.demonum    = -1;
 	}
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_main;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_main;
 	m_entersound = qtrue;
 }
 
@@ -285,8 +285,8 @@ void M_Main_Key(int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		key_dest = keydest_t::key_game;
-		m_state = m_state_t::m_none;
+		key_dest    = keydest_t::key_game;
+		m_state     = m_state_t::m_none;
 		cls.demonum = m_save_demonum;
 		if (cls.demonum != -1 && !cls.demoplayback && cls.state != cactive_t::ca_connected)
 			CL_NextDemo();
@@ -343,8 +343,8 @@ int m_singleplayer_cursor;
 
 void M_Menu_SinglePlayer_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_singleplayer;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_singleplayer;
 	m_entersound = qtrue;
 }
 
@@ -418,12 +418,12 @@ int load_cursor; // 0 < load_cursor < MAX_SAVEGAMES
 
 #define	MAX_SAVEGAMES		12
 char m_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH + 1];
-int loadable[MAX_SAVEGAMES];
+int  loadable[MAX_SAVEGAMES];
 
 void M_ScanSaves()
 {
 	char name[MAX_OSPATH];
-	int version;
+	int  version;
 
 	for (auto i = 0; i < MAX_SAVEGAMES; i++)
 	{
@@ -441,7 +441,7 @@ void M_ScanSaves()
 		for (auto j = 0; j < SAVEGAME_COMMENT_LENGTH; j++)
 			if (m_filenames[i][j] == '_')
 				m_filenames[i][j] = ' ';
-		loadable[i] = qtrue;
+		loadable[i]               = qtrue;
 		fclose(f);
 	}
 }
@@ -449,8 +449,8 @@ void M_ScanSaves()
 void M_Menu_Load_f()
 {
 	m_entersound = qtrue;
-	m_state = m_state_t::m_load;
-	key_dest = keydest_t::key_menu;
+	m_state      = m_state_t::m_load;
+	key_dest     = keydest_t::key_menu;
 	M_ScanSaves();
 }
 
@@ -464,8 +464,8 @@ void M_Menu_Save_f()
 	if (svs.maxclients != 1)
 		return;
 	m_entersound = qtrue;
-	m_state = m_state_t::m_save;
-	key_dest = keydest_t::key_menu;
+	m_state      = m_state_t::m_save;
+	key_dest     = keydest_t::key_menu;
 	M_ScanSaves();
 }
 
@@ -508,7 +508,7 @@ void M_Load_Key(int k)
 		S_LocalSound("misc/menu2.wav");
 		if (!loadable[load_cursor])
 			return;
-		m_state = m_state_t::m_none;
+		m_state  = m_state_t::m_none;
 		key_dest = keydest_t::key_game;
 
 		// Host_Loadgame_f can't bring up the loading plaque because too much
@@ -548,7 +548,7 @@ void M_Save_Key(int k)
 		break;
 
 	case K_ENTER:
-		m_state = m_state_t::m_none;
+		m_state  = m_state_t::m_none;
 		key_dest = keydest_t::key_game;
 		Cbuf_AddText(va("save s%i\n", load_cursor));
 		return;
@@ -581,8 +581,8 @@ int m_multiplayer_cursor;
 
 void M_Menu_MultiPlayer_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_multiplayer;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_multiplayer;
 	m_entersound = qtrue;
 }
 
@@ -650,26 +650,26 @@ void M_MultiPlayer_Key(int key)
 //=============================================================================
 /* SETUP MENU */
 
-int setup_cursor = 4;
+int setup_cursor         = 4;
 int setup_cursor_table[] = {40, 56, 80, 104, 140};
 
 char setup_hostname[16];
 char setup_myname[16];
-int setup_oldtop;
-int setup_oldbottom;
-int setup_top;
-int setup_bottom;
+int  setup_oldtop;
+int  setup_oldbottom;
+int  setup_top;
+int  setup_bottom;
 
 #define	NUM_SETUP_CMDS	5
 
 void M_Menu_Setup_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_setup;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_setup;
 	m_entersound = qtrue;
 	Q_strcpy(setup_myname, cl_name.string);
 	Q_strcpy(setup_hostname, hostname.string);
-	setup_top = setup_oldtop = static_cast<int>(cl_color.value) >> 4;
+	setup_top    = setup_oldtop    = static_cast<int>(cl_color.value) >> 4;
 	setup_bottom = setup_oldbottom = static_cast<int>(cl_color.value) & 15;
 }
 
@@ -795,7 +795,7 @@ void M_Setup_Key(int k)
 			if (l < 15)
 			{
 				setup_hostname[l + 1] = 0;
-				setup_hostname[l] = k;
+				setup_hostname[l]     = k;
 			}
 		}
 		if (setup_cursor == 1)
@@ -804,7 +804,7 @@ void M_Setup_Key(int k)
 			if (l < 15)
 			{
 				setup_myname[l + 1] = 0;
-				setup_myname[l] = k;
+				setup_myname[l]     = k;
 			}
 		}
 	}
@@ -852,10 +852,10 @@ char* net_helpMessage [] =
 
 void M_Menu_Net_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_net;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_net;
 	m_entersound = qtrue;
-	m_net_items = 4;
+	m_net_items  = 4;
 
 	if (m_net_cursor >= m_net_items)
 		m_net_cursor = 0;
@@ -1015,8 +1015,8 @@ int options_cursor;
 
 void M_Menu_Options_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_options;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_options;
 	m_entersound = qtrue;
 
 #ifdef _WIN32
@@ -1301,8 +1301,8 @@ int bind_grab;
 
 void M_Menu_Keys_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_keys;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_keys;
 	m_entersound = qtrue;
 }
 
@@ -1310,7 +1310,7 @@ void M_Menu_Keys_f()
 void M_FindKeysForCommand(char* command, int* twokeys)
 {
 	twokeys[0] = twokeys[1] = -1;
-	int l = strlen(command);
+	int  l     = strlen(command);
 	auto count = 0;
 
 	for (auto j = 0; j < 256; j++)
@@ -1390,10 +1390,11 @@ void M_Keys_Draw()
 void M_Keys_Key(int k)
 {
 	char cmd[80];
-	int keys[2];
+	int  keys[2];
 
 	if (bind_grab)
-	{ // defining a key
+	{
+		// defining a key
 		S_LocalSound("misc/menu1.wav");
 		if (k == K_ESCAPE)
 		{
@@ -1453,8 +1454,8 @@ void M_Keys_Key(int k)
 
 void M_Menu_Video_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_video;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_video;
 	m_entersound = qtrue;
 }
 
@@ -1479,10 +1480,10 @@ int help_page;
 
 void M_Menu_Help_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_help;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_help;
 	m_entersound = qtrue;
-	help_page = 0;
+	help_page    = 0;
 }
 
 
@@ -1520,9 +1521,9 @@ void M_Help_Key(int key)
 //=============================================================================
 /* QUIT MENU */
 
-int msgNumber;
+int       msgNumber;
 m_state_t m_quit_prevstate;
-qboolean wasInMenus;
+qboolean  wasInMenus;
 
 #ifndef	_WIN32
 char *quitMessage [] = 
@@ -1574,12 +1575,12 @@ void M_Menu_Quit_f()
 {
 	if (m_state == m_state_t::m_quit)
 		return;
-	wasInMenus = key_dest == keydest_t::key_menu;
-	key_dest = keydest_t::key_menu;
+	wasInMenus       = key_dest == keydest_t::key_menu;
+	key_dest         = keydest_t::key_menu;
 	m_quit_prevstate = m_state;
-	m_state = m_state_t::m_quit;
-	m_entersound = qtrue;
-	msgNumber = rand() & 7;
+	m_state          = m_state_t::m_quit;
+	m_entersound     = qtrue;
+	msgNumber        = rand() & 7;
 }
 
 
@@ -1592,13 +1593,13 @@ void M_Quit_Key(int key)
 	case 'N':
 		if (wasInMenus)
 		{
-			m_state = m_quit_prevstate;
+			m_state      = m_quit_prevstate;
 			m_entersound = qtrue;
 		}
 		else
 		{
 			key_dest = keydest_t::key_game;
-			m_state = m_state_t::m_none;
+			m_state  = m_state_t::m_none;
 		}
 		break;
 
@@ -1618,7 +1619,7 @@ void M_Quit_Draw()
 {
 	if (wasInMenus)
 	{
-		m_state = m_quit_prevstate;
+		m_state         = m_quit_prevstate;
 		m_recursiveDraw = qtrue;
 		M_Draw();
 		m_state = m_state_t::m_quit;
@@ -1664,24 +1665,24 @@ int serialConfig_cursor;
 int serialConfig_cursor_table[] = {48, 64, 80, 96, 112, 132};
 #define	NUM_SERIALCONFIG_CMDS	6
 
-static int ISA_uarts[] = {0x3f8,0x2f8,0x3e8,0x2e8};
-static int ISA_IRQs[] = {4,3,4,3};
-int serialConfig_baudrate[] = {9600,14400,19200,28800,38400,57600};
+static int ISA_uarts[]             = {0x3f8, 0x2f8, 0x3e8, 0x2e8};
+static int ISA_IRQs[]              = {4, 3, 4, 3};
+int        serialConfig_baudrate[] = {9600, 14400, 19200, 28800, 38400, 57600};
 
-int serialConfig_comport;
-int serialConfig_irq;
-int serialConfig_baud;
+int  serialConfig_comport;
+int  serialConfig_irq;
+int  serialConfig_baud;
 char serialConfig_phone[16];
 
 void M_Menu_SerialConfig_f()
 {
-	int n;
-	int port;
-	int baudrate;
+	int      n;
+	int      port;
+	int      baudrate;
 	qboolean useModem;
 
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_serialconfig;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_serialconfig;
 	m_entersound = qtrue;
 	if (JoiningGame && SerialConfig)
 		serialConfig_cursor = 4;
@@ -1696,7 +1697,7 @@ void M_Menu_SerialConfig_f()
 			break;
 	if (n == 4)
 	{
-		n = 0;
+		n                = 0;
 		serialConfig_irq = 4;
 	}
 	serialConfig_comport = n + 1;
@@ -1706,10 +1707,10 @@ void M_Menu_SerialConfig_f()
 		if (serialConfig_baudrate[n] == baudrate)
 			break;
 	if (n == 6)
-		n = 5;
+		n             = 5;
 	serialConfig_baud = n;
 
-	m_return_onerror = qfalse;
+	m_return_onerror   = qfalse;
 	m_return_reason[0] = 0;
 }
 
@@ -1720,7 +1721,7 @@ void M_SerialConfig_Draw()
 	char* directModem;
 
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/p_multi.lmp");
+	auto p     = Draw_CachePic("gfx/p_multi.lmp");
 	auto basex = (320 - p->width) / 2;
 	M_DrawPic(basex, 4, p);
 
@@ -1811,7 +1812,7 @@ void M_SerialConfig_Key(int key)
 			serialConfig_comport--;
 			if (serialConfig_comport == 0)
 				serialConfig_comport = 4;
-			serialConfig_irq = ISA_IRQs[serialConfig_comport - 1];
+			serialConfig_irq         = ISA_IRQs[serialConfig_comport - 1];
 		}
 
 		if (serialConfig_cursor == 1)
@@ -1843,7 +1844,7 @@ void M_SerialConfig_Key(int key)
 			serialConfig_comport++;
 			if (serialConfig_comport > 4)
 				serialConfig_comport = 1;
-			serialConfig_irq = ISA_IRQs[serialConfig_comport - 1];
+			serialConfig_irq         = ISA_IRQs[serialConfig_comport - 1];
 		}
 
 		if (serialConfig_cursor == 1)
@@ -1895,10 +1896,10 @@ void M_SerialConfig_Key(int key)
 			break;
 		}
 
-		m_return_state = m_state;
+		m_return_state   = m_state;
 		m_return_onerror = qtrue;
-		key_dest = keydest_t::key_game;
-		m_state = m_state_t::m_none;
+		key_dest         = keydest_t::key_game;
+		m_state          = m_state_t::m_none;
 
 		if (SerialConfig)
 			Cbuf_AddText(va("connect \"%s\"\n", serialConfig_phone));
@@ -1923,7 +1924,7 @@ void M_SerialConfig_Key(int key)
 			if (l < 15)
 			{
 				serialConfig_phone[l + 1] = 0;
-				serialConfig_phone[l] = key;
+				serialConfig_phone[l]     = key;
 			}
 		}
 	}
@@ -1955,8 +1956,8 @@ char modemConfig_hangup [16];
 
 void M_Menu_ModemConfig_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_modemconfig;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_modemconfig;
 	m_entersound = qtrue;
 	(*GetModemConfig)(0, &modemConfig_dialing, modemConfig_clear, modemConfig_init, modemConfig_hangup);
 }
@@ -1965,7 +1966,7 @@ void M_Menu_ModemConfig_f()
 void M_ModemConfig_Draw()
 {
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/p_multi.lmp");
+	auto p     = Draw_CachePic("gfx/p_multi.lmp");
 	auto basex = (320 - p->width) / 2;
 	M_DrawPic(basex, 4, p);
 	basex += 8;
@@ -2043,7 +2044,7 @@ void M_ModemConfig_Key(int key)
 				modemConfig_dialing = 'T';
 			else
 				modemConfig_dialing = 'P';
-			m_entersound = qtrue;
+			m_entersound            = qtrue;
 		}
 
 		if (modemConfig_cursor == 4)
@@ -2084,7 +2085,7 @@ void M_ModemConfig_Key(int key)
 			if (l < 15)
 			{
 				modemConfig_clear[l + 1] = 0;
-				modemConfig_clear[l] = key;
+				modemConfig_clear[l]     = key;
 			}
 		}
 
@@ -2094,7 +2095,7 @@ void M_ModemConfig_Key(int key)
 			if (l < 29)
 			{
 				modemConfig_init[l + 1] = 0;
-				modemConfig_init[l] = key;
+				modemConfig_init[l]     = key;
 			}
 		}
 
@@ -2104,7 +2105,7 @@ void M_ModemConfig_Key(int key)
 			if (l < 15)
 			{
 				modemConfig_hangup[l + 1] = 0;
-				modemConfig_hangup[l] = key;
+				modemConfig_hangup[l]     = key;
 			}
 		}
 	}
@@ -2113,18 +2114,18 @@ void M_ModemConfig_Key(int key)
 //=============================================================================
 /* LAN CONFIG MENU */
 
-int lanConfig_cursor = -1;
+int lanConfig_cursor          = -1;
 int lanConfig_cursor_table [] = {72, 92, 124};
 #define NUM_LANCONFIG_CMDS	3
 
-int lanConfig_port;
+int  lanConfig_port;
 char lanConfig_portname[6];
 char lanConfig_joinname[22];
 
 void M_Menu_LanConfig_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_lanconfig;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_lanconfig;
 	m_entersound = qtrue;
 	if (lanConfig_cursor == -1)
 	{
@@ -2135,10 +2136,10 @@ void M_Menu_LanConfig_f()
 	}
 	if (StartingGame && lanConfig_cursor == 2)
 		lanConfig_cursor = 1;
-	lanConfig_port = DEFAULTnet_hostport;
+	lanConfig_port       = DEFAULTnet_hostport;
 	sprintf(lanConfig_portname, "%u", lanConfig_port);
 
-	m_return_onerror = qfalse;
+	m_return_onerror   = qfalse;
 	m_return_reason[0] = 0;
 }
 
@@ -2149,7 +2150,7 @@ void M_LanConfig_Draw()
 	char* protocol;
 
 	M_DrawTransPic(16, 4, Draw_CachePic("gfx/qplaque.lmp"));
-	auto p = Draw_CachePic("gfx/p_multi.lmp");
+	auto p     = Draw_CachePic("gfx/p_multi.lmp");
 	auto basex = (320 - p->width) / 2;
 	M_DrawPic(basex, 4, p);
 
@@ -2245,10 +2246,10 @@ void M_LanConfig_Key(int key)
 
 		if (lanConfig_cursor == 2)
 		{
-			m_return_state = m_state;
+			m_return_state   = m_state;
 			m_return_onerror = qtrue;
-			key_dest = keydest_t::key_game;
-			m_state = m_state_t::m_none;
+			key_dest         = keydest_t::key_game;
+			m_state          = m_state_t::m_none;
 			Cbuf_AddText(va("connect \"%s\"\n", lanConfig_joinname));
 			break;
 		}
@@ -2279,7 +2280,7 @@ void M_LanConfig_Key(int key)
 			if (l < 21)
 			{
 				lanConfig_joinname[l + 1] = 0;
-				lanConfig_joinname[l] = key;
+				lanConfig_joinname[l]     = key;
 			}
 		}
 
@@ -2291,7 +2292,7 @@ void M_LanConfig_Key(int key)
 			if (l < 5)
 			{
 				lanConfig_portname[l + 1] = 0;
-				lanConfig_portname[l] = key;
+				lanConfig_portname[l]     = key;
 			}
 		}
 	}
@@ -2419,8 +2420,8 @@ level_t roguelevels[] =
 struct episode_t
 {
 	char* description;
-	int firstLevel;
-	int levels;
+	int   firstLevel;
+	int   levels;
 };
 
 episode_t episodes[] =
@@ -2455,16 +2456,16 @@ episode_t rogueepisodes[] =
 	{"Deathmatch Arena", 16, 1}
 };
 
-int startepisode;
-int startlevel;
-int maxplayers;
+int      startepisode;
+int      startlevel;
+int      maxplayers;
 qboolean m_serverInfoMessage = qfalse;
-double m_serverInfoMessageTime;
+double   m_serverInfoMessageTime;
 
 void M_Menu_GameOptions_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_gameoptions;
+	key_dest     = keydest_t::key_menu;
+	m_state      = m_state_t::m_gameoptions;
 	m_entersound = qtrue;
 	if (maxplayers == 0)
 		maxplayers = svs.maxclients;
@@ -2561,7 +2562,7 @@ void M_GameOptions_Draw()
 	//MED 01/06/97 added hipnotic episodes
 	if (hipnotic)
 		M_Print(160, 112, hipnoticepisodes[startepisode].description);
-	//PGM 01/07/97 added rogue episodes
+		//PGM 01/07/97 added rogue episodes
 	else if (rogue)
 		M_Print(160, 112, rogueepisodes[startepisode].description);
 	else
@@ -2574,7 +2575,7 @@ void M_GameOptions_Draw()
 		M_Print(160, 120, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].description);
 		M_Print(160, 128, hipnoticlevels[hipnoticepisodes[startepisode].firstLevel + startlevel].name);
 	}
-	//PGM 01/07/97 added rogue episodes
+		//PGM 01/07/97 added rogue episodes
 	else if (rogue)
 	{
 		M_Print(160, 120, roguelevels[rogueepisodes[startepisode].firstLevel + startlevel].description);
@@ -2619,8 +2620,8 @@ void M_NetStart_Change(int dir)
 		maxplayers += dir;
 		if (maxplayers > svs.maxclientslimit)
 		{
-			maxplayers = svs.maxclientslimit;
-			m_serverInfoMessage = qtrue;
+			maxplayers              = svs.maxclientslimit;
+			m_serverInfoMessage     = qtrue;
 			m_serverInfoMessageTime = realtime;
 		}
 		if (maxplayers < 2)
@@ -2673,8 +2674,8 @@ void M_NetStart_Change(int dir)
 		//MED 01/06/97 added hipnotic count
 		if (hipnotic)
 			count = 6;
-		//PGM 01/07/97 added rogue count
-		//PGM 03/02/97 added 1 for dmatch episode
+			//PGM 01/07/97 added rogue count
+			//PGM 03/02/97 added 1 for dmatch episode
 		else if (rogue)
 			count = 4;
 		else if (registered.value)
@@ -2696,7 +2697,7 @@ void M_NetStart_Change(int dir)
 		//MED 01/06/97 added hipnotic episodes
 		if (hipnotic)
 			count = hipnoticepisodes[startepisode].levels;
-		//PGM 01/06/97 added hipnotic episodes
+			//PGM 01/06/97 added hipnotic episodes
 		else if (rogue)
 			count = rogueepisodes[startepisode].levels;
 		else
@@ -2778,15 +2779,15 @@ void M_GameOptions_Key(int key)
 /* SEARCH MENU */
 
 qboolean searchComplete = qfalse;
-double searchCompleteTime;
+double   searchCompleteTime;
 
 void M_Menu_Search_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_search;
-	m_entersound = qfalse;
-	slistSilent = qtrue;
-	slistLocal = qfalse;
+	key_dest       = keydest_t::key_menu;
+	m_state        = m_state_t::m_search;
+	m_entersound   = qfalse;
+	slistSilent    = qtrue;
+	slistLocal     = qfalse;
 	searchComplete = qfalse;
 	NET_Slist_f();
 }
@@ -2808,7 +2809,7 @@ void M_Search_Draw()
 
 	if (! searchComplete)
 	{
-		searchComplete = qtrue;
+		searchComplete     = qtrue;
 		searchCompleteTime = realtime;
 	}
 
@@ -2833,18 +2834,18 @@ void M_Search_Key(int key)
 //=============================================================================
 /* SLIST MENU */
 
-int slist_cursor;
+int      slist_cursor;
 qboolean slist_sorted;
 
 void M_Menu_ServerList_f()
 {
-	key_dest = keydest_t::key_menu;
-	m_state = m_state_t::m_slist;
-	m_entersound = qtrue;
-	slist_cursor = 0;
-	m_return_onerror = qfalse;
+	key_dest           = keydest_t::key_menu;
+	m_state            = m_state_t::m_slist;
+	m_entersound       = qtrue;
+	slist_cursor       = 0;
+	m_return_onerror   = qfalse;
 	m_return_reason[0] = 0;
-	slist_sorted = qfalse;
+	slist_sorted       = qfalse;
 }
 
 
@@ -2856,8 +2857,8 @@ void M_ServerList_Draw()
 	{
 		if (hostCacheCount > 1)
 		{
-			hostcache_t temp;
-			for (auto i = 0; i < hostCacheCount; i++)
+			hostcache_t   temp;
+			for (auto     i = 0; i < hostCacheCount; i++)
 				for (auto j = i + 1; j < hostCacheCount; j++)
 					if (strcmp(hostcache[j].name, hostcache[i].name) < 0)
 					{
@@ -2916,11 +2917,11 @@ void M_ServerList_Key(int k)
 
 	case K_ENTER:
 		S_LocalSound("misc/menu2.wav");
-		m_return_state = m_state;
+		m_return_state   = m_state;
 		m_return_onerror = qtrue;
-		slist_sorted = qfalse;
-		key_dest = keydest_t::key_game;
-		m_state = m_state_t::m_none;
+		slist_sorted     = qfalse;
+		key_dest         = keydest_t::key_game;
+		m_state          = m_state_t::m_none;
 		Cbuf_AddText(va("connect \"%s\"\n", hostcache[slist_cursor].cname));
 		break;
 

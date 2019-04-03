@@ -4,32 +4,29 @@
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-cvar_t cl_name = {"_cl_name", "player", qtrue};
-cvar_t cl_color = {"_cl_color", "0", qtrue};
-
-cvar_t cl_shownet = {"cl_shownet","0"}; // can be 0, 1, or 2
-cvar_t cl_nolerp = {"cl_nolerp","0"};
-
-cvar_t lookspring = {"lookspring","0", qtrue};
-cvar_t lookstrafe = {"lookstrafe","0", qtrue};
-cvar_t sensitivity = {"sensitivity","3", qtrue};
-
-cvar_t m_pitch = {"m_pitch","0.022", qtrue};
-cvar_t m_yaw = {"m_yaw","0.022", qtrue};
-cvar_t m_forward = {"m_forward","1", qtrue};
-cvar_t m_side = {"m_side","0.8", qtrue};
+cvar_t cl_name     = {"_cl_name", "player", qtrue};
+cvar_t cl_color    = {"_cl_color", "0", qtrue};
+cvar_t cl_shownet  = {"cl_shownet", "0"}; // can be 0, 1, or 2
+cvar_t cl_nolerp   = {"cl_nolerp", "0"};
+cvar_t lookspring  = {"lookspring", "0", qtrue};
+cvar_t lookstrafe  = {"lookstrafe", "0", qtrue};
+cvar_t sensitivity = {"sensitivity", "3", qtrue};
+cvar_t m_pitch     = {"m_pitch", "0.022", qtrue};
+cvar_t m_yaw       = {"m_yaw", "0.022", qtrue};
+cvar_t m_forward   = {"m_forward", "1", qtrue};
+cvar_t m_side      = {"m_side", "0.8", qtrue};
 
 
 client_static_t cls;
-client_state_t cl;
+client_state_t  cl;
 // FIXME: put these on hunk?
-efrag_t cl_efrags[MAX_EFRAGS];
-entity_t cl_entities[MAX_EDICTS];
-entity_t cl_static_entities[MAX_STATIC_ENTITIES];
+efrag_t      cl_efrags[MAX_EFRAGS];
+entity_t     cl_entities[MAX_EDICTS];
+entity_t     cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t cl_lightstyle[MAX_LIGHTSTYLES];
-dlight_t cl_dlights[MAX_DLIGHTS];
+dlight_t     cl_dlights[MAX_DLIGHTS];
 
-int cl_numvisedicts;
+int       cl_numvisedicts;
 entity_t* cl_visedicts[MAX_VISEDICTS];
 
 /*
@@ -61,10 +58,10 @@ void CL_ClearState()
 	//
 	// allocate the efrags and chain together into a free list
 	//
-	cl.free_efrags = cl_efrags;
-	for (i = 0; i < MAX_EFRAGS - 1; i++)
+	cl.free_efrags                = cl_efrags;
+	for (i                        = 0; i < MAX_EFRAGS - 1; i++)
 		cl.free_efrags[i].entnext = &cl.free_efrags[i + 1];
-	cl.free_efrags[i].entnext = nullptr;
+	cl.free_efrags[i].entnext     = nullptr;
 }
 
 /*
@@ -104,7 +101,7 @@ void CL_Disconnect()
 	}
 
 	cls.demoplayback = cls.timedemo = qfalse;
-	cls.signon = 0;
+	cls.signon       = 0;
 }
 
 void CL_Disconnect_f()
@@ -138,8 +135,8 @@ void CL_EstablishConnection(char* host)
 	Con_DPrintf("CL_EstablishConnection: connected to %s\n", host);
 
 	cls.demonum = -1; // not in the demo loop now
-	cls.state = cactive_t::ca_connected;
-	cls.signon = 0; // need all the signon messages before playing
+	cls.state   = cactive_t::ca_connected;
+	cls.signon  = 0; // need all the signon messages before playing
 }
 
 /*
@@ -227,9 +224,9 @@ CL_PrintEntities_f
 void CL_PrintEntities_f()
 {
 	entity_t* ent;
-	int i;
+	int       i;
 
-	for (i = 0 , ent = cl_entities; i < cl.num_entities; i++ , ent++)
+	for (i = 0, ent = cl_entities; i < cl.num_entities; i++, ent++)
 	{
 		Con_Printf("%3i:", i);
 		if (!ent->model)
@@ -251,7 +248,6 @@ Debugging tool, just flashes the screen
 */
 void SetPal(int i)
 {
-
 }
 
 /*
@@ -262,14 +258,14 @@ CL_AllocDlight
 */
 dlight_t* CL_AllocDlight(int key)
 {
-	int i;
+	int       i;
 	dlight_t* dl;
 
 	// first look for an exact key match
 	if (key)
 	{
-		dl = cl_dlights;
-		for (i = 0; i < MAX_DLIGHTS; i++ , dl++)
+		dl     = cl_dlights;
+		for (i = 0; i < MAX_DLIGHTS; i++, dl++)
 		{
 			if (dl->key == key)
 			{
@@ -281,8 +277,8 @@ dlight_t* CL_AllocDlight(int key)
 	}
 
 	// then look for anything else
-	dl = cl_dlights;
-	for (i = 0; i < MAX_DLIGHTS; i++ , dl++)
+	dl     = cl_dlights;
+	for (i = 0; i < MAX_DLIGHTS; i++, dl++)
 	{
 		if (dl->die < cl.time)
 		{
@@ -309,8 +305,8 @@ void CL_DecayLights()
 {
 	float time = cl.time - cl.oldtime;
 
-	auto dl = cl_dlights;
-	for (auto i = 0; i < MAX_DLIGHTS; i++ , dl++)
+	auto      dl = cl_dlights;
+	for (auto i  = 0; i < MAX_DLIGHTS; i++, dl++)
 	{
 		if (dl->die < cl.time || !dl->radius)
 			continue;
@@ -341,9 +337,10 @@ float CL_LerpPoint()
 	}
 
 	if (f > 0.1)
-	{ // dropped packet, or start of demo
+	{
+		// dropped packet, or start of demo
 		cl.mtime[1] = cl.mtime[0] - 0.1;
-		f = 0.1;
+		f           = 0.1;
 	}
 	float frac = (cl.time - cl.mtime[1]) / f;
 	//Con_Printf ("frac: %f\n",frac);
@@ -382,10 +379,10 @@ CL_RelinkEntities
 void CL_RelinkEntities()
 {
 	entity_t* ent;
-	int i, j;
-	float d;
-	vec3_t delta;
-	vec3_t oldorg;
+	int       i, j;
+	float     d;
+	vec3_t    delta;
+	vec3_t    oldorg;
 	dlight_t* dl;
 
 	// determine partial update time	
@@ -396,7 +393,7 @@ void CL_RelinkEntities()
 	//
 	// interpolate player info
 	//
-	for (i = 0; i < 3; i++)
+	for (i             = 0; i < 3; i++)
 		cl.velocity[i] = cl.mvelocity[1][i] +
 			frac * (cl.mvelocity[0][i] - cl.mvelocity[1][i]);
 
@@ -417,10 +414,11 @@ void CL_RelinkEntities()
 	auto bobjrotate = anglemod(100 * cl.time);
 
 	// start on the entity after the world
-	for (i = 1 , ent = cl_entities + 1; i < cl.num_entities; i++ , ent++)
+	for (i = 1, ent = cl_entities + 1; i < cl.num_entities; i++, ent++)
 	{
 		if (!ent->model)
-		{ // empty slot
+		{
+			// empty slot
 			if (ent->forcelink)
 				R_RemoveEfrags(ent); // just became empty
 			continue;
@@ -436,13 +434,15 @@ void CL_RelinkEntities()
 		VectorCopy (ent->origin, oldorg);
 
 		if (ent->forcelink)
-		{ // the entity was not updated in the last message
+		{
+			// the entity was not updated in the last message
 			// so move to the final spot
 			VectorCopy (ent->msg_origins[0], ent->origin);
 			VectorCopy (ent->msg_angles[0], ent->angles);
 		}
 		else
-		{ // if the delta is large, assume a teleport and don't lerp
+		{
+			// if the delta is large, assume a teleport and don't lerp
 			auto f = frac;
 			for (j = 0; j < 3; j++)
 			{
@@ -481,9 +481,9 @@ void CL_RelinkEntities()
 			AngleVectors(ent->angles, fv, rv, uv);
 
 			VectorMA(dl->origin, 18, fv, dl->origin);
-			dl->radius = 200 + (rand() & 31);
+			dl->radius   = 200 + (rand() & 31);
 			dl->minlight = 32;
-			dl->die = cl.time + 0.1;
+			dl->die      = cl.time + 0.1;
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
 		{
@@ -491,14 +491,14 @@ void CL_RelinkEntities()
 			VectorCopy (ent->origin, dl->origin);
 			dl->origin[2] += 16;
 			dl->radius = 400 + (rand() & 31);
-			dl->die = cl.time + 0.001;
+			dl->die    = cl.time + 0.001;
 		}
 		if (ent->effects & EF_DIMLIGHT)
 		{
 			dl = CL_AllocDlight(i);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200 + (rand() & 31);
-			dl->die = cl.time + 0.001;
+			dl->die    = cl.time + 0.001;
 		}
 
 		if (ent->model->flags & EF_GIB)
@@ -515,7 +515,7 @@ void CL_RelinkEntities()
 			dl = CL_AllocDlight(i);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
-			dl->die = cl.time + 0.01;
+			dl->die    = cl.time + 0.01;
 		}
 		else if (ent->model->flags & EF_GRENADE)
 			R_RocketTrail(oldorg, ent->origin, 1);

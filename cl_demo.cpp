@@ -27,8 +27,8 @@ void CL_StopPlayback()
 
 	fclose(cls.demofile);
 	cls.demoplayback = qfalse;
-	cls.demofile = nullptr;
-	cls.state = cactive_t::ca_disconnected;
+	cls.demofile     = nullptr;
+	cls.state        = cactive_t::ca_disconnected;
 
 	if (cls.timedemo)
 		CL_FinishTimeDemo();
@@ -63,7 +63,7 @@ Handles recording and playback of demos, on top of NET_ code
 */
 int CL_GetMessage()
 {
-	int r;
+	int   r;
 	float f;
 
 	if (cls.demoplayback)
@@ -155,7 +155,7 @@ void CL_Stop_f()
 
 	// finish up
 	fclose(cls.demofile);
-	cls.demofile = nullptr;
+	cls.demofile      = nullptr;
 	cls.demorecording = qfalse;
 	Con_Printf("Completed demo\n");
 }
@@ -170,7 +170,7 @@ record <demoname> <map> [cd track]
 void CL_Record_f()
 {
 	char name[MAX_OSPATH];
-	int track;
+	int  track;
 
 	if (cmd_source != cmd_source_t::src_command)
 		return;
@@ -241,7 +241,7 @@ play [demoname]
 void CL_PlayDemo_f()
 {
 	char name[256];
-	int c;
+	int  c;
 	auto neg = qfalse;
 
 	if (cmd_source != cmd_source_t::src_command)
@@ -274,8 +274,8 @@ void CL_PlayDemo_f()
 	}
 
 	cls.demoplayback = qtrue;
-	cls.state = cactive_t::ca_connected;
-	cls.forcetrack = 0;
+	cls.state        = cactive_t::ca_connected;
+	cls.forcetrack   = 0;
 
 	while ((c = getc(cls.demofile)) != '\n')
 		if (c == '-')
@@ -300,8 +300,8 @@ void CL_FinishTimeDemo()
 	cls.timedemo = qfalse;
 
 	// the first frame didn't count
-	auto frames = host_framecount - cls.td_startframe - 1;
-	float time = realtime - cls.td_starttime;
+	auto  frames = host_framecount - cls.td_startframe - 1;
+	float time   = realtime - cls.td_starttime;
 	if (!time)
 		time = 1;
 	Con_Printf("%i frames %5.1f seconds %5.1f fps\n", frames, time, frames / time);
@@ -330,7 +330,7 @@ void CL_TimeDemo_f()
 	// cls.td_starttime will be grabbed at the second frame of the demo, so
 	// all the loading time doesn't get counted
 
-	cls.timedemo = qtrue;
+	cls.timedemo      = qtrue;
 	cls.td_startframe = host_framecount;
-	cls.td_lastframe = -1; // get a new message this frame
+	cls.td_lastframe  = -1; // get a new message this frame
 }

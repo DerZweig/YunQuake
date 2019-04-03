@@ -2,21 +2,20 @@
 
 extern model_t* loadmodel;
 
-int solidskytexture;
-int alphaskytexture;
+int   solidskytexture;
+int   alphaskytexture;
 float speedscale; // for top sky and bottom sky
 
 msurface_t* warpface;
 
 
-
 void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 {
-	mins[0] = mins[1] = mins[2] = 9999;
-	maxs[0] = maxs[1] = maxs[2] = -9999;
-	auto v = verts;
-	for (auto i = 0; i < numverts; i++)
-		for (auto j = 0; j < 3; j++ , v++)
+	mins[0]         = mins[1] = mins[2] = 9999;
+	maxs[0]         = maxs[1] = maxs[2] = -9999;
+	auto          v = verts;
+	for (auto     i = 0; i < numverts; i++)
+		for (auto j = 0; j < 3; j++, v++)
 		{
 			if (*v < mins[j])
 				mins[j] = *v;
@@ -27,15 +26,15 @@ void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
 
 void SubdividePolygon(int numverts, float* verts)
 {
-	int i;
-	int j;
-	vec3_t mins;
-	vec3_t maxs;
-	float* v;
-	vec3_t front[64];
-	vec3_t back[64];
-	int f, b;
-	float dist[64];
+	int       i;
+	int       j;
+	vec3_t    mins;
+	vec3_t    maxs;
+	float*    v;
+	vec3_t    front[64];
+	vec3_t    back[64];
+	int       f, b;
+	float     dist[64];
 	glpoly_t* poly;
 
 	if (numverts > 60)
@@ -46,15 +45,15 @@ void SubdividePolygon(int numverts, float* verts)
 	for (i = 0; i < 3; i++)
 	{
 		float m = (mins[i] + maxs[i]) * 0.5;
-		m = gl_subdivide_size.value * floor(m / gl_subdivide_size.value + 0.5);
+		m       = gl_subdivide_size.value * floor(m / gl_subdivide_size.value + 0.5);
 		if (maxs[i] - m < 8)
 			continue;
 		if (m - mins[i] < 8)
 			continue;
 
 		// cut it
-		v = verts + i;
-		for (j = 0; j < numverts; j++ , v += 3)
+		v           = verts + i;
+		for (j      = 0; j < numverts; j++, v += 3)
 			dist[j] = *v - m;
 
 		// wrap cases
@@ -62,9 +61,9 @@ void SubdividePolygon(int numverts, float* verts)
 		v -= i;
 		VectorCopy (verts, v);
 
-		f = b = 0;
-		v = verts;
-		for (j = 0; j < numverts; j++ , v += 3)
+		f      = b = 0;
+		v      = verts;
+		for (j = 0; j < numverts; j++, v += 3)
 		{
 			if (dist[j] >= 0)
 			{
@@ -81,8 +80,8 @@ void SubdividePolygon(int numverts, float* verts)
 			if (dist[j] > 0 != dist[j + 1] > 0)
 			{
 				// clip point
-				auto frac = dist[j] / (dist[j] - dist[j + 1]);
-				for (auto k = 0; k < 3; k++)
+				auto      frac  = dist[j] / (dist[j] - dist[j + 1]);
+				for (auto k     = 0; k < 3; k++)
 					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
 				f++;
 				b++;
@@ -94,15 +93,15 @@ void SubdividePolygon(int numverts, float* verts)
 		return;
 	}
 
-	poly = static_cast<glpoly_t*>(Hunk_Alloc(sizeof(glpoly_t) + (numverts - 4) * VERTEXSIZE * sizeof(float)));
-	poly->next = warpface->polys;
+	poly            = static_cast<glpoly_t*>(Hunk_Alloc(sizeof(glpoly_t) + (numverts - 4) * VERTEXSIZE * sizeof(float)));
+	poly->next      = warpface->polys;
 	warpface->polys = poly;
-	poly->numverts = numverts;
-	for (i = 0; i < numverts; i++ , verts += 3)
+	poly->numverts  = numverts;
+	for (i          = 0; i < numverts; i++, verts += 3)
 	{
 		VectorCopy (verts, poly->verts[i]);
-		auto s = DotProduct (verts, warpface->texinfo->vecs[0]);
-		auto t = DotProduct (verts, warpface->texinfo->vecs[1]);
+		auto s            = DotProduct (verts, warpface->texinfo->vecs[0]);
+		auto t            = DotProduct (verts, warpface->texinfo->vecs[1]);
 		poly->verts[i][3] = s;
 		poly->verts[i][4] = t;
 	}
@@ -120,7 +119,7 @@ can be done reasonably.
 void GL_SubdivideSurface(msurface_t* fa)
 {
 	vec3_t verts[64];
-	int numverts;
+	int    numverts;
 	float* vec;
 
 	warpface = fa;
@@ -128,7 +127,7 @@ void GL_SubdivideSurface(msurface_t* fa)
 	//
 	// convert edges back to a normal polygon
 	//
-	numverts = 0;
+	numverts    = 0;
 	for (auto i = 0; i < fa->numedges; i++)
 	{
 		auto lindex = loadmodel->surfedges[fa->firstedge + i];
@@ -195,12 +194,12 @@ Does a water warp on the pre-fragmented glpoly_t chain
 void EmitWaterPolys(msurface_t* fa)
 {
 	float* v;
-	int i;
+	int    i;
 
 	for (auto p = fa->polys; p; p = p->next)
 	{
 		glBegin(GL_POLYGON);
-		for (i = 0 , v = p->verts[0]; i < p->numverts; i++ , v += VERTEXSIZE)
+		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
 		{
 			auto os = v[3];
 			auto ot = v[4];
@@ -227,20 +226,20 @@ EmitSkyPolys
 void EmitSkyPolys(msurface_t* fa)
 {
 	float* v;
-	int i;
+	int    i;
 	vec3_t dir;
 
 	for (auto p = fa->polys; p; p = p->next)
 	{
 		glBegin(GL_POLYGON);
-		for (i = 0 , v = p->verts[0]; i < p->numverts; i++ , v += VERTEXSIZE)
+		for (i = 0, v = p->verts[0]; i < p->numverts; i++, v += VERTEXSIZE)
 		{
 			VectorSubtract (v, r_origin, dir);
 			dir[2] *= 3; // flatten the sphere
 
 			auto length = dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2];
-			length = sqrt(length);
-			length = 6 * 63 / length;
+			length      = sqrt(length);
+			length      = 6 * 63 / length;
 
 			dir[0] *= length;
 			dir[1] *= length;
@@ -325,25 +324,25 @@ A sky texture is 256*128, with the right side being a masked overlay
 */
 void R_InitSky(texture_t* mt)
 {
-	int i;
-	int j;
-	int p;
+	int      i;
+	int      j;
+	int      p;
 	unsigned trans[128 * 128];
 	unsigned transpix;
-	int g;
-	int b;
+	int      g;
+	int      b;
 
 	auto src = reinterpret_cast<byte *>(mt) + mt->offsets[0];
 
 	// make an average value for the back to avoid
 	// a fringe on the top level
 
-	auto r = g = b = 0;
-	for (i = 0; i < 128; i++)
+	auto r     = g = b = 0;
+	for (i     = 0; i < 128; i++)
 		for (j = 0; j < 128; j++)
 		{
-			p = src[i * 256 + j + 128];
-			auto rgba = &d_8to24table[p];
+			p                  = src[i * 256 + j + 128];
+			auto rgba          = &d_8to24table[p];
 			trans[i * 128 + j] = *rgba;
 			r += reinterpret_cast<byte *>(rgba)[0];
 			g += reinterpret_cast<byte *>(rgba)[1];
@@ -364,7 +363,7 @@ void R_InitSky(texture_t* mt)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
-	for (i = 0; i < 128; i++)
+	for (i     = 0; i < 128; i++)
 		for (j = 0; j < 128; j++)
 		{
 			p = src[i * 256 + j];

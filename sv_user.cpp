@@ -9,7 +9,7 @@ cvar_t sv_edgefriction = {"edgefriction", "2"};
 static vec3_t forward, right, up;
 
 vec3_t wishdir;
-float wishspeed;
+float  wishspeed;
 
 // world
 float* angles;
@@ -20,7 +20,7 @@ qboolean onground;
 
 usercmd_t cmd;
 
-cvar_t sv_idealpitchscale = {"sv_idealpitchscale","0.8"};
+cvar_t sv_idealpitchscale = {"sv_idealpitchscale", "0.8"};
 
 
 /*
@@ -34,15 +34,15 @@ void SV_SetIdealPitch()
 {
 	vec3_t top;
 	vec3_t bottom;
-	float z[MAX_FORWARD];
-	int i;
+	float  z[MAX_FORWARD];
+	int    i;
 
 	if (!(static_cast<int>(sv_player->v.flags) & FL_ONGROUND))
 		return;
 
 	float angleval = sv_player->v.angles[YAW] * M_PI * 2 / 360;
-	auto sinval = sin(angleval);
-	auto cosval = cos(angleval);
+	auto  sinval   = sin(angleval);
+	auto  cosval   = cos(angleval);
 
 	for (i = 0; i < MAX_FORWARD; i++)
 	{
@@ -64,9 +64,9 @@ void SV_SetIdealPitch()
 		z[i] = top[2] + tr.fraction * (bottom[2] - top[2]);
 	}
 
-	auto dir = 0;
-	auto steps = 0;
-	for (auto j = 1; j < i; j++)
+	auto      dir   = 0;
+	auto      steps = 0;
+	for (auto j     = 1; j < i; j++)
 	{
 		int step = z[j] - z[j - 1];
 		if (step > -ON_EPSILON && step < ON_EPSILON)
@@ -101,7 +101,7 @@ void SV_UserFriction()
 {
 	vec3_t start;
 	vec3_t stop;
-	float friction;
+	float  friction;
 
 	auto vel = velocity;
 
@@ -113,7 +113,7 @@ void SV_UserFriction()
 	start[0] = stop[0] = origin[0] + vel[0] / speed * 16;
 	start[1] = stop[1] = origin[1] + vel[1] / speed * 16;
 	start[2] = origin[2] + sv_player->v.mins[2];
-	stop[2] = start[2] - 34;
+	stop[2]  = start[2] - 34;
 
 	auto trace = SV_Move(start, vec3_origin, vec3_origin, stop, qtrue, sv_player);
 
@@ -123,7 +123,7 @@ void SV_UserFriction()
 		friction = sv_friction.value;
 
 	// apply friction	
-	auto control = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
+	auto  control  = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
 	float newspeed = speed - host_frametime * control * friction;
 
 	if (newspeed < 0)
@@ -140,13 +140,13 @@ void SV_UserFriction()
 SV_Accelerate
 ==============
 */
-cvar_t sv_maxspeed = {"sv_maxspeed", "320", qfalse, qtrue};
+cvar_t sv_maxspeed   = {"sv_maxspeed", "320", qfalse, qtrue};
 cvar_t sv_accelerate = {"sv_accelerate", "10"};
 
 void SV_Accelerate()
 {
 	auto currentspeed = DotProduct (velocity, wishdir);
-	auto addspeed = wishspeed - currentspeed;
+	auto addspeed     = wishspeed - currentspeed;
 	if (addspeed <= 0)
 		return;
 	float accelspeed = sv_accelerate.value * host_frametime * wishspeed;
@@ -161,9 +161,9 @@ void SV_AirAccelerate(vec3_t wishveloc)
 {
 	auto wishspd = VectorNormalize(wishveloc);
 	if (wishspd > 30)
-		wishspd = 30;
+		wishspd       = 30;
 	auto currentspeed = DotProduct (velocity, wishveloc);
-	auto addspeed = wishspd - currentspeed;
+	auto addspeed     = wishspd - currentspeed;
 	if (addspeed <= 0)
 		return;
 	//	accelspeed = sv_accelerate.value * host_frametime;
@@ -194,16 +194,16 @@ SV_WaterMove
 */
 void SV_WaterMove()
 {
-	int i;
+	int    i;
 	vec3_t wishvel;
-	float newspeed;
+	float  newspeed;
 
 	//
 	// user intentions
 	//
 	AngleVectors(sv_player->v.v_angle, forward, right, up);
 
-	for (i = 0; i < 3; i++)
+	for (i         = 0; i < 3; i++)
 		wishvel[i] = forward[i] * cmd.forwardmove + right[i] * cmd.sidemove;
 
 	if (!cmd.forwardmove && !cmd.sidemove && !cmd.upmove)
@@ -256,7 +256,7 @@ void SV_WaterJump()
 {
 	if (sv.time > sv_player->v.teleport_time || !sv_player->v.waterlevel)
 	{
-		sv_player->v.flags = static_cast<int>(sv_player->v.flags) & ~FL_WATERJUMP;
+		sv_player->v.flags         = static_cast<int>(sv_player->v.flags) & ~FL_WATERJUMP;
 		sv_player->v.teleport_time = 0;
 	}
 	sv_player->v.velocity[0] = sv_player->v.movedir[0];
@@ -283,7 +283,7 @@ void SV_AirMove()
 	if (sv.time < sv_player->v.teleport_time && fmove < 0)
 		fmove = 0;
 
-	for (auto i = 0; i < 3; i++)
+	for (auto i    = 0; i < 3; i++)
 		wishvel[i] = forward[i] * fmove + right[i] * smove;
 
 	if (static_cast<int>(sv_player->v.movetype) != MOVETYPE_WALK)
@@ -300,7 +300,8 @@ void SV_AirMove()
 	}
 
 	if (sv_player->v.movetype == MOVETYPE_NOCLIP)
-	{ // noclip
+	{
+		// noclip
 		VectorCopy (wishvel, velocity);
 	}
 	else if (onground)
@@ -309,7 +310,8 @@ void SV_AirMove()
 		SV_Accelerate();
 	}
 	else
-	{ // not on ground, so little effect on velocity
+	{
+		// not on ground, so little effect on velocity
 		SV_AirAccelerate(wishvel);
 	}
 }
@@ -331,7 +333,7 @@ void SV_ClientThink()
 
 	onground = static_cast<int>(sv_player->v.flags) & FL_ONGROUND;
 
-	origin = sv_player->v.origin;
+	origin   = sv_player->v.origin;
 	velocity = sv_player->v.velocity;
 
 	DropPunchAngle();
@@ -345,7 +347,7 @@ void SV_ClientThink()
 	//
 	// angles
 	// show 1/3 the pitch angle and all the roll angle
-	cmd = host_client->cmd;
+	cmd    = host_client->cmd;
 	angles = sv_player->v.angles;
 
 	VectorAdd (sv_player->v.v_angle, sv_player->v.punchangle, v_angle);
@@ -353,7 +355,7 @@ void SV_ClientThink()
 	if (!sv_player->v.fixangle)
 	{
 		angles[PITCH] = -v_angle[PITCH] / 3;
-		angles[YAW] = v_angle[YAW];
+		angles[YAW]   = v_angle[YAW];
 	}
 
 	if (static_cast<int>(sv_player->v.flags) & FL_WATERJUMP)
@@ -382,7 +384,7 @@ SV_ReadClientMove
 */
 void SV_ReadClientMove(usercmd_t* move)
 {
-	int i;
+	int    i;
 	vec3_t angle;
 
 	// read ping time
@@ -391,18 +393,18 @@ void SV_ReadClientMove(usercmd_t* move)
 	host_client->num_pings++;
 
 	// read current angles	
-	for (i = 0; i < 3; i++)
+	for (i       = 0; i < 3; i++)
 		angle[i] = MSG_ReadAngle();
 
 	VectorCopy (angle, host_client->edict->v.v_angle);
 
 	// read movement
 	move->forwardmove = MSG_ReadShort();
-	move->sidemove = MSG_ReadShort();
-	move->upmove = MSG_ReadShort();
+	move->sidemove    = MSG_ReadShort();
+	move->upmove      = MSG_ReadShort();
 
 	// read buttons
-	auto bits = MSG_ReadByte();
+	auto bits                     = MSG_ReadByte();
 	host_client->edict->v.button0 = bits & 1;
 	host_client->edict->v.button2 = (bits & 2) >> 1;
 
@@ -540,7 +542,7 @@ void SV_RunClients()
 {
 	int i;
 
-	for (i = 0 , host_client = svs.clients; i < svs.maxclients; i++ , host_client++)
+	for (i = 0, host_client = svs.clients; i < svs.maxclients; i++, host_client++)
 	{
 		if (!host_client->active)
 			continue;

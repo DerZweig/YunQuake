@@ -1,6 +1,8 @@
 # YunQuake
 
-This is c++ version of the Fitzquake source port. 
+This is a close to vanilla version of quake that was converted
+to compile with visual studio c++. 
+
 
 Copyright (C) 1996-1997 Id Software, Inc.
 
